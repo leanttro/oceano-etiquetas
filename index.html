@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oceano Etiquetas - Soluções Industriais</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- AOS (Animate On Scroll) CSS CDN (Mudado para jsDelivr) -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Google Fonts: Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Configuração do Tailwind com a Paleta de Cores do PDF -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Fonte industrial/limpa
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        // Azuis do logo
+                        'oceano-blue': {
+                            '700': '#1e40af', // Azul médio
+                            '800': '#1e3a8a', // Azul escuro (usado no PDF)
+                            '900': '#172554'  // Azul mais escuro (para footer)
+                        },
+                        // Vermelho "ATENÇÃO" (pág 5)
+                        'oceano-red': {
+                            '600': '#DC2626',
+                            '700': '#B91C1C'
+                        },
+                        // Amarelo "GRUPO ALG" / "FLEXCOMM" (pág 5, 7)
+                        'oceano-yellow': {
+                            '500': '#F59E0B', // Um tom de mostarda/âmbar
+                            '600': '#D97706'
+                        }
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style>
+        /* Ajuste fino de tipografia */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .hero-bg {
+            /* Imagem placeholder de uma gráfica industrial */
+            background-image: linear-gradient(rgba(23, 37, 84, 0.85), rgba(23, 37, 84, 0.85)), url('https://placehold.co/1920x800/333333/555555?text=Produção+Gráfica+Industrial');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Classe para o logo invertido (branco) */
+        .logo-inverted {
+            filter: invert(100%) brightness(200%);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-white">
+
+    <!-- 1. Header (Cabeçalho) - ATUALIZADO PARA ESTILO 'CHIQUE' -->
+    <header id="main-header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
+        <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            
+            <!-- Logo (Flex-1 para empurrar para a esquerda) -->
+            <div class="flex-1">
+                <a href="#" class="flex items-center">
+                    <!-- LOGO ATUALIZADO com ID e classe de inversão -->
+                    <img id="header-logo" src="oceanologo.png" alt="Logo Oceano Etiquetas" class="h-10 w-auto transition-all duration-300 logo-inverted">
+                </a>
+            </div>
+            
+            <!-- Menu de Navegação (Desktop) com Dropdowns (Centralizado) -->
+            <div class="hidden md:flex flex-auto justify-center items-center space-x-6">
+                <a href="#" class="nav-link text-white hover:text-gray-200 font-medium transition-colors">Home</a>
+
+                <!-- Dropdown Etiquetas -->
+                <div class="relative group">
+                    <button class="nav-link flex items-center text-white hover:text-gray-200 font-medium transition-colors">
+                        Etiquetas
+                        <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                    </button>
+                    <!-- Painel Dropdown (Estilo mantido) -->
+                    <div class="absolute left-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 z-10">
+                        <div class="py-2">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas de Alta Durabilidade (P.V.C)</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Lacres e Selos de Garantia</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas para Rádios (Motorola)</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas com Nº Sequencial</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas para Catracas e Painéis</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropdown Brindes e Impressos -->
+                <div class="relative group">
+                    <button class="nav-link flex items-center text-white hover:text-gray-200 font-medium transition-colors">
+                        Brindes e Impressos
+                        <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                    </button>
+                    <!-- Painel Dropdown (Estilo mantido) -->
+                    <div class="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 z-10">
+                        <div class="py-2">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Mouse Pads Personalizados</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Banners e Roll-Up</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Wind-Banners</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Cartões de Visita</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Panfletos</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="nav-link text-white hover:text-gray-200 font-medium transition-colors">Contato</a>
+            </div>
+            
+            <!-- Botão CTA (Desktop) (Flex-1 para empurrar para a direita) -->
+            <div class="hidden md:flex flex-1 justify-end">
+                <a href="https://wa.me/5511964711934" target="_blank" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                    Orçamento
+                </a>
+            </div>
+
+            <!-- Botão Menu (Mobile) -->
+            <div class="md:hidden">
+                <button class="text-white focus:outline-none"> <!-- Cor inicial branca -->
+                    <i data-lucide="menu" class="w-7 h-7"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Início do Conteúdo Principal -->
+    <main>
+
+        <!-- 2. Seção Hero (Estática) - ATUALIZADA (Full Screen) -->
+        <section class="hero-bg text-white min-h-screen flex items-center">
+            <div class="relative z-10 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center flex flex-col justify-center min-h-screen pt-20">
+                
+                <!-- Conteúdo centralizado -->
+                <div class="flex-grow flex flex-col justify-center">
+                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight" data-aos="fade-up">
+                        Soluções Industriais em Etiquetas e Comunicação Visual
+                    </h1>
+                    <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-200" data-aos="fade-up" data-aos-delay="100">
+                        Produção própria em Impressão Digital e Serigrafia para garantir máxima durabilidade.
+                    </p>
+                    <div class="mt-10 flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                        <a href="https://wa.me/5511964711934" target="_blank" class="bg-oceano-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-oceano-red-700 transition-all transform hover:-translate-y-0.5 shadow-lg">
+                            Pedir Orçamento Urgente
+                        </a>
+                        <a href="#produtos" class="bg-oceano-yellow-500 text-black font-bold py-3 px-8 rounded-lg text-lg hover:bg-oceano-yellow-600 transition-all transform hover:-translate-y-0.5 shadow-lg">
+                            Ver Nossos Produtos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Seta de Scroll Down (Inspirado no site) -->
+                <div class="pb-10">
+                    <a href="#especialidades" class="inline-block">
+                        <i data-lucide="arrow-down" class="w-8 h-8 text-white animate-bounce"></i>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. Seção de Categorias Principais (Grid de Ícones) -->
+        <section id="especialidades" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
+                    Nossas Especialidades
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Card 1 -->
+                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="100">
+                        <div class="flex justify-center items-center mb-4">
+                            <i data-lucide="shield-check" class="w-12 h-12 text-oceano-blue-700"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Etiquetas de Alta Durabilidade</h3>
+                        <p class="text-gray-600 text-sm">P.V.C. Jateado, Cristal e Poliéster para painéis e máquinas.</p>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="200">
+                        <div class="flex justify-center items-center mb-4">
+                            <i data-lucide="lock" class="w-12 h-12 text-oceano-blue-700"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Lacres e Selos de Garantia</h3>
+                        <p class="text-gray-600 text-sm">VOID, Casca de Ovo (destrutível) e selos para segurança.</p>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="300">
+                        <div class="flex justify-center items-center mb-4">
+                            <i data-lucide="mouse-pointer-square" class="w-12 h-12 text-oceano-blue-700"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Mouse Pads Personalizados</h3>
+                        <p class="text-gray-600 text-sm">Brindes corporativos de alta qualidade com a sua marca.</p>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="400">
+                        <div class="flex justify-center items-center mb-4">
+                            <i data-lucide="layout-list" class="w-12 h-12 text-oceano-blue-700"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Banners e Impressos Gráficos</h3>
+                        <p class="text-gray-600 text-sm">Cartões, Panfletos, Banners e Roll-Ups para comunicação visual.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Seção de Produtos em Destaque (A "Loja") -->
+        <section id="produtos" class="py-16 md:py-24 bg-gray-100">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+                    Produtos Mais Procurados
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Card 1 (Lacre p. 8) -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="100">
+                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Lacre+Garantia" alt="Lacre de Garantia" class="w-full h-56 object-cover border-b border-gray-200">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold text-gray-900">Lacre de Garantia Destrutível</h3>
+                            <span class="text-sm text-gray-500 mt-1">Cód: LAC-001</span>
+                            <p class="text-gray-600 mt-3 text-sm flex-grow">Material "Casca de Ovo" que se quebra ao tentar remover. Ideal para eletrônicos.</p>
+                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Lacre%20de%20Garantia%20Destrutível" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
+                                <span>Orçar via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (Painel p. 7) -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="200">
+                        <img src="https://placehold.co/300x300/FACC15/000000?text=Painel+FLEXCOMM" alt="Painel de Policarbonato" class="w-full h-56 object-cover border-b border-gray-200">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold text-gray-900">Painel de Policarbonato</h3>
+                            <span class="text-sm text-gray-500 mt-1">Cód: PNL-002</span>
+                            <p class="text-gray-600 mt-3 text-sm flex-grow">Impressão interna (verso) para máxima durabilidade em painéis de máquinas e equipamentos.</p>
+                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Painel%20de%20Policarbonato" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
+                                <span>Orçar via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 3 (Rádio p. 11) -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="300">
+                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Motorola+EP450" alt="Etiqueta para Rádio" class="w-full h-56 object-cover border-b border-gray-200">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold text-gray-900">Etiqueta para Rádio (Motorola)</h3>
+                            <span class="text-sm text-gray-500 mt-1">Cód: RAD-001</span>
+                            <p class="text-gray-600 mt-3 text-sm flex-grow">Etiquetas com cortes precisos para modelos de radiocomunicação (Ex: EP450).</p>
+                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Etiqueta%20para%20Rádio" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
+                                <span>Orçar via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 (Mouse Pad p. 12) -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="100">
+                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Mouse+Pad" alt="Mouse Pad" class="w-full h-56 object-cover border-b border-gray-200">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold text-gray-900">Mouse Pad Personalizado</h3>
+                            <span class="text-sm text-gray-500 mt-1">Cód: BRIND-001</span>
+                            <p class="text-gray-600 mt-3 text-sm flex-grow">Brinde corporativo de alta aderência e impressão de qualidade fotográfica.</p>
+                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Mouse%20Pad%20Personalizado" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
+                                <span>Orçar via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 (Sequencial p. 10) -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="200">
+                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Patrimônio+Nº+Sequencial" alt="Etiqueta Numerada" class="w-full h-56 object-cover border-b border-gray-200">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold text-gray-900">Etiqueta com Nº Sequencial</h3>
+                            <span class="text-sm text-gray-500 mt-1">Cód: SEQ-001</span>
+                            <p class="text-gray-600 mt-3 text-sm flex-grow">Para controle de patrimônio ou garantia, com numeração e/ou código de barras.</p>
+                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Etiqueta%20com%20Nº%20Sequencial" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
+                                <span>Orçar via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 6 (Cartão p. 13) -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="300">
+                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Cartão+de+Visita" alt="Cartão de Visita" class="w-full h-56 object-cover border-b border-gray-200">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-lg font-bold text-gray-900">Cartão de Visita Premium</h3>
+                            <span class="text-sm text-gray-500 mt-1">Cód: IMP-001</span>
+                            <p class="text-gray-600 mt-3 text-sm flex-grow">Impressão offset ou digital com acabamentos (laminação, verniz localizado, etc).</p>
+                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Cartão%20de%20Visita" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
+                                <span>Orçar via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Seção de Diferenciais (Baseada na pág. 16) -->
+        <section class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Qualidade e Confiança em Cada Entrega</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Nossos diferenciais garantem o melhor produto para sua empresa.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                    <!-- Diferencial 1: Equipe -->
+                    <div class="bg-gray-50 border border-gray-200 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="100">
+                        <div class="flex-shrink-0 mb-5">
+                            <div class="flex justify-center items-center w-16 h-16 rounded-full bg-oceano-blue-700 text-white">
+                                <i data-lucide="users-2" class="w-8 h-8"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Equipe</h3>
+                        <p class="text-gray-600">Designers prontos para atender suas dúvidas e criar sua arte, com atendimento exclusivo.</p>
+                    </div>
+                    
+                    <!-- Diferencial 2: Durabilidade -->
+                    <div class="bg-gray-50 border border-gray-200 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="200">
+                         <div class="flex-shrink-0 mb-5">
+                            <div class="flex justify-center items-center w-16 h-16 rounded-full bg-oceano-blue-700 text-white">
+                                <i data-lucide="shield-check" class="w-8 h-8"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Durabilidade</h3>
+                        <p class="text-gray-600">Impressão Digital e Serigrafia para garantir uma qualidade impressionante nas suas peças.</p>
+                    </div>
+                    
+                    <!-- Diferencial 3: Prazo -->
+                    <div class="bg-gray-50 border border-gray-200 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="300">
+                         <div class="flex-shrink-0 mb-5">
+                            <div class="flex justify-center items-center w-16 h-16 rounded-full bg-oceano-blue-700 text-white">
+                                <i data-lucide="timer" class="w-8 h-8"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Prazo</h3>
+                        <p class="text-gray-600">Todos os processos são internos: Criação, Impressão e Corte prontos para te atender.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- 6. Footer (Rodapé - Atualizado com dados do PDF pág. 18) -->
+    <footer class="bg-oceano-blue-900 text-gray-300 pt-16 pb-8">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Coluna 1: Logo e Contato -->
+                <div class="mb-6 md:mb-0 md:col-span-2">
+                    <a href="#" class="flex items-center space-x-3 mb-4">
+                        <img src="https://placehold.co/40x40/FFFFFF/172554?text=O" alt="Logo Oceano Etiquetas" class="w-10 h-10 rounded-full">
+                        <span class="text-2xl font-bold text-white">
+                            Oceano Etiquetas e Brindes
+                        </span>
+                    </a>
+                    <p class="text-gray-400 mt-4 max-w-md">Especialistas em etiquetas industriais, lacres de garantia e brindes corporativos. Atendemos todo o Brasil.</p>
+                    
+                    <div class="mt-6 space-y-3">
+                        <a href="https://wa.me/5511964711934" target="_blank" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                            <i data-lucide="phone" class="w-5 h-5 mr-3 flex-shrink-0"></i>
+                            <span>(11) 96471-1934 (WhatsApp)</span>
+                        </a>
+                        <a href="mailto:vendas@oceanoetiquetas.com.br" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                            <i data-lucide="mail" class="w-5 h-5 mr-3 flex-shrink-0"></i>
+                            <span>vendas@oceanoetiquetas.com.br</span>
+                        </a>
+                        <a href="https://instagram.com/oceanoetiquetas" target="_blank" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                            <i data-lucide="instagram" class="w-5 h-5 mr-3 flex-shrink-0"></i>
+                            <span>@oceanoetiquetas</span>
+                        </a>
+                         <a href="http://www.oceanoetiquetas.com.br" target="_blank" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                            <i data-lucide="globe" class="w-5 h-5 mr-3 flex-shrink-0"></i>
+                            <span>www.oceanoetiquetas.com.br</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Coluna 2: Etiquetas -->
+                <div>
+                    <h4 class="font-bold text-white mb-4 uppercase text-sm tracking-wider">Etiquetas</h4>
+                    <nav class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Lacres de Garantia</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Etiquetas em P.V.C.</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Etiquetas para Painéis</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Etiquetas para Rádios</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Nº Sequencial / Patrimônio</a>
+                    </nav>
+                </div>
+
+                <!-- Coluna 3: Brindes e Impressos -->
+                <div>
+                    <h4 class="font-bold text-white mb-4 uppercase text-sm tracking-wider">Brindes e Impressos</h4>
+                    <nav class="space-y-2">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Mouse Pads</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Cartões de Visita</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Banners e Roll-Up</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Wind-Banners</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Panfletos</a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+                <p class="text-sm text-gray-400">
+                    &copy; 2025 Oceano Etiquetas e Brindes. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Libs JS (Mudado para jsDelivr para melhor confiabilidade) -->
+    <!-- CORREÇÃO FINAL: Removido 'defer' para forçar o carregamento síncrono -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Init Script -->
+    <script>
+        // CORREÇÃO FINAL: Espera a JANELA INTEIRA (incluindo scripts) carregar
+        // 'window.onload' é o evento mais seguro para garantir que libs externas
+        // (que acabaram de ser carregadas sincronamente) estejam 100% prontas.
+        window.onload = () => {
+            
+            // 1. Inicializa os Ícones Lucide
+            try {
+                // Neste ponto, 'lucide' DEVE estar definido.
+                lucide.createIcons();
+            } catch (e) { console.error('Lucide init failed', e); }
+
+            // 2. Inicializa o AOS
+            try {
+                // 'AOS' DEVE estar definido.
+                AOS.init({
+                    duration: 800, // Duração da animação
+                    once: true,     // Animar apenas uma vez
+                    offset: 50,     // Offset para disparar a animação
+                });
+            } catch (e) { console.error('AOS init failed', e); }
+
+            // 3. SCRIPT DO HEADER (Executa após tudo carregar)
+            try {
+                const header = document.getElementById('main-header');
+                const headerLogo = document.getElementById('header-logo');
+                // Seleciona apenas os links de navegação de nível superior
+                const navLinks = document.querySelectorAll('#main-header .nav-link');
+                // Seleciona o ícone do menu mobile
+                const mobileMenuIcon = document.querySelector('#main-header .md\\:hidden i');
+
+                const handleScroll = () => {
+                    if (window.scrollY > 10) {
+                        // ROLOU PARA BAIXO
+                        header.classList.add('bg-white', 'shadow-md');
+                        // Remove filtro do logo (para cor original)
+                        headerLogo.classList.remove('logo-inverted');
+                        // Muda cor dos links
+                        navLinks.forEach(link => {
+                            link.classList.add('text-gray-700');
+                            link.classList.remove('text-white');
+                        });
+                        // Muda cor do ícone mobile
+                        if (mobileMenuIcon) {
+                            mobileMenuIcon.classList.add('text-gray-800');
+                            mobileMenuIcon.classList.remove('text-white');
+                        }
+                    } else {
+                        // TOPO DA PÁGINA
+                        header.classList.remove('bg-white', 'shadow-md');
+                        // Adiciona filtro no logo (para ficar branco)
+                        headerLogo.classList.add('logo-inverted');
+                        // Volta cor dos links
+                        navLinks.forEach(link => {
+                            link.classList.add('text-white');
+                            link.classList.remove('text-gray-700');
+                        });
+                        // Volta cor do ícone mobile
+                        if (mobileMenuIcon) {
+                            mobileMenuIcon.classList.add('text-white');
+                            mobileMenuIcon.classList.remove('text-gray-800');
+                        }
+                    }
+                };
+
+                // Adiciona o 'listener'
+                window.addEventListener('scroll', handleScroll);
+                // Executa uma vez no carregamento
+                handleScroll(); 
+
+            } catch (e) { console.error('Header scroll script failed', e); }
+        };
+    </script>
+    
+</body>
+</html>
+
