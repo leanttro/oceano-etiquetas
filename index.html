@@ -4,511 +4,1305 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oceano Etiquetas - Soluções Industriais</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- AOS (Animate On Scroll) CSS CDN (Mudado para jsDelivr) -->
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <!-- Google Fonts: Roboto -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-    <!-- Configuração do Tailwind com a Paleta de Cores do PDF -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        // Fonte industrial/limpa
-                        sans: ['Roboto', 'sans-serif'],
-                    },
-                    colors: {
-                        // Azuis do logo
-                        'oceano-blue': {
-                            '700': '#1e40af', // Azul médio
-                            '800': '#1e3a8a', // Azul escuro (usado no PDF)
-                            '900': '#172554'  // Azul mais escuro (para footer)
-                        },
-                        // Vermelho "ATENÇÃO" (pág 5)
-                        'oceano-red': {
-                            '600': '#DC2626',
-                            '700': '#B91C1C'
-                        },
-                        // Amarelo "GRUPO ALG" / "FLEXCOMM" (pág 5, 7)
-                        'oceano-yellow': {
-                            '500': '#F59E0B', // Um tom de mostarda/âmbar
-                            '600': '#D97706'
-                        }
-                    }
-                },
-            }
-        }
-    </script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Ajuste fino de tipografia */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --dark: #0f172a;
+            --accent: #dc2626;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg-light: #f8fafc;
+            --light-blue: #3672d4; /* Adicionando a nova cor azul claro */
+        }
+
         body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: #ffffff;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
-        .hero-bg {
-            /* Imagem placeholder de uma gráfica industrial */
-            background-image: linear-gradient(rgba(23, 37, 84, 0.85), rgba(23, 37, 84, 0.85)), url('https://placehold.co/1920x800/333333/555555?text=Produção+Gráfica+Industrial');
+
+        /* Header Ultra Clean */
+        .header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            height: 75px; /* Altura fixa para o menu mobile */
+        }
+
+        .nav {
+            max-width: 1400px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            /* font-size: 1.1rem; */
+            /* font-weight: 700; */
+            /* color: var(--dark); */
+            /* letter-spacing: 0.5px; */
+            /* text-transform: uppercase; */
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--dark); /* Mantém a cor caso o link tenha algum texto */
+        }
+
+        .logo img {
+            height: 40px; /* Altura do logo */
+            width: auto; /* Largura automática para manter a proporção */
+            object-fit: contain; /* Garante que o logo caiba sem distorcer */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* --- Estilos do Dropdown (Desktop) --- */
+        .nav-item {
+            position: relative;
+        }
+
+        .dropdown-arrow {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-left: 4px;
+            stroke: currentColor;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 150%; /* Começa um pouco abaixo */
+            left: -1rem;
+            min-width: 240px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            padding: 0.5rem 0;
+            list-style: none;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease-out;
+        }
+
+        .nav-item:hover > .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            top: 100%; /* Posição final */
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        
+        .dropdown-menu a:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+        /* --- Fim Estilos Dropdown --- */
+
+
+        .nav-cta {
+            padding: 0.6rem 1.5rem;
+            background: var(--dark);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-cta .full-text { display: inline; }
+        .nav-cta .short-text { display: none; }
+
+        /* Botão Menu Mobile */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 10px;
+        }
+
+        .hamburger {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--dark);
+            position: relative;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background: var(--dark);
+            left: 0;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .hamburger::before { top: -7px; }
+        .hamburger::after { bottom: -7px; }
+
+        /* Estado Ativo (X) do Hamburger */
+        .nav-toggle.active .hamburger { background: transparent; }
+        .nav-toggle.active .hamburger::before { transform: translateY(7px) rotate(45deg); }
+        .nav-toggle.active .hamburger::after { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Painel do Menu Mobile */
+        .mobile-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: fixed;
+            top: 75px; /* Altura do header */
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 75px);
+            background: white;
+            z-index: 999;
+            padding: 4rem 2rem;
+            text-align: center;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-nav.active {
+            transform: translateX(0);
+        }
+
+        .mobile-nav a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        /* --- Estilos Dropdown (Mobile) --- */
+        .mobile-nav-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-nav-toggle-sub {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            cursor: pointer;
+        }
+        
+        .mobile-nav-toggle-sub span {
+            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .mobile-nav-toggle-sub .dropdown-arrow {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-nav-toggle-sub.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .mobile-sub-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding-left: 1.5rem;
+        }
+        
+        .mobile-sub-menu.active {
+            /* JS vai calcular a altura, mas max-height alto é um fallback */
+            max-height: 500px; 
+            padding-bottom: 1rem;
+        }
+        
+        .mobile-sub-menu a {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-light);
+            padding: 0.75rem 0;
+        }
+
+        .mobile-nav-link { /* Para links diretos como "Contato" */
+            display: block;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        /* --- Fim Estilos Mobile Dropdown --- */
+
+
+        /* Hero Minimalista (Slider) */
+        .hero {
+            margin-top: 75px; /* Altura do header */
+            min-height: 90vh;
+            /* display: flex; */ /* Removido para o slider funcionar */
+            /* align-items: center; */ /* Removido para o slider funcionar */
+            background: var(--dark); /* Fundo de fallback caso as imagens falhem */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            /* content: ''; */ /* Desabilitado o gradiente estático antigo */
+            display: none; /* Esconde o gradiente estático antigo */
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-size: cover;
-            background-position: center;
+            background-position: center center;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out; /* Transição de fade suave */
+            
+            /* Para centralizar o .hero-content dentro dele */
+            display: flex;
+            align-items: center;
         }
-        /* Classe para o logo invertido (branco) */
-        .logo-inverted {
-            filter: invert(100%) brightness(200%);
+
+        .hero-slide.active {
+            opacity: 1; /* Slide ativo fica visível */
+        }
+
+        /* Overlay escuro para garantir legibilidade */
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)); /* #0f172a com opacidade */
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            max-width: 900px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3rem;
+            max-width: 650px;
+            font-weight: 400;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: white;
+            color: var(--dark);
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--light-blue); /* Aplicando o novo azul claro */
+            border-bottom: 1px solid var(--border); /* Mantendo a borda de contraste */
+        }
+
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 3rem; /* MODIFICADO - era 4rem 3rem */
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white; /* Alterado para branco para contraste com o azul */
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8); /* Branco com opacidade */
+            font-weight: 500;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 4rem 3rem 8rem; /* Alterado de 8rem 3rem */
+            background: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 5rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.2;
+            letter-spacing: -1px;
+            max-width: 700px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .service-card {
+            background: white;
+            padding: 3rem;
+            transition: background 0.3s;
+        }
+
+        .service-card:hover {
+            background: var(--bg-light);
+        }
+
+        .service-number {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 4rem 3rem 8rem; /* Alterado de 8rem 3rem */
+            background: var(--bg-light);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-image {
+            aspect-ratio: 4/3;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden; /* Garante que a imagem não vaze */
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cobre a área 4:3 sem distorcer */
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05); /* Efeito de zoom suave */
+        }
+
+        .product-content {
+            padding: 2rem;
+        }
+
+        .product-code {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+
+        .product-link:hover {
+            gap: 0.75rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 8rem 3rem;
+            background: var(--dark);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 3rem 3rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-brand p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .footer-contact a {
+            display: block;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-contact a:hover {
+            color: var(--primary);
+        }
+
+        .footer-links h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-links a {
+            display: block;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 3rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            /* Ajustes de espaçamento para mobile */
+            .nav { padding: 0 1.5rem; }
+            .hero-content { padding: 0 1.5rem; }
+            .stats-container { padding: 2rem 1.5rem; } /* MODIFICADO - era 4rem 1.5rem */
+            .services { padding: 3rem 1.5rem 6rem; } /* Alterado de 6rem 1.5rem */
+            .products { padding: 3rem 1.5rem 6rem; } /* Alterado de 6rem 1.5rem */
+            .cta-section { padding: 6rem 1.5rem; }
+            .footer-content { padding: 5rem 1.5rem 3rem; }
+
+            /* Esconde links desktop, mostra botão mobile */
+            .nav-links {
+                display: none;
+            }
+            .nav-toggle {
+                display: block;
+            }
+            
+            /* Ajusta o botão CTA para mobile */
+            .nav-cta {
+                padding: 0.6rem 1rem; /* Um pouco menor para caber */
+            }
+            .nav-cta .full-text { display: none; }
+            .nav-cta .short-text { display: inline; }
+
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .services-grid,
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-card {
+                padding: 2rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            /* .nav-cta {
+                display: none; 
+            } */
+        }
+        
+        @media (max-width: 767px) {
+            .hero-buttons {
+                flex-direction: column;
+            }
+            .btn-primary, .btn-secondary {
+                text-align: center;
+            }
         }
     </style>
 </head>
-<body class="font-sans text-gray-800 bg-white">
-
-    <!-- 1. Header (Cabeçalho) - ATUALIZADO PARA ESTILO 'CHIQUE' -->
-    <header id="main-header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
-        <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo"> <!-- Alterado de DIV para A (link) -->
+                <img src="oceanologo.png" alt="Logo Oceano Etiquetas">
+            </a>
+            <ul class="nav-links">
+                <!-- Item 1: Lacres -->
+                <li class="nav-item">
+                    <a href="#">
+                        Lacres
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Lacre Destrutível (Casca de Ovo)</a></li>
+                        <li><a href="#">Lacre de Segurança VOID</a></li>
+                        <li><a href="#">Selos de Garantia</a></li>
+                    </ul>
+                </li>
+                <!-- Item 2: Adesivos -->
+                <li class="nav-item">
+                    <a href="#">
+                        Adesivos
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Etiquetas Industriais (PVC)</a></li>
+                        <li><a href="#">Painel de Policarbonato</a></li>
+                        <li><a href="#">Etiquetas para Rádios</a></li>
+                        <li><a href="#">Etiquetas (Nº Sequencial)</a></li>
+                    </ul>
+                </li>
+                <!-- Item 3: Brindes -->
+                <li class="nav-item">
+                    <a href="#">
+                        Brindes
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Mouse Pads Personalizados</a></li>
+                        <li><a href="#">Brindes Corporativos</a></li>
+                    </ul>
+                </li>
+                <!-- Item 4: Impressos -->
+                <li class="nav-item">
+                    <a href="#">
+                        Impressos
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Cartões de Visita Premium</a></li>
+                        <li><a href="#">Banners e Roll-ups</a></li>
+                        <li><a href="#">Material Gráfico</a></li>
+                    </ul>
+                </li>
+                <!-- Item 5: Contato -->
+                <li class="nav-item">
+                    <a href="#contato">Contato</a>
+                </li>
+            </ul>
             
-            <!-- Logo (Flex-1 para empurrar para a esquerda) -->
-            <div class="flex-1">
-                <a href="#" class="flex items-center">
-                    <!-- LOGO ATUALIZADO com ID e classe de inversão -->
-                    <img id="header-logo" src="oceanologo.png" alt="Logo Oceano Etiquetas" class="h-10 w-auto transition-all duration-300 logo-inverted">
+            <div class="nav-controls"> <!-- Wrapper para controles da direita -->
+                <a href="https://wa.me/5511964711934" class="nav-cta">
+                    <span class="full-text">Solicitar Orçamento</span>
+                    <span class="short-text">Orçamento</span>
                 </a>
-            </div>
-            
-            <!-- Menu de Navegação (Desktop) com Dropdowns (Centralizado) -->
-            <div class="hidden md:flex flex-auto justify-center items-center space-x-6">
-                <a href="#" class="nav-link text-white hover:text-gray-200 font-medium transition-colors">Home</a>
-
-                <!-- Dropdown Etiquetas -->
-                <div class="relative group">
-                    <button class="nav-link flex items-center text-white hover:text-gray-200 font-medium transition-colors">
-                        Etiquetas
-                        <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
-                    </button>
-                    <!-- Painel Dropdown (Estilo mantido) -->
-                    <div class="absolute left-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 z-10">
-                        <div class="py-2">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas de Alta Durabilidade (P.V.C)</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Lacres e Selos de Garantia</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas para Rádios (Motorola)</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas com Nº Sequencial</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Etiquetas para Catracas e Painéis</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dropdown Brindes e Impressos -->
-                <div class="relative group">
-                    <button class="nav-link flex items-center text-white hover:text-gray-200 font-medium transition-colors">
-                        Brindes e Impressos
-                        <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
-                    </button>
-                    <!-- Painel Dropdown (Estilo mantido) -->
-                    <div class="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 z-10">
-                        <div class="py-2">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Mouse Pads Personalizados</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Banners e Roll-Up</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Wind-Banners</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Cartões de Visita</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-oceano-blue-700">Panfletos</a>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="#" class="nav-link text-white hover:text-gray-200 font-medium transition-colors">Contato</a>
-            </div>
-            
-            <!-- Botão CTA (Desktop) (Flex-1 para empurrar para a direita) -->
-            <div class="hidden md:flex flex-1 justify-end">
-                <a href="https://wa.me/5511964711934" target="_blank" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                    Orçamento
-                </a>
-            </div>
-
-            <!-- Botão Menu (Mobile) -->
-            <div class="md:hidden">
-                <button class="text-white focus:outline-none"> <!-- Cor inicial branca -->
-                    <i data-lucide="menu" class="w-7 h-7"></i>
+                
+                <!-- Botão Hamburger -->
+                <button class="nav-toggle" aria-label="Abrir menu">
+                    <span class="hamburger"></span>
                 </button>
             </div>
         </nav>
     </header>
 
-    <!-- Início do Conteúdo Principal -->
-    <main>
-
-        <!-- 2. Seção Hero (Estática) - ATUALIZADA (Full Screen) -->
-        <section class="hero-bg text-white min-h-screen flex items-center">
-            <div class="relative z-10 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center flex flex-col justify-center min-h-screen pt-20">
-                
-                <!-- Conteúdo centralizado -->
-                <div class="flex-grow flex flex-col justify-center">
-                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight" data-aos="fade-up">
-                        Soluções Industriais em Etiquetas e Comunicação Visual
-                    </h1>
-                    <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-200" data-aos="fade-up" data-aos-delay="100">
-                        Produção própria em Impressão Digital e Serigrafia para garantir máxima durabilidade.
-                    </p>
-                    <div class="mt-10 flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
-                        <a href="https://wa.me/5511964711934" target="_blank" class="bg-oceano-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-oceano-red-700 transition-all transform hover:-translate-y-0.5 shadow-lg">
-                            Pedir Orçamento Urgente
-                        </a>
-                        <a href="#produtos" class="bg-oceano-yellow-500 text-black font-bold py-3 px-8 rounded-lg text-lg hover:bg-oceano-yellow-600 transition-all transform hover:-translate-y-0.5 shadow-lg">
-                            Ver Nossos Produtos
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Seta de Scroll Down (Inspirado no site) -->
-                <div class="pb-10">
-                    <a href="#especialidades" class="inline-block">
-                        <i data-lucide="arrow-down" class="w-8 h-8 text-white animate-bounce"></i>
-                    </a>
-                </div>
-
+    <!-- Menu Mobile (Painel) -->
+    <div class="mobile-nav">
+        <!-- Item 1: Lacres -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Lacres</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-        </section>
+            <div class="mobile-sub-menu">
+                <a href="#">Lacre Destrutível (Casca de Ovo)</a>
+                <a href="#">Lacre de Segurança VOID</a>
+                <a href="#">Selos de Garantia</a>
+            </div>
+        </div>
+        <!-- Item 2: Adesivos -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Adesivos</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="#">Etiquetas Industriais (PVC)</a>
+                <a href="#">Painel de Policarbonato</a>
+                <a href="#">Etiquetas para Rádios</a>
+                <a href="#">Etiquetas (Nº Sequencial)</a>
+            </div>
+        </div>
+        <!-- Item 3: Brindes -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Brindes</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="#">Mouse Pads Personalizados</a>
+                <a href="#">Brindes Corporativos</a>
+            </div>
+        </div>
+        <!-- Item 4: Impressos -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Impressos</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="#">Cartões de Visita Premium</a>
+                <a href="#">Banners e Roll-ups</a>
+                <a href="#">Material Gráfico</a>
+            </div>
+        </div>
+        <!-- Item 5: Contato -->
+        <a href="#contato" class="mobile-nav-link">Contato</a>
+    </div>
 
-        <!-- 3. Seção de Categorias Principais (Grid de Ícones) -->
-        <section id="especialidades" class="py-16 md:py-24 bg-white">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
-                    Nossas Especialidades
-                </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Card 1 -->
-                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="100">
-                        <div class="flex justify-center items-center mb-4">
-                            <i data-lucide="shield-check" class="w-12 h-12 text-oceano-blue-700"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Etiquetas de Alta Durabilidade</h3>
-                        <p class="text-gray-600 text-sm">P.V.C. Jateado, Cristal e Poliéster para painéis e máquinas.</p>
-                    </div>
-                    <!-- Card 2 -->
-                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="200">
-                        <div class="flex justify-center items-center mb-4">
-                            <i data-lucide="lock" class="w-12 h-12 text-oceano-blue-700"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Lacres e Selos de Garantia</h3>
-                        <p class="text-gray-600 text-sm">VOID, Casca de Ovo (destrutível) e selos para segurança.</p>
-                    </div>
-                    <!-- Card 3 -->
-                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="300">
-                        <div class="flex justify-center items-center mb-4">
-                            <i data-lucide="mouse-pointer-square" class="w-12 h-12 text-oceano-blue-700"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Mouse Pads Personalizados</h3>
-                        <p class="text-gray-600 text-sm">Brindes corporativos de alta qualidade com a sua marca.</p>
-                    </div>
-                    <!-- Card 4 -->
-                    <div class="text-center p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-xl hover:border-oceano-blue-700 transition-all" data-aos="fade-up" data-aos-delay="400">
-                        <div class="flex justify-center items-center mb-4">
-                            <i data-lucide="layout-list" class="w-12 h-12 text-oceano-blue-700"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Banners e Impressos Gráficos</h3>
-                        <p class="text-gray-600 text-sm">Cartões, Panfletos, Banners e Roll-Ups para comunicação visual.</p>
-                    </div>
+    <!-- Hero Slider -->
+    <section class="hero">
+        
+        <!-- Slide 1 -->
+        <div class="hero-slide active" style="background-image: url('fundo1.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Da Impressão à Produção: Velocidade e Precisão Industrial.</h1>
+                <p>Nossa tecnologia de impressão digital garante rolos de etiquetas com acabamento perfeito e prontos para sua linha de montagem.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511964711934" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- 4. Seção de Produtos em Destaque (A "Loja") -->
-        <section id="produtos" class="py-16 md:py-24 bg-gray-100">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-                    Produtos Mais Procurados
-                </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
-                    <!-- Card 1 (Lacre p. 8) -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="100">
-                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Lacre+Garantia" alt="Lacre de Garantia" class="w-full h-56 object-cover border-b border-gray-200">
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900">Lacre de Garantia Destrutível</h3>
-                            <span class="text-sm text-gray-500 mt-1">Cód: LAC-001</span>
-                            <p class="text-gray-600 mt-3 text-sm flex-grow">Material "Casca de Ovo" que se quebra ao tentar remover. Ideal para eletrônicos.</p>
-                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Lacre%20de%20Garantia%20Destrutível" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
-                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
-                                <span>Orçar via WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Card 2 (Painel p. 7) -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="200">
-                        <img src="https://placehold.co/300x300/FACC15/000000?text=Painel+FLEXCOMM" alt="Painel de Policarbonato" class="w-full h-56 object-cover border-b border-gray-200">
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900">Painel de Policarbonato</h3>
-                            <span class="text-sm text-gray-500 mt-1">Cód: PNL-002</span>
-                            <p class="text-gray-600 mt-3 text-sm flex-grow">Impressão interna (verso) para máxima durabilidade em painéis de máquinas e equipamentos.</p>
-                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Painel%20de%20Policarbonato" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
-                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
-                                <span>Orçar via WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Card 3 (Rádio p. 11) -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="300">
-                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Motorola+EP450" alt="Etiqueta para Rádio" class="w-full h-56 object-cover border-b border-gray-200">
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900">Etiqueta para Rádio (Motorola)</h3>
-                            <span class="text-sm text-gray-500 mt-1">Cód: RAD-001</span>
-                            <p class="text-gray-600 mt-3 text-sm flex-grow">Etiquetas com cortes precisos para modelos de radiocomunicação (Ex: EP450).</p>
-                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Etiqueta%20para%20Rádio" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
-                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
-                                <span>Orçar via WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 (Mouse Pad p. 12) -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="100">
-                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Mouse+Pad" alt="Mouse Pad" class="w-full h-56 object-cover border-b border-gray-200">
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900">Mouse Pad Personalizado</h3>
-                            <span class="text-sm text-gray-500 mt-1">Cód: BRIND-001</span>
-                            <p class="text-gray-600 mt-3 text-sm flex-grow">Brinde corporativo de alta aderência e impressão de qualidade fotográfica.</p>
-                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Mouse%20Pad%20Personalizado" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
-                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
-                                <span>Orçar via WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Card 5 (Sequencial p. 10) -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="200">
-                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Patrimônio+Nº+Sequencial" alt="Etiqueta Numerada" class="w-full h-56 object-cover border-b border-gray-200">
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900">Etiqueta com Nº Sequencial</h3>
-                            <span class="text-sm text-gray-500 mt-1">Cód: SEQ-001</span>
-                            <p class="text-gray-600 mt-3 text-sm flex-grow">Para controle de patrimônio ou garantia, com numeração e/ou código de barras.</p>
-                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Etiqueta%20com%20Nº%20Sequencial" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
-                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
-                                <span>Orçar via WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Card 6 (Cartão p. 13) -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" data-aos="zoom-in" data-aos-delay="300">
-                        <img src="https://placehold.co/300x300/E5E7EB/333333?text=Cartão+de+Visita" alt="Cartão de Visita" class="w-full h-56 object-cover border-b border-gray-200">
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900">Cartão de Visita Premium</h3>
-                            <span class="text-sm text-gray-500 mt-1">Cód: IMP-001</span>
-                            <p class="text-gray-600 mt-3 text-sm flex-grow">Impressão offset ou digital com acabamentos (laminação, verniz localizado, etc).</p>
-                            <a href="https://wa.me/5511964711934?text=Olá,%20gostaria%20de%20orçar%20Cartão%20de%20Visita" target="_blank" class="mt-5 bg-green-500 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center w-full">
-                                <i data-lucide="whatsapp" class="w-5 h-5 mr-2"></i>
-                                <span>Orçar via WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-
+        <!-- Slide 2 -->
+        <div class="hero-slide" style="background-image: url('fundo2.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>A Arte da Serigrafia: Durabilidade que Supera Desafios.</h1>
+                <p>Especialistas em impressão serigráfica de alta performance para painéis, brindes e etiquetas que resistem ao tempo.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511964711934" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- 5. Seção de Diferenciais (Baseada na pág. 16) -->
-        <section class="py-16 md:py-24 bg-white">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Qualidade e Confiança em Cada Entrega</h2>
-                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Nossos diferenciais garantem o melhor produto para sua empresa.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-                    <!-- Diferencial 1: Equipe -->
-                    <div class="bg-gray-50 border border-gray-200 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="100">
-                        <div class="flex-shrink-0 mb-5">
-                            <div class="flex justify-center items-center w-16 h-16 rounded-full bg-oceano-blue-700 text-white">
-                                <i data-lucide="users-2" class="w-8 h-8"></i>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Equipe</h3>
-                        <p class="text-gray-600">Designers prontos para atender suas dúvidas e criar sua arte, com atendimento exclusivo.</p>
-                    </div>
-                    
-                    <!-- Diferencial 2: Durabilidade -->
-                    <div class="bg-gray-50 border border-gray-200 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="200">
-                         <div class="flex-shrink-0 mb-5">
-                            <div class="flex justify-center items-center w-16 h-16 rounded-full bg-oceano-blue-700 text-white">
-                                <i data-lucide="shield-check" class="w-8 h-8"></i>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Durabilidade</h3>
-                        <p class="text-gray-600">Impressão Digital e Serigrafia para garantir uma qualidade impressionante nas suas peças.</p>
-                    </div>
-                    
-                    <!-- Diferencial 3: Prazo -->
-                    <div class="bg-gray-50 border border-gray-200 p-8 rounded-lg" data-aos="fade-left" data-aos-delay="300">
-                         <div class="flex-shrink-0 mb-5">
-                            <div class="flex justify-center items-center w-16 h-16 rounded-full bg-oceano-blue-700 text-white">
-                                <i data-lucide="timer" class="w-8 h-8"></i>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Prazo</h3>
-                        <p class="text-gray-600">Todos os processos são internos: Criação, Impressão e Corte prontos para te atender.</p>
-                    </div>
+        <!-- Slide 3 -->
+        <div class="hero-slide" style="background-image: url('fundo3.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Mais que Brindes: A Identidade da Sua Marca.</h1>
+                <p>De mouse pads a sacolas personalizadas, produzimos brindes corporativos que fortalecem sua presença no mercado.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511964711934" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
                 </div>
             </div>
-        </section>
+        </div>
 
-    </main>
-    
-    <!-- 6. Footer (Rodapé - Atualizado com dados do PDF pág. 18) -->
-    <footer class="bg-oceano-blue-900 text-gray-300 pt-16 pb-8">
-        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Coluna 1: Logo e Contato -->
-                <div class="mb-6 md:mb-0 md:col-span-2">
-                    <a href="#" class="flex items-center space-x-3 mb-4">
-                        <img src="https://placehold.co/40x40/FFFFFF/172554?text=O" alt="Logo Oceano Etiquetas" class="w-10 h-10 rounded-full">
-                        <span class="text-2xl font-bold text-white">
-                            Oceano Etiquetas e Brindes
-                        </span>
-                    </a>
-                    <p class="text-gray-400 mt-4 max-w-md">Especialistas em etiquetas industriais, lacres de garantia e brindes corporativos. Atendemos todo o Brasil.</p>
-                    
-                    <div class="mt-6 space-y-3">
-                        <a href="https://wa.me/5511964711934" target="_blank" class="flex items-center text-gray-300 hover:text-white transition-colors">
-                            <i data-lucide="phone" class="w-5 h-5 mr-3 flex-shrink-0"></i>
-                            <span>(11) 96471-1934 (WhatsApp)</span>
-                        </a>
-                        <a href="mailto:vendas@oceanoetiquetas.com.br" class="flex items-center text-gray-300 hover:text-white transition-colors">
-                            <i data-lucide="mail" class="w-5 h-5 mr-3 flex-shrink-0"></i>
-                            <span>vendas@oceanoetiquetas.com.br</span>
-                        </a>
-                        <a href="https://instagram.com/oceanoetiquetas" target="_blank" class="flex items-center text-gray-300 hover:text-white transition-colors">
-                            <i data-lucide="instagram" class="w-5 h-5 mr-3 flex-shrink-0"></i>
-                            <span>@oceanoetiquetas</span>
-                        </a>
-                         <a href="http://www.oceanoetiquetas.com.br" target="_blank" class="flex items-center text-gray-300 hover:text-white transition-colors">
-                            <i data-lucide="globe" class="w-5 h-5 mr-3 flex-shrink-0"></i>
-                            <span>www.oceanoetiquetas.com.br</span>
+        <!-- Slide 4 -->
+        <div class="hero-slide" style="background-image: url('fundo4.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Etiquetas de Alta Performance para Ambientes Extremos.</h1>
+                <p>Soluções em PS transparente e policarbonato que garantem identificação clara e duradoura para seus equipamentos.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511964711934" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="hero-slide" style="background-image: url('fundo5.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Tecnologia de Ponta para Soluções Industriais.</h1>
+                <p>Nosso parque gráfico combina impressão digital e serigrafia para entregar precisão absoluta em cada produto.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511964711934" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Stats -->
+    <section id="sobre" class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Anos de Mercado</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Clientes Ativos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Satisfação</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24h</div>
+                <div class="stat-label">Suporte Técnico</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="servicos" class="services">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Especialidades</div>
+                <h2 class="section-title">Soluções completas para identificação e segurança industrial</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-number">01</div>
+                    <h3>Etiquetas Industriais</h3>
+                    <p>P.V.C. jateado, cristal e poliéster com impressão UV resistente. Durabilidade extrema para painéis de máquinas e ambientes agressivos.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">02</div>
+                    <h3>Lacres de Segurança</h3>
+                    <p>Tecnologia VOID e casca de ovo destrutível. Selos invioláveis para garantia de produtos eletrônicos e equipamentos de alto valor.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">03</div>
+                    <h3>Material Gráfico</h3>
+                    <p>Cartões de visita, banners, roll-ups e impressos com acabamento premium. Qualidade offset e digital para comunicação profissional.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">04</div>
+                    <h3>Brindes Corporativos</h3>
+                    <p>Mouse pads personalizados com impressão fotográfica de alta resolução. Produtos promocionais que valorizam sua marca.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section id="produtos" class="products">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Catálogo</div>
+                <h2 class="section-title">Produtos mais requisitados</h2>
+            </div>
+            <div class="products-grid">
+                <!-- Produto 1 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="lacre-destrutivel.png" alt="Lacre de Garantia Destrutível Casca de Ovo">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-code">LAC-001</div>
+                        <h3>Lacre de Garantia Destrutível</h3>
+                        <p>Material casca de ovo que fragmenta ao remover. Segurança máxima para eletrônicos.</p>
+                        <a href="https://wa.me/5511964711934?text=Gostaria%20de%20orçar%20Lacre%20Destrutível" class="product-link">
+                            Solicitar orçamento →
                         </a>
                     </div>
                 </div>
-                
-                <!-- Coluna 2: Etiquetas -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 uppercase text-sm tracking-wider">Etiquetas</h4>
-                    <nav class="space-y-2">
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Lacres de Garantia</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Etiquetas em P.V.C.</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Etiquetas para Painéis</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Etiquetas para Rádios</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Nº Sequencial / Patrimônio</a>
-                    </nav>
+                <!-- Produto 2 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="painel-policarbonato.png" alt="Painel de Policarbonato Industrial">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-code">PNL-002</div>
+                        <h3>Painel de Policarbonato</h3>
+                        <p>Impressão interna com proteção UV. Durabilidade para painéis de comando industrial.</p>
+                        <a href="https://wa.me/5511964711934?text=Gostaria%20de%20orçar%20Painel%20Policarbonato" class="product-link">
+                            Solicitar orçamento →
+                        </a>
+                    </div>
                 </div>
+                <!-- Produto 3 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="etiqueta-radio.png" alt="Etiqueta para Rádio Motorola EP450">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-code">RAD-001</div>
+                        <h3>Etiqueta para Rádio</h3>
+                        <p>Corte de precisão para Motorola EP450. Adesivo ultra resistente ao uso intensivo.</p>
+                        <a href="https://wa.me/5511964711934?text=Gostaria%20de%20orçar%20Etiqueta%20Rádio" class="product-link">
+                            Solicitar orçamento →
+                        </a>
+                    </div>
+                </div>
+                <!-- Produto 4 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="mousepad-personalizado.png" alt="Mouse Pad Personalizado para Brinde">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-code">BRIND-001</div>
+                        <h3>Mouse Pad Personalizado</h3>
+                        <p>Base antiderrapante com impressão fotográfica em alta definição.</p>
+                        <a href="https://wa.me/5511964711934?text=Gostaria%20de%20orçar%20Mouse%20Pad" class="product-link">
+                            Solicitar orçamento →
+                        </a>
+                    </div>
+                </div>
+                <!-- Produto 5 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="etiqueta-sequencial.png" alt="Etiqueta com Numeração Sequencial para Patrimônio">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-code">SEQ-001</div>
+                        <h3>Etiqueta Nº Sequencial</h3>
+                        <p>Controle de patrimônio com numeração e código de barras. Rastreabilidade total.</p>
+                        <a href="https://wa.me/5511964711934?text=Gostaria%20de%20orçar%20Etiqueta%20Sequencial" class="product-link">
+                            Solicitar orçamento →
+                        </a>
+                    </div>
+                </div>
+                <!-- Produto 6 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="cartao-visita.png" alt="Cartão de Visita Premium com Acabamentos">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-code">IMP-001</div>
+                        <h3>Cartão de Visita Premium</h3>
+                        <p>Acabamentos especiais: laminação, verniz UV localizado e hot stamping.</p>
+                        <a href="https://wa.me/5511964711934?text=Gostaria%20de%20orçar%20Cartão%20Visita" class="product-link">
+                            Solicitar orçamento →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- Coluna 3: Brindes e Impressos -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 uppercase text-sm tracking-wider">Brindes e Impressos</h4>
-                    <nav class="space-y-2">
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Mouse Pads</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Cartões de Visita</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Banners e Roll-Up</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Wind-Banners</a>
-                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition-colors">Panfletos</a>
-                    </nav>
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Pronto para elevar o padrão de qualidade?</h2>
+            <p>Entre em contato com nossa equipe técnica e receba uma consultoria especializada para seu projeto.</p>
+            <a href="https://wa.me/5511964711934" class="btn-primary">Falar com Especialista</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contato" class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>OCEANO</h3>
+                <p>Especialistas em soluções industriais de etiquetas, lacres de garantia e comunicação visual. Atendimento técnico especializado.</p>
+                <div class="footer-contact">
+                    <a href="https://wa.me/5511964711934">(11) 96471-1934</a>
+                    <a href="mailto:vendas@oceanoetiquetas.com.br">vendas@oceanoetiquetas.com.br</a>
+                    <a href="http://www.oceanoetiquetas.com.br">www.oceanoetiquetas.com.br</a>
                 </div>
             </div>
-            
-            <!-- Copyright -->
-            <div class="border-t border-gray-700 mt-12 pt-8 text-center">
-                <p class="text-sm text-gray-400">
-                    &copy; 2025 Oceano Etiquetas e Brindes. Todos os direitos reservados.
-                </p>
+
+            <div class="footer-links">
+                <h4>Produtos</h4>
+                <a href="#produtos">Lacres de Garantia</a>
+                <a href="#produtos">Etiquetas P.V.C.</a>
+                <a href="#produtos">Painéis Industriais</a>
+                <a href="#produtos">Etiquetas Rádios</a>
             </div>
+
+            <div class="footer-links">
+                <h4>Serviços</h4>
+                <a href="#servicos">Impressão Digital</a>
+                <a href="#servicos">Serigrafia</a>
+                <a href="#servicos">Corte Especial</a>
+                <a href="#servicos">Consultoria</a>
+            </div>
+
+            <div class="footer-links">
+                <h4>Empresa</h4>
+                <a href="#sobre">Sobre Nós</a>
+                <a href="#servicos">Qualidade</a>
+                <a href="#contato">Contato</a>
+                <a href="https://wa.me/5511964711934">Orçamento</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Oceano Etiquetas. Todos os direitos reservados.</p>
         </div>
     </footer>
 
-
-    <!-- Libs JS (Mudado para jsDelivr para melhor confiabilidade) -->
-    <!-- CORREÇÃO FINAL: Removido 'defer' para forçar o carregamento síncrono -->
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-
-    <!-- Init Script -->
     <script>
-        // CORREÇÃO FINAL: Espera a JANELA INTEIRA (incluindo scripts) carregar
-        // 'window.onload' é o evento mais seguro para garantir que libs externas
-        // (que acabaram de ser carregadas sincronamente) estejam 100% prontas.
-        window.onload = () => {
-            
-            // 1. Inicializa os Ícones Lucide
-            try {
-                // Neste ponto, 'lucide' DEVE estar definido.
-                lucide.createIcons();
-            } catch (e) { console.error('Lucide init failed', e); }
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
 
-            // 2. Inicializa o AOS
-            try {
-                // 'AOS' DEVE estar definido.
-                AOS.init({
-                    duration: 800, // Duração da animação
-                    once: true,     // Animar apenas uma vez
-                    offset: 50,     // Offset para disparar a animação
+        // Lógica do Menu Mobile
+        const navToggle = document.querySelector('.nav-toggle');
+        const mobileNav = document.querySelector('.mobile-nav');
+
+        if (navToggle && mobileNav) {
+            navToggle.addEventListener('click', () => {
+                navToggle.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                
+                // Trava o scroll da página quando o menu está aberto
+                if (mobileNav.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Fecha o menu principal ao clicar em um link SIMPLES (como Contato)
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navToggle.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    document.body.style.overflow = '';
                 });
-            } catch (e) { console.error('AOS init failed', e); }
+            });
 
-            // 3. SCRIPT DO HEADER (Executa após tudo carregar)
-            try {
-                const header = document.getElementById('main-header');
-                const headerLogo = document.getElementById('header-logo');
-                // Seleciona apenas os links de navegação de nível superior
-                const navLinks = document.querySelectorAll('#main-header .nav-link');
-                // Seleciona o ícone do menu mobile
-                const mobileMenuIcon = document.querySelector('#main-header .md\\:hidden i');
-
-                const handleScroll = () => {
-                    if (window.scrollY > 10) {
-                        // ROLOU PARA BAIXO
-                        header.classList.add('bg-white', 'shadow-md');
-                        // Remove filtro do logo (para cor original)
-                        headerLogo.classList.remove('logo-inverted');
-                        // Muda cor dos links
-                        navLinks.forEach(link => {
-                            link.classList.add('text-gray-700');
-                            link.classList.remove('text-white');
-                        });
-                        // Muda cor do ícone mobile
-                        if (mobileMenuIcon) {
-                            mobileMenuIcon.classList.add('text-gray-800');
-                            mobileMenuIcon.classList.remove('text-white');
+            // --- LÓGICA DO SUB-MENU MOBILE (Sanfona/Accordion) ---
+            document.querySelectorAll('.mobile-nav-toggle-sub').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    // Fecha todos os outros sub-menus abertos
+                    document.querySelectorAll('.mobile-nav-toggle-sub').forEach(otherToggle => {
+                        if (otherToggle !== toggle && otherToggle.classList.contains('active')) {
+                            otherToggle.classList.remove('active');
+                            const otherSubMenu = otherToggle.nextElementSibling;
+                            otherSubMenu.classList.remove('active');
+                            otherSubMenu.style.maxHeight = '0px';
                         }
+                    });
+
+                    // Abre ou fecha o sub-menu clicado
+                    toggle.classList.toggle('active');
+                    const subMenu = toggle.nextElementSibling;
+                    subMenu.classList.toggle('active');
+
+                    if (subMenu.classList.contains('active')) {
+                        // Define a altura máxima com base no conteúdo
+                        subMenu.style.maxHeight = subMenu.scrollHeight + 'px';
                     } else {
-                        // TOPO DA PÁGINA
-                        header.classList.remove('bg-white', 'shadow-md');
-                        // Adiciona filtro no logo (para ficar branco)
-                        headerLogo.classList.add('logo-inverted');
-                        // Volta cor dos links
-                        navLinks.forEach(link => {
-                            link.classList.add('text-white');
-                            link.classList.remove('text-gray-700');
-                        });
-                        // Volta cor do ícone mobile
-                        if (mobileMenuIcon) {
-                            mobileMenuIcon.classList.add('text-white');
-                            mobileMenuIcon.classList.remove('text-gray-800');
-                        }
+                        subMenu.style.maxHeight = '0px';
                     }
-                };
+                });
+            });
 
-                // Adiciona o 'listener'
-                window.addEventListener('scroll', handleScroll);
-                // Executa uma vez no carregamento
-                handleScroll(); 
+            // Fecha o menu principal ao clicar em um link de SUB-MENU
+            document.querySelectorAll('.mobile-sub-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navToggle.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    document.body.style.overflow = '';
 
-            } catch (e) { console.error('Header scroll script failed', e); }
-        };
+                    // Reseta os sub-menus
+                    document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => {
+                        toggle.classList.remove('active');
+                    });
+                    document.querySelectorAll('.mobile-sub-menu.active').forEach(subMenu => {
+                        subMenu.classList.remove('active');
+                        subMenu.style.maxHeight = '0px';
+                    });
+                });
+            });
+        }
+
+        // --- LÓGICA DO HERO SLIDER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.hero-slide');
+            if (slides.length === 0) return; // Não faz nada se não houver slides
+            
+            let currentSlide = 0;
+
+            function showSlide(n) {
+                // Remove 'active' de todos
+                slides.forEach(slide => slide.classList.remove('active'));
+                
+                // Ajusta o índice
+                currentSlide = (n + slides.length) % slides.length;
+                
+                // Adiciona 'active' ao slide atual
+                slides[currentSlide].classList.add('active');
+            }
+
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+
+            // Exibe o primeiro slide imediatamente (o 'active' no HTML cuida disso, mas garantimos)
+            showSlide(0);
+            
+            // Troca automática a cada 5 segundos
+            setInterval(nextSlide, 5000); // 5000ms = 5s
+        });
     </script>
-    
 </body>
 </html>
 
