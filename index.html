@@ -20,27 +20,41 @@
             --text-light: #6b7280;
             --border: #e5e7eb;
             --bg-light: #f8fafc;
-            --light-blue: #3672d4; /* Adicionando a nova cor azul claro */
+            --light-blue: #3672d4; 
         }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             line-height: 1.6;
             color: var(--text);
-            background: #ffffff;
+            background: #ffffff; 
             -webkit-font-smoothing: antialiased;
         }
+        
+        /* --- ANIMAÇÃO DE FUNDO 'OCEANO' (Agora dentro do Hero) --- */
+        #fish-background {
+            position: absolute; /* MUDADO de fixed para absolute */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Fica acima do overlay (1) e abaixo do conteúdo (3) */
+            pointer-events: none; 
+            opacity: 0.5; /* MUDADO - Aumentado para 50% para ver no fundo escuro */
+        }
+        /* --- FIM DA ANIMAÇÃO --- */
+
 
         /* Header Ultra Clean */
         .header {
             position: fixed;
             width: 100%;
             top: 0;
-            z-index: 1000;
+            z-index: 1000; 
             background: rgba(255, 255, 255, 0.95);
             border-bottom: 1px solid var(--border);
             backdrop-filter: blur(20px);
-            height: 75px; /* Altura fixa para o menu mobile */
+            height: 75px; 
         }
 
         .nav {
@@ -54,21 +68,16 @@
         }
 
         .logo {
-            /* font-size: 1.1rem; */
-            /* font-weight: 700; */
-            /* color: var(--dark); */
-            /* letter-spacing: 0.5px; */
-            /* text-transform: uppercase; */
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: var(--dark); /* Mantém a cor caso o link tenha algum texto */
+            color: var(--dark); 
         }
 
         .logo img {
-            height: 40px; /* Altura do logo */
-            width: auto; /* Largura automática para manter a proporção */
-            object-fit: contain; /* Garante que o logo caiba sem distorcer */
+            height: 55px; 
+            width: auto; 
+            object-fit: contain; 
         }
 
         .nav-links {
@@ -109,7 +118,7 @@
 
         .dropdown-menu {
             position: absolute;
-            top: 150%; /* Começa um pouco abaixo */
+            top: 150%; 
             left: -1rem;
             min-width: 240px;
             background: white;
@@ -129,7 +138,7 @@
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
-            top: 100%; /* Posição final */
+            top: 100%; 
         }
 
         .dropdown-menu a {
@@ -216,12 +225,12 @@
             flex-direction: column;
             gap: 2rem;
             position: fixed;
-            top: 75px; /* Altura do header */
+            top: 75px; 
             left: 0;
             width: 100%;
             height: calc(100vh - 75px);
             background: white;
-            z-index: 999;
+            z-index: 999; 
             padding: 4rem 2rem;
             text-align: center;
             transform: translateX(-100%);
@@ -278,7 +287,6 @@
         }
         
         .mobile-sub-menu.active {
-            /* JS vai calcular a altura, mas max-height alto é um fallback */
             max-height: 500px; 
             padding-bottom: 1rem;
         }
@@ -291,7 +299,7 @@
             padding: 0.75rem 0;
         }
 
-        .mobile-nav-link { /* Para links diretos como "Contato" */
+        .mobile-nav-link { 
             display: block;
             color: var(--dark);
             text-decoration: none;
@@ -305,18 +313,16 @@
 
         /* Hero Minimalista (Slider) */
         .hero {
-            margin-top: 75px; /* Altura do header */
+            margin-top: 75px; 
             min-height: 90vh;
-            /* display: flex; */ /* Removido para o slider funcionar */
-            /* align-items: center; */ /* Removido para o slider funcionar */
-            background: var(--dark); /* Fundo de fallback caso as imagens falhem */
+            background: var(--dark); 
             position: relative;
             overflow: hidden;
+            z-index: 1; /* Hero fica acima do body, mas abaixo do header */
         }
 
         .hero::before {
-            /* content: ''; */ /* Desabilitado o gradiente estático antigo */
-            display: none; /* Esconde o gradiente estático antigo */
+            display: none; 
         }
 
         .hero-slide {
@@ -328,15 +334,13 @@
             background-size: cover;
             background-position: center center;
             opacity: 0;
-            transition: opacity 1.2s ease-in-out; /* Transição de fade suave */
-            
-            /* Para centralizar o .hero-content dentro dele */
+            transition: opacity 1.2s ease-in-out; 
             display: flex;
             align-items: center;
         }
 
         .hero-slide.active {
-            opacity: 1; /* Slide ativo fica visível */
+            opacity: 1; 
         }
 
         /* Overlay escuro para garantir legibilidade */
@@ -347,8 +351,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)); /* #0f172a com opacidade */
-            z-index: 1;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)); 
+            z-index: 1; /* MUDADO - Fica atrás dos peixes (2) e do conteúdo (3) */
         }
 
         .hero-content {
@@ -356,7 +360,7 @@
             margin: 0 auto;
             padding: 0 3rem;
             position: relative;
-            z-index: 2;
+            z-index: 3; /* MUDADO - Fica na frente dos peixes (2) */
         }
 
         .hero-label {
@@ -428,14 +432,16 @@
 
         /* Stats Section */
         .stats {
-            background: var(--light-blue); /* Aplicando o novo azul claro */
-            border-bottom: 1px solid var(--border); /* Mantendo a borda de contraste */
+            background: var(--light-blue); 
+            border-bottom: 1px solid var(--border); 
+            position: relative; 
+            z-index: 1; /* z-index não é mais necessário aqui, mas mantido */
         }
 
         .stats-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 3rem; /* MODIFICADO - era 4rem 3rem */
+            padding: 2rem 3rem; 
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 3rem;
@@ -448,20 +454,22 @@
         .stat-number {
             font-size: 2.5rem;
             font-weight: 700;
-            color: white; /* Alterado para branco para contraste com o azul */
+            color: white; 
             margin-bottom: 0.5rem;
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8); /* Branco com opacidade */
+            color: rgba(255, 255, 255, 0.8); 
             font-weight: 500;
         }
 
         /* Services Section */
         .services {
-            padding: 4rem 3rem 8rem; /* Alterado de 8rem 3rem */
-            background: white;
+            padding: 4rem 3rem 8rem; 
+            background: white; 
+            position: relative; 
+            z-index: 1; 
         }
 
         .container {
@@ -531,8 +539,10 @@
 
         /* Products Section */
         .products {
-            padding: 4rem 3rem 8rem; /* Alterado de 8rem 3rem */
-            background: var(--bg-light);
+            padding: 4rem 3rem 8rem; 
+            background: var(--bg-light); 
+            position: relative; 
+            z-index: 1; 
         }
 
         .products-grid {
@@ -557,18 +567,18 @@
             aspect-ratio: 4/3;
             background: var(--bg-light);
             border-bottom: 1px solid var(--border);
-            overflow: hidden; /* Garante que a imagem não vaze */
+            overflow: hidden; 
         }
         
         .product-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Cobre a área 4:3 sem distorcer */
+            object-fit: cover; 
             transition: transform 0.3s;
         }
 
         .product-card:hover .product-image img {
-            transform: scale(1.05); /* Efeito de zoom suave */
+            transform: scale(1.05); 
         }
 
         .product-content {
@@ -614,8 +624,10 @@
         /* CTA Section */
         .cta-section {
             padding: 8rem 3rem;
-            background: var(--dark);
+            background: var(--dark); 
             text-align: center;
+            position: relative; 
+            z-index: 1; 
         }
 
         .cta-section h2 {
@@ -637,8 +649,10 @@
 
         /* Footer */
         .footer {
-            background: white;
+            background: white; 
             border-top: 1px solid var(--border);
+            position: relative; 
+            z-index: 1; 
         }
 
         .footer-content {
@@ -719,9 +733,9 @@
             /* Ajustes de espaçamento para mobile */
             .nav { padding: 0 1.5rem; }
             .hero-content { padding: 0 1.5rem; }
-            .stats-container { padding: 2rem 1.5rem; } /* MODIFICADO - era 4rem 1.5rem */
-            .services { padding: 3rem 1.5rem 6rem; } /* Alterado de 6rem 1.5rem */
-            .products { padding: 3rem 1.5rem 6rem; } /* Alterado de 6rem 1.5rem */
+            .stats-container { padding: 2rem 1.5rem; } 
+            .services { padding: 3rem 1.5rem 6rem; } 
+            .products { padding: 3rem 1.5rem 6rem; } 
             .cta-section { padding: 6rem 1.5rem; }
             .footer-content { padding: 5rem 1.5rem 3rem; }
 
@@ -735,7 +749,7 @@
             
             /* Ajusta o botão CTA para mobile */
             .nav-cta {
-                padding: 0.6rem 1rem; /* Um pouco menor para caber */
+                padding: 0.6rem 1rem; 
             }
             .nav-cta .full-text { display: none; }
             .nav-cta .short-text { display: inline; }
@@ -772,9 +786,6 @@
                 gap: 3rem;
             }
             
-            /* .nav-cta {
-                display: none; 
-            } */
         }
         
         @media (max-width: 767px) {
@@ -792,7 +803,7 @@
     <!-- Header -->
     <header class="header">
         <nav class="nav">
-            <a href="#" class="logo"> <!-- Alterado de DIV para A (link) -->
+            <a href="#" class="logo"> 
                 <img src="oceanologo.png" alt="Logo Oceano Etiquetas">
             </a>
             <ul class="nav-links">
@@ -850,13 +861,12 @@
                 </li>
             </ul>
             
-            <div class="nav-controls"> <!-- Wrapper para controles da direita -->
+            <div class="nav-controls"> 
                 <a href="https://wa.me/5511964711934" class="nav-cta">
                     <span class="full-text">Solicitar Orçamento</span>
                     <span class="short-text">Orçamento</span>
                 </a>
                 
-                <!-- Botão Hamburger -->
                 <button class="nav-toggle" aria-label="Abrir menu">
                     <span class="hamburger"></span>
                 </button>
@@ -921,6 +931,9 @@
     <!-- Hero Slider -->
     <section class="hero">
         
+        <!-- Canvas da Animação de Fundo (AGORA DENTRO DO HERO) -->
+        <canvas id="fish-background"></canvas>
+
         <!-- Slide 1 -->
         <div class="hero-slide active" style="background-image: url('fundo1.png');">
             <div class="hero-content">
@@ -1197,6 +1210,12 @@
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
+                    // Fecha o menu mobile (se estiver aberto) antes de rolar
+                    if (mobileNav && mobileNav.classList.contains('active')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
@@ -1221,17 +1240,18 @@
 
             // Fecha o menu principal ao clicar em um link SIMPLES (como Contato)
             document.querySelectorAll('.mobile-nav-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    navToggle.classList.remove('active');
-                    mobileNav.classList.remove('active');
-                    document.body.style.overflow = '';
+                link.addEventListener('click', (e) => { 
+                    if (!link.getAttribute('href').startsWith('#')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
                 });
             });
 
             // --- LÓGICA DO SUB-MENU MOBILE (Sanfona/Accordion) ---
             document.querySelectorAll('.mobile-nav-toggle-sub').forEach(toggle => {
                 toggle.addEventListener('click', () => {
-                    // Fecha todos os outros sub-menus abertos
                     document.querySelectorAll('.mobile-nav-toggle-sub').forEach(otherToggle => {
                         if (otherToggle !== toggle && otherToggle.classList.contains('active')) {
                             otherToggle.classList.remove('active');
@@ -1241,13 +1261,11 @@
                         }
                     });
 
-                    // Abre ou fecha o sub-menu clicado
                     toggle.classList.toggle('active');
                     const subMenu = toggle.nextElementSibling;
                     subMenu.classList.toggle('active');
 
                     if (subMenu.classList.contains('active')) {
-                        // Define a altura máxima com base no conteúdo
                         subMenu.style.maxHeight = subMenu.scrollHeight + 'px';
                     } else {
                         subMenu.style.maxHeight = '0px';
@@ -1258,49 +1276,131 @@
             // Fecha o menu principal ao clicar em um link de SUB-MENU
             document.querySelectorAll('.mobile-sub-menu a').forEach(link => {
                 link.addEventListener('click', () => {
-                    navToggle.classList.remove('active');
-                    mobileNav.classList.remove('active');
-                    document.body.style.overflow = '';
-
-                    // Reseta os sub-menus
-                    document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => {
-                        toggle.classList.remove('active');
-                    });
-                    document.querySelectorAll('.mobile-sub-menu.active').forEach(subMenu => {
-                        subMenu.classList.remove('active');
-                        subMenu.style.maxHeight = '0px';
-                    });
+                    if (!link.getAttribute('href').startsWith('#')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                        document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => {
+                            toggle.classList.remove('active');
+                        });
+                        document.querySelectorAll('.mobile-sub-menu.active').forEach(subMenu => {
+                            subMenu.classList.remove('active');
+                            subMenu.style.maxHeight = '0px';
+                        });
+                    }
                 });
             });
         }
 
-        // --- LÓGICA DO HERO SLIDER ---
+        // --- LÓGICA DO HERO SLIDER E ANIMAÇÃO DE FUNDO ---
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- LÓGICA DO HERO SLIDER ---
             const slides = document.querySelectorAll('.hero-slide');
-            if (slides.length === 0) return; // Não faz nada se não houver slides
-            
-            let currentSlide = 0;
+            if (slides.length > 0) {
+                let currentSlide = 0;
 
-            function showSlide(n) {
-                // Remove 'active' de todos
-                slides.forEach(slide => slide.classList.remove('active'));
-                
-                // Ajusta o índice
-                currentSlide = (n + slides.length) % slides.length;
-                
-                // Adiciona 'active' ao slide atual
-                slides[currentSlide].classList.add('active');
+                function showSlide(n) {
+                    slides.forEach(slide => slide.classList.remove('active'));
+                    currentSlide = (n + slides.length) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }
+
+                function nextSlide() {
+                    showSlide(currentSlide + 1);
+                }
+
+                showSlide(0);
+                setInterval(nextSlide, 5000); // 5s
             }
 
-            function nextSlide() {
-                showSlide(currentSlide + 1);
-            }
+            // --- LÓGICA DA ANIMAÇÃO DE FUNDO 'OCEANO' (AGORA NO HERO) ---
+            const canvas = document.getElementById('fish-background');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const heroSection = document.querySelector('.hero');
+                let width = heroSection.clientWidth;
+                let height = heroSection.clientHeight;
+                let fishArray = [];
+                const fishCount = 10; 
+                
+                const fishColor = getComputedStyle(document.documentElement).getPropertyValue('--light-blue') || '#3672d4';
 
-            // Exibe o primeiro slide imediatamente (o 'active' no HTML cuida disso, mas garantimos)
-            showSlide(0);
-            
-            // Troca automática a cada 5 segundos
-            setInterval(nextSlide, 5000); // 5000ms = 5s
+                canvas.width = width;
+                canvas.height = height;
+
+                // Ajusta o canvas se o tamanho do hero mudar (ex: resize da janela)
+                new ResizeObserver(() => {
+                    width = heroSection.clientWidth;
+                    height = heroSection.clientHeight;
+                    canvas.width = width;
+                    canvas.height = height;
+                }).observe(heroSection);
+
+
+                class Fish {
+                    constructor() {
+                        this.size = Math.random() * 15 + 10; // Tamanho 10-25
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                        this.direction = Math.random() > 0.5 ? 1 : -1; 
+                        this.vx = (Math.random() * 0.8 + 0.2) * this.direction; 
+                    }
+
+                    update() {
+                        this.x += this.vx;
+                        
+                        if (this.direction === 1 && this.x > width + this.size * 2) { 
+                            this.x = -this.size * 2;
+                            this.y = Math.random() * height; 
+                        } else if (this.direction === -1 && this.x < -this.size * 2) { 
+                            this.x = width + this.size * 2;
+                            this.y = Math.random() * height; 
+                        }
+                    }
+
+                    draw() {
+                        ctx.fillStyle = fishColor;
+                        ctx.beginPath();
+                        
+                        ctx.save();
+                        ctx.translate(this.x, this.y);
+                        ctx.scale(this.direction, 1); 
+
+                        // Corpo (forma de amêndoa/folha)
+                        ctx.moveTo(0, 0);
+                        ctx.quadraticCurveTo(this.size / 2, -this.size / 3, this.size, 0);
+                        ctx.quadraticCurveTo(this.size / 2, this.size / 3, 0, 0);
+                        
+                        // Cauda (duas linhas)
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(-this.size / 3, -this.size / 4);
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(-this.size / 3, this.size / 4);
+                        
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+
+                function initFish() {
+                    for (let i = 0; i < fishCount; i++) {
+                        fishArray.push(new Fish());
+                    }
+                }
+
+                function animateFish() {
+                    ctx.clearRect(0, 0, width, height);
+                    for (let i = 0; i < fishArray.length; i++) {
+                        fishArray[i].update();
+                        fishArray[i].draw();
+                    }
+                    requestAnimationFrame(animateFish);
+                }
+
+                initFish();
+                animateFish();
+            }
         });
     </script>
 </body>
