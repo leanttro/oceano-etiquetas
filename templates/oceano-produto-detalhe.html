@@ -575,7 +575,8 @@
                     <h1>{{ produto.nome_produto }}</h1>
                     <p class="short-description">{{ produto.descricao_curta }}</p>
                     
-                    <a href="https://wa.me/5511997223828?text=Gostaria%20de%20orçar%20{{ produto.whatsapp_link_texto | url_encode }}" 
+                    <!-- [CORREÇÃO 2]: Trocado 'url_encode' (errado) para 'urlencode' (correto) -->
+                    <a href="https://wa.me/5511997223828?text=Gostaria%20de%20orçar%20{{ produto.whatsapp_link_texto | urlencode }}" 
                        class="btn-primary btn-full cta-button">
                        Solicitar Orçamento via WhatsApp
                     </a>
