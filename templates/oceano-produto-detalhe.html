@@ -556,16 +556,25 @@
                             <img src="{{ produto.imagem_principal_url }}" alt="Thumbnail 1">
                         </div>
                         
-                        <!-- [CORREÇÃO 1]: Sintaxe Jinja 'default:' trocada para 'default(...)' -->
+                        <!-- [CORREÇÃO 3]: Adicionando verificação 'if' para impedir o erro de índice -->
+                        
+                        {% if produto.galeria_imagens and produto.galeria_imagens[0] %}
                         <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[0].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
                             <img src="{{ produto.galeria_imagens[0].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 2">
                         </div>
+                        {% endif %}
+
+                        {% if produto.galeria_imagens and produto.galeria_imagens[1] %}
                         <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[1].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
                             <img src="{{ produto.galeria_imagens[1].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 3">
                         </div>
+                        {% endif %}
+
+                        {% if produto.galeria_imagens and produto.galeria_imagens[2] %}
                         <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[2].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
                             <img src="{{ produto.galeria_imagens[2].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 4">
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
