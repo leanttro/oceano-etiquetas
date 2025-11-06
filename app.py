@@ -7,6 +7,7 @@ from flask_cors import CORS
 import datetime
 import traceback
 import decimal
+import json # [CORREÇÃO 4] Importa a biblioteca JSON
 
 # Carrega variáveis de ambiente de um arquivo .env, se existir (para dev local)
 # No Render, você vai setar as variáveis de ambiente na interface
@@ -109,7 +110,7 @@ def get_api_produtos():
 def produto_detalhe(slug):
     """Renderiza a página de detalhe de um produto buscando pelo 'url_slug'."""
     conn = None
-    try:
+    try
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
@@ -126,6 +127,26 @@ def produto_detalhe(slug):
         if produto:
             # Formata os dados (datas, etc.) para o template
             produto_formatado = format_db_data(dict(produto))
+            
+            # --- [INÍCIO DA CORREÇÃO 4] ---
+            # O template espera um objeto 'specs'. O banco de dados fornece
+            # uma string 'especificacoes_tecnicas'. Precisamos fazer o parse.
+            specs_json_string = produto_formatado.get('especificacoes_tecnicas')
+            specs_dict = {} # Começa com um dicionário vazio por segurança
+            
+            if specs_json_string:
+                try:
+                    # Tenta fazer o parse da string JSON
+                    specs_dict = json.loads(specs_json_string)
+                except json.JSONDecodeError:
+                    # Se falhar (ex: texto simples), loga o aviso e deixa specs_dict vazio
+                    print(f"AVISO: Falha ao decodificar JSON de especificacoes_tecnicas para o slug '{slug}'.")
+            
+            # Adiciona o dict 'specs' ao 'produto_formatado' que vai para o template.
+            # Se o parse falhou ou a string era vazia, 'specs' será {}
+            produto_formatado['specs'] = specs_dict
+            # --- [FIM DA CORREÇÃO 4] ---
+            
             # Renderiza o template 'oceano-produto-detalhe.html'
             # e injeta os dados do banco na variável 'produto'
             return render_template('oceano-produto-detalhe.html', produto=produto_formatado)
