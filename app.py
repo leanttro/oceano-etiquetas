@@ -110,7 +110,7 @@ def get_api_produtos():
 def produto_detalhe(slug):
     """Renderiza a página de detalhe de um produto buscando pelo 'url_slug'."""
     conn = None
-    try
+    try: # [CORREÇÃO 5] Adiciona os dois-pontos que faltavam.
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
@@ -193,7 +193,7 @@ def serve_static_files(path):
         return "Not Found", 404
 
 # --- Execução do App ---
-if __name__ == '__main__':
+if __name__ == '____':
     # O Render usa a variável 'PORT'
     port = int(os.environ.get("PORT", 10000))
     # debug=False é o padrão para produção
