@@ -555,14 +555,16 @@
                         <div class="thumbnail active" onclick="changeImage('{{ produto.imagem_principal_url }}', this)">
                             <img src="{{ produto.imagem_principal_url }}" alt="Thumbnail 1">
                         </div>
-                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[0].url | default: "https://placehold.co/100x100/f8fafc/e5e7eb?text=Img" }}', this)">
-                            <img src="{{ produto.galeria_imagens[0].url | default: "https://placehold.co/100x100/f8fafc/e5e7eb?text=Img" }}" alt="Thumbnail 2">
+                        
+                        <!-- [CORREÇÃO 1]: Sintaxe Jinja 'default:' trocada para 'default(...)' -->
+                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[0].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
+                            <img src="{{ produto.galeria_imagens[0].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 2">
                         </div>
-                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[1].url | default: "https://placehold.co/100x100/f8fafc/e5e7eb?text=Img" }}', this)">
-                            <img src="{{ produto.galeria_imagens[1].url | default: "https://placehold.co/100x100/f8fafc/e5e7eb?text=Img" }}" alt="Thumbnail 3">
+                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[1].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
+                            <img src="{{ produto.galeria_imagens[1].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 3">
                         </div>
-                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[2].url | default: "https://placehold.co/100x100/f8fafc/e5e7eb?text=Img" }}', this)">
-                            <img src="{{ produto.galeria_imagens[2].url | default: "https://placehold.co/100x100/f8fafc/e5e7eb?text=Img" }}" alt="Thumbnail 4">
+                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[2].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
+                            <img src="{{ produto.galeria_imagens[2].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 4">
                         </div>
                     </div>
                 </div>
