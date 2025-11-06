@@ -114,10 +114,12 @@ def produto_detalhe(slug):
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         # Busca pelo campo 'url_slug'
-        # Adiciona a barra inicial se não existir, para bater com o padrão /produtos/...
-        url_busca = slug if slug.startswith('/') else f"/{slug}"
         
-        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (url_busca,))
+        # [CORREÇÃO 1]
+        # REMOVIDA A LÓGICA DE MANIPULAÇÃO 'url_busca'.
+        # A consulta agora usa 'slug' diretamente, como veio da URL.
+        
+        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (slug,))
         produto = cur.fetchone()
         cur.close()
 
@@ -128,7 +130,8 @@ def produto_detalhe(slug):
             # e injeta os dados do banco na variável 'produto'
             return render_template('oceano-produto-detalhe.html', produto=produto_formatado)
         else:
-            print(f"AVISO: Produto com slug/url '{url_busca}' não encontrado.")
+            # [CORREÇÃO 1] Log atualizado para usar 'slug'
+            print(f"AVISO: Produto com slug/url '{slug}' não encontrado.")
             return "Produto não encontrado", 404
             
     except Exception as e:

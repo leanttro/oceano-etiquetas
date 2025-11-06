@@ -1485,7 +1485,9 @@
                                     <div class="product-code">${produto.codigo_produto || 'Cód. N/D'}</div>
                                     <h3>${produto.nome_produto || 'Produto sem nome'}</h3>
                                     <p>${produto.descricao_curta || 'Clique para ver mais detalhes.'}</p>
-                                    <a href="${produto.url_slug}" class="product-link">
+                                    
+                                    <!-- [CORREÇÃO 2] O href agora inclui o prefixo /produtos/ -->
+                                    <a href="/produtos/${produto.url_slug}" class="product-link">
                                         Ver detalhes →
                                     </a>
                                 </div>
