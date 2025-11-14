@@ -532,7 +532,7 @@ def handle_orcamento_id(id):
             if not orcamento_data:
                 return jsonify({'erro': 'Orçamento não encontrado'}), 404
             orcamento = format_db_data(dict(orcamento_data))
-            sql_itens = "SELECT oi.*, p.nome_produto, p.codigo_produto FROM oceano_orcamento_ilens oi LEFT JOIN oceano_produtos p ON oi.produto_id = p.id WHERE oi.orcamento_id = %s ORDER BY oi.id;"
+            sql_itens = "SELECT oi.*, p.nome_produto, p.codigo_produto FROM oceano_orcamento_itens oi LEFT JOIN oceano_produtos p ON oi.produto_id = p.id WHERE oi.orcamento_id = %s ORDER BY oi.id;"
             cur.execute(sql_itens, (id,))
             itens_data = cur.fetchall()
             orcamento['itens'] = [format_db_data(dict(i)) for i in itens_data]
@@ -549,7 +549,7 @@ def handle_orcamento_id(id):
             WHERE id = %s;
             """
             cur.execute(sql_update_orc, (data.get('status'), data.get('valor_frete'), data.get('valor_final_total'), data.get('chave_pix'), data.get('observacoes_admin'), id))
-            sql_update_item = "UPDATE oceano_orcamento_ilens SET preco_unitario_definido = %s WHERE id = %s AND orcamento_id = %s"
+            sql_update_item = "UPDATE oceano_orcamento_itens SET preco_unitario_definido = %s WHERE id = %s AND orcamento_id = %s"
             for item in itens_atualizados:
                 cur.execute(sql_update_item, (item.get('preco_unitario_definido'), item.get('id'), id))
             conn.commit()
@@ -573,12 +573,12 @@ def aprovar_orcamento(id):
         orcamento = cur.fetchone()
         if not orcamento:
             return jsonify({'erro': 'Orçamento não encontrado'}), 404
-        cur.execute("SELECT * FROM oceano_orcamento_ilens WHERE orcamento_id = %s", (id,))
+        cur.execute("SELECT * FROM oceano_orcamento_itens WHERE orcamento_id = %s", (id,))
         itens_orcamento = cur.fetchall()
         sql_insert_pedido = "INSERT INTO oceano_pedidos (cliente_id, status, valor_frete, valor_final_total, chave_pix, observacoes_admin, data_criacao, data_atualizacao) VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP) RETURNING id;"
         cur.execute(sql_insert_pedido, (orcamento['cliente_id'], 'Em Produção', orcamento['valor_frete'], orcamento['valor_final_total'], orcamento['chave_pix'], orcamento['observacoes_admin'], orcamento['data_criacao']))
         novo_pedido_id = cur.fetchone()['id']
-        sql_insert_item_pedido = "INSERT INTO oceano_pedido_ilens (pedido_id, produto_id, quantidade_solicitada, observacoes_cliente, preco_unitario_definido) VALUES (%s, %s, %s, %s, %s);"
+        sql_insert_item_pedido = "INSERT INTO oceano_orcamento_itens (pedido_id, produto_id, quantidade_solicitada, observacoes_cliente, preco_unitario_definido) VALUES (%s, %s, %s, %s, %s);"
         for item in itens_orcamento:
             cur.execute(sql_insert_item_pedido, (novo_pedido_id, item['produto_id'], item['quantidade_solicitada'], item['observacoes_cliente'], item['preco_unitario_definido']))
         cur.execute("UPDATE oceano_orcamentos SET status = 'Convertido em Pedido' WHERE id = %s", (id,))
@@ -624,7 +624,7 @@ def handle_pedido_id(id):
             if not pedido_data:
                 return jsonify({'erro': 'Pedido não encontrado'}), 404
             pedido = format_db_data(dict(pedido_data))
-            sql_itens = "SELECT pi.*, p.nome_produto, p.codigo_produto FROM oceano_pedido_ilens pi LEFT JOIN oceano_produtos p ON pi.produto_id = p.id WHERE pi.pedido_id = %s ORDER BY pi.id;"
+            sql_itens = "SELECT pi.*, p.nome_produto, p.codigo_produto FROM oceano_orcamento_itens pi LEFT JOIN oceano_produtos p ON pi.produto_id = p.id WHERE pi.pedido_id = %s ORDER BY pi.id;"
             cur.execute(sql_itens, (id,))
             itens_data = cur.fetchall()
             pedido['itens'] = [format_db_data(dict(i)) for i in itens_data]
@@ -773,7 +773,7 @@ def post_novo_orcamento(cliente_id):
         novo_orcamento_id = cur.fetchone()['id']
         
         # 2. Insere os Itens
-        sql_item = "INSERT INTO oceano_orcamento_ilens (orcamento_id, produto_id, quantidade_solicitada, observacoes_cliente) VALUES (%s, %s, %s, %s);"
+        sql_item = "INSERT INTO oceano_orcamento_itens (orcamento_id, produto_id, quantidade_solicitada, observacoes_cliente) VALUES (%s, %s, %s, %s);"
         for item in itens:
             cur.execute(sql_item, (
                 novo_orcamento_id,
@@ -874,7 +874,7 @@ def post_orcamento_publico():
         novo_orcamento_id = cur.fetchone()['id']
         
         # 2. Insere os Itens
-        sql_item = "INSERT INTO oceano_orcamento_ilens (orcamento_id, produto_id, quantidade_solicitada, observacoes_cliente) VALUES (%s, %s, %s, %s);"
+        sql_item = "INSERT INTO oceano_orcamento_itens (orcamento_id, produto_id, quantidade_solicitada, observacoes_cliente) VALUES (%s, %s, %s, %s);"
         for item in itens:
             cur.execute(sql_item, (
                 novo_orcamento_id,
