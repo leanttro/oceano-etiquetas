@@ -154,7 +154,56 @@
             background: var(--bg-light);
             color: var(--primary);
         }
-        /* --- Fim Estilos Dropdown --- */
+
+        /* --- [NOVO] Estilos para o Sub-Dropdown (Nível 2) --- */
+        .dropdown-menu .dropdown-submenu-item {
+            position: relative;
+        }
+        .dropdown-menu .dropdown-submenu-item > a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* Seta para a direita */
+        .dropdown-menu .dropdown-submenu-item > a .submenu-arrow {
+            transform: rotate(-90deg);
+            width: 14px;
+            height: 14px;
+        }
+        
+        .dropdown-submenu {
+            position: absolute;
+            top: -0.5rem; /* Alinha com o item pai */
+            left: 100%;
+            min-width: 240px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            padding: 0.5rem 0;
+            list-style: none;
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(10px);
+            transition: all 0.3s ease-out;
+        }
+
+        .dropdown-submenu-item:hover > .dropdown-submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+        
+        .dropdown-submenu a {
+            font-weight: 400; /* Produtos com peso menor */
+            color: var(--text-light);
+        }
+        .dropdown-submenu a:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+        /* --- Fim Estilos Sub-Dropdown --- */
 
 
         .nav-cta {
@@ -235,6 +284,7 @@
             text-align: center;
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
+            overflow-y: auto; /* Permite rolar o menu se for muito grande */
         }
 
         .mobile-nav.active {
@@ -287,8 +337,9 @@
         }
         
         .mobile-sub-menu.active {
-            max-height: 500px; 
+            max-height: 500px; /* Aumentado para aninhar */
             padding-bottom: 1rem;
+            overflow-y: auto; /* Permite rolar sub-itens */
         }
         
         .mobile-sub-menu a {
@@ -298,6 +349,20 @@
             color: var(--text-light);
             padding: 0.75rem 0;
         }
+        
+        /* [NOVO] Estilos para o Nível 2 do Menu Mobile */
+        .mobile-sub-menu .mobile-nav-toggle-sub {
+            padding: 0.75rem 0;
+        }
+        .mobile-sub-menu .mobile-nav-toggle-sub span {
+            font-size: 1.2rem; /* Fonte menor para subcategoria */
+            font-weight: 500;
+        }
+        .mobile-sub-menu .mobile-sub-menu a {
+            font-size: 1rem; /* Fonte menor para produto */
+            padding: 0.5rem 0 0.5rem 1rem; /* Mais indentação */
+        }
+
 
         .mobile-nav-link { 
             display: block;
@@ -917,10 +982,21 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Lacres %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Lacres.items() %}
+                        <li class="dropdown-submenu-item">
+                            <a href="#"> {{ subcategoria }}
+                                <svg class="submenu-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </a>
+                            <ul class="dropdown-submenu">
+                                {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                                {% else %}
+                                <li><a href="#">Nenhum produto</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% else %}
-                            <li><a href="#">Nenhum produto</a></li>
+                        <li><a href="#">Nenhuma subcategoria</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -930,10 +1006,22 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Adesivos %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Adesivos.items() %}
+                        <li class="dropdown-submenu-item">
+                            <a href="#">
+                                {{ subcategoria }}
+                                <svg class="submenu-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </a>
+                            <ul class="dropdown-submenu">
+                                {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                                {% else %}
+                                <li><a href="#">Nenhum produto</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% else %}
-                            <li><a href="#">Nenhum produto</a></li>
+                        <li><a href="#">Nenhuma subcategoria</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -943,10 +1031,22 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Brindes %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Brindes.items() %}
+                        <li class="dropdown-submenu-item">
+                            <a href="#">
+                                {{ subcategoria }}
+                                <svg class="submenu-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </a>
+                            <ul class="dropdown-submenu">
+                                {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                                {% else %}
+                                <li><a href="#">Nenhum produto</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% else %}
-                            <li><a href="#">Nenhum produto</a></li>
+                        <li><a href="#">Nenhuma subcategoria</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -956,10 +1056,22 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Impressos %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Impressos.items() %}
+                        <li class="dropdown-submenu-item">
+                            <a href="#">
+                                {{ subcategoria }}
+                                <svg class="submenu-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </a>
+                            <ul class="dropdown-submenu">
+                                {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                                {% else %}
+                                <li><a href="#">Nenhum produto</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% else %}
-                            <li><a href="#">Nenhum produto</a></li>
+                        <li><a href="#">Nenhuma subcategoria</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -983,15 +1095,23 @@
 
     <div class="mobile-nav">
         <div class="mobile-nav-item">
-            <div class="mobile-nav-toggle-sub">
-                <span>Lacres</span>
+            <div class="mobile-nav-toggle-sub"> <span>Lacres</span>
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-            <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Lacres %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+            <div class="mobile-sub-menu"> {% for subcategoria, produtos in menu_categorias.Lacres.items() %}
+                <div class="mobile-nav-item" style="border-bottom: none;">
+                    <div class="mobile-nav-toggle-sub"> <span>{{ subcategoria }}</span>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="mobile-sub-menu"> {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                        {% else %}
+                        <a href="#">Nenhum produto</a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% else %}
-                    <a href="#">Nenhum produto</a>
+                <a href="#">Nenhuma subcategoria</a>
                 {% endfor %}
             </div>
         </div>
@@ -1001,10 +1121,22 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Adesivos %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Adesivos.items() %}
+                <div class="mobile-nav-item" style="border-bottom: none;">
+                    <div class="mobile-nav-toggle-sub">
+                        <span>{{ subcategoria }}</span>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="mobile-sub-menu">
+                        {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                        {% else %}
+                        <a href="#">Nenhum produto</a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% else %}
-                    <a href="#">Nenhum produto</a>
+                <a href="#">Nenhuma subcategoria</a>
                 {% endfor %}
             </div>
         </div>
@@ -1014,10 +1146,22 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Brindes %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Brindes.items() %}
+                <div class="mobile-nav-item" style="border-bottom: none;">
+                    <div class="mobile-nav-toggle-sub">
+                        <span>{{ subcategoria }}</span>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="mobile-sub-menu">
+                        {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                        {% else %}
+                        <a href="#">Nenhum produto</a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% else %}
-                    <a href="#">Nenhum produto</a>
+                <a href="#">Nenhuma subcategoria</a>
                 {% endfor %}
             </div>
         </div>
@@ -1027,10 +1171,22 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Impressos %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Impressos.items() %}
+                <div class="mobile-nav-item" style="border-bottom: none;">
+                    <div class="mobile-nav-toggle-sub">
+                        <span>{{ subcategoria }}</span>
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="mobile-sub-menu">
+                        {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                        {% else %}
+                        <a href="#">Nenhum produto</a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% else %}
-                    <a href="#">Nenhum produto</a>
+                <a href="#">Nenhuma subcategoria</a>
                 {% endfor %}
             </div>
         </div>
@@ -1272,19 +1428,31 @@
             });
 
             // --- LÓGICA DO SUB-MENU MOBILE (Sanfona/Accordion) ---
+            // Esta lógica agora suporta múltiplos níveis
             document.querySelectorAll('.mobile-nav-toggle-sub').forEach(toggle => {
-                toggle.addEventListener('click', () => {
-                    document.querySelectorAll('.mobile-nav-toggle-sub').forEach(otherToggle => {
-                        if (otherToggle !== toggle && otherToggle.classList.contains('active')) {
-                            otherToggle.classList.remove('active');
-                            const otherSubMenu = otherToggle.nextElementSibling;
-                            otherSubMenu.classList.remove('active');
-                            otherSubMenu.style.maxHeight = '0px';
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Impede o clique de fechar o menu pai
+                    
+                    // Fecha outros toggles no *mesmo nível*
+                    const parentElement = toggle.parentElement; // .mobile-nav-item
+                    const siblings = parentElement.parentElement.children; // Coleção de .mobile-nav-item
+                    
+                    for (let item of siblings) {
+                        if (item !== parentElement && item.classList.contains('mobile-nav-item')) {
+                            const otherToggle = item.querySelector('.mobile-nav-toggle-sub');
+                            const otherSubMenu = item.querySelector('.mobile-sub-menu');
+                            
+                            if (otherToggle && otherToggle.classList.contains('active')) {
+                                otherToggle.classList.remove('active');
+                                otherSubMenu.classList.remove('active');
+                                otherSubMenu.style.maxHeight = '0px';
+                            }
                         }
-                    });
+                    }
 
+                    // Abre/fecha o toggle ATUAL
                     toggle.classList.toggle('active');
-                    const subMenu = toggle.nextElementSibling;
+                    const subMenu = toggle.nextElementSibling; // .mobile-sub-menu
                     subMenu.classList.toggle('active');
 
                     if (subMenu.classList.contains('active')) {
@@ -1292,16 +1460,30 @@
                     } else {
                         subMenu.style.maxHeight = '0px';
                     }
+                    
+                    // [NOVO] Reajusta a altura do menu pai (se existir)
+                    const parentSubMenu = toggle.closest('.mobile-sub-menu.active');
+                    if (parentSubMenu) {
+                        // Recalcula a altura do pai somando a altura de seus filhos
+                        let totalHeight = 0;
+                        parentSubMenu.querySelectorAll(':scope > .mobile-nav-item').forEach(childItem => {
+                            totalHeight += childItem.offsetHeight;
+                        });
+                        parentSubMenu.style.maxHeight = totalHeight + 'px';
+                    }
                 });
             });
 
-            // Fecha o menu principal ao clicar em um link de SUB-MENU
+
+            // Fecha o menu principal ao clicar em um link de SUB-MENU (agora de produto)
             document.querySelectorAll('.mobile-sub-menu a').forEach(link => {
-                link.addEventListener('click', () => {
+                link.addEventListener('click', (e) => {
+                    // Não para o clique, apenas fecha o menu
                     if (!link.getAttribute('href').startsWith('#')) {
                         navToggle.classList.remove('active');
                         mobileNav.classList.remove('active');
                         document.body.style.overflow = '';
+                        // Reseta todos os submenus abertos
                         document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => {
                             toggle.classList.remove('active');
                         });
@@ -1464,6 +1646,12 @@
                             const imageUrl = produto.imagem_principal_url || `https://placehold.co/400x300/f8fafc/6b7280?text=${produto.codigo_produto || 'Sem Imagem'}`;
                             const imageAlt = produto.imagem_principal_alt || produto.nome_produto || 'Imagem do Produto';
                             
+                            // [INÍCIO CORREÇÃO LINK]
+                            // O 'produto.url_slug' já vem do banco como o caminho completo
+                            // (ex: /produtos/meu-produto). Não precisamos adicionar /produtos/ de novo.
+                            const productUrl = produto.url_slug || '#'; 
+                            // [FIM CORREÇÃO LINK]
+
                             productsHTML += `
                             <div class="product-card">
                                 <div class="product-image">
@@ -1474,7 +1662,7 @@
                                     <h3>${produto.nome_produto || 'Produto sem nome'}</h3>
                                     <p>${produto.descricao_curta || 'Clique para ver mais detalhes.'}</p>
                                     
-                                    <a href="/produtos/${produto.url_slug}" class="product-link">
+                                    <a href="${productUrl}" class="product-link">
                                         Ver detalhes →
                                     </a>
                                 </div>
