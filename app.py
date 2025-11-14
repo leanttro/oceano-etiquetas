@@ -11,6 +11,8 @@ import json
 import collections 
 import jwt # Importa JWT para tokens de login
 from functools import wraps # Importa 'wraps' para os decoradores de login
+import string # [NOVO] Para gerar o código de acesso
+import random # [NOVO] Para gerar o código de acesso
 
 # --- [NOVO] Importações do Chatbot ---
 import google.generativeai as genai
@@ -21,7 +23,7 @@ load_dotenv()
 app = Flask(__name__, static_folder='static', static_url_path='/static', template_folder='templates')
 CORS(app) 
 
-# Configuração de Chave Secreta para JWT
+# Configuração de Chave Secexta para JWT
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'sua-chave-secreta-padrao-mude-isso')
 
 # --- [NOVO] Configuração do Gemini (Chatbot) ---
@@ -75,6 +77,13 @@ def format_db_data(data_dict):
         else:
             formatted_dict[key] = value
     return formatted_dict
+
+# [NOVO] Função para gerar código de acesso
+def generate_access_code(length=8):
+    """Gera um código de acesso alfanumérico aleatório."""
+    # Gera 8 caracteres alfanuméricos maiúsculos (ex: A4B9K1D2)
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(random.choice(characters) for i in range(length))
 
 # =====================================================================
 # --- DECORADORES DE AUTENTICAÇÃO (Admin e Cliente) ---
@@ -181,7 +190,7 @@ def get_api_produtos():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         # --- MUDANÇA 5: Adicionado 'url_slug' à query (ESSA ERA A CAUSA DO ERRO 'undefined') ---
-        query = "SELECT id, nome_produto, codigo_produto, categoria, imagem_principal_url, descricao_curta, url_slug FROM oceano_produtos ORDER BY nome_produto;"
+        query = "SELECT id, nome_produto, codigo_produto, categoria, subcategoria, imagem_principal_url, descricao_curta, url_slug FROM oceano_produtos ORDER BY nome_produto;"
         cur.execute(query)
         produtos_raw = cur.fetchall()
         cur.close()
@@ -746,7 +755,7 @@ def get_cliente_orcamentos(cliente_id):
 @app.route('/api/oceano/cliente/orcamentos/novo', methods=['POST'])
 @cliente_token_required
 def post_novo_orcamento(cliente_id):
-    """Cria um novo orçamento e seus itens."""
+    """Cria um novo orçamento e seus itens. (LOGADO)"""
     data = request.get_json()
     itens = data.get('itens')
     if not itens or not isinstance(itens, list) or len(itens) == 0:
@@ -785,7 +794,128 @@ def post_novo_orcamento(cliente_id):
         if conn: conn.close()
 
 # =====================================================================
-# --- [NOVO] PARTE 4: API DO CHATBOT ---
+# --- [NOVO] PARTE 4: API DE ORÇAMENTO PÚBLICO (do index.html) ---
+# =====================================================================
+
+@app.route('/api/oceano/orcamento/publico', methods=['POST'])
+def post_orcamento_publico():
+    """
+    Cria um orçamento a partir do site público (index.html).
+    Verifica se o cliente existe pelo 'codigo_acesso' ou 'email'.
+    Se não existir, cria um novo cliente com um código aleatório.
+    """
+    data = request.get_json()
+    
+    # Validação de dados de entrada
+    itens = data.get('itens')
+    if not itens or not isinstance(itens, list) or len(itens) == 0:
+        return jsonify({'erro': 'O orçamento deve ter pelo menos um item.'}), 400
+
+    nome = data.get('nome')
+    email = data.get('email')
+    whatsapp = data.get('whatsapp')
+    codigo_acesso_opcional = data.get('codigo_acesso')
+    
+    # Validações mínimas de usuário
+    if not codigo_acesso_opcional and (not nome or not email or not whatsapp):
+        return jsonify({'erro': 'Nome, Email e WhatsApp são obrigatórios para novos clientes.'}), 400
+    if not email:
+        return jsonify({'erro': 'Email é obrigatório.'}), 400
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("BEGIN;")
+
+        cliente_id = None
+        is_new_client = False
+
+        # --- Lógica de Cliente ---
+        
+        # 1. Tenta achar pelo CÓDIGO DE ACESSO (se fornecido)
+        if codigo_acesso_opcional:
+            cur.execute("SELECT id FROM oceano_clientes WHERE codigo_acesso = %s", (codigo_acesso_opcional,))
+            cliente_existente = cur.fetchone()
+            if cliente_existente:
+                cliente_id = cliente_existente['id']
+            else:
+                # Se o código estiver errado, mas o email for obrigatório, não podemos prosseguir
+                return jsonify({'erro': 'Código de Acesso inválido. Verifique o código ou deixe em branco para novo cadastro.'}), 401
+        
+        # 2. Se não achou pelo código, tenta achar pelo EMAIL
+        if cliente_id is None:
+            cur.execute("SELECT id FROM oceano_clientes WHERE email = %s", (email,))
+            cliente_existente = cur.fetchone()
+            if cliente_existente:
+                cliente_id = cliente_existente['id']
+                # Cliente já existe, mas não forneceu o código (ou não sabia)
+                # O orçamento será associado a ele.
+            else:
+                # 3. Se não achou nem pelo código nem pelo email, CRIA NOVO CLIENTE
+                is_new_client = True
+                novo_codigo_acesso = generate_access_code()
+                
+                sql_novo_cliente = """
+                INSERT INTO oceano_clientes (nome_cliente, email, telefone, codigo_acesso)
+                VALUES (%s, %s, %s, %s) RETURNING id;
+                """
+                cur.execute(sql_novo_cliente, (nome, email, whatsapp, novo_codigo_acesso))
+                cliente_id = cur.fetchone()['id']
+
+        if cliente_id is None:
+            raise Exception("Falha ao identificar ou criar cliente.")
+
+        # --- Lógica de Orçamento (igual à rota do cliente) ---
+        
+        # 1. Cria o Orçamento "capa"
+        sql_orc = "INSERT INTO oceano_orcamentos (cliente_id, status, data_criacao, data_atualizacao) VALUES (%s, 'Aguardando Orçamento', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING id;"
+        cur.execute(sql_orc, (cliente_id,))
+        novo_orcamento_id = cur.fetchone()['id']
+        
+        # 2. Insere os Itens
+        sql_item = "INSERT INTO oceano_orcamento_ilens (orcamento_id, produto_id, quantidade_solicitada, observacoes_cliente) VALUES (%s, %s, %s, %s);"
+        for item in itens:
+            cur.execute(sql_item, (
+                novo_orcamento_id,
+                item.get('produto_id'),
+                item.get('quantidade'),
+                item.get('observacao')
+            ))
+            
+        conn.commit()
+        cur.close()
+        
+        # Retorna a resposta correta
+        if is_new_client:
+            return jsonify({
+                'mensagem': f'Orçamento #{novo_orcamento_id} enviado! Nossa equipe entrará em contato. Um novo cadastro foi criado para você.', 
+                'is_new': True
+            }), 201
+        else:
+             return jsonify({
+                'mensagem': f'Orçamento #{novo_orcamento_id} enviado! Vimos que você já é nosso cliente. Em breve o orçamento aparecerá no seu portal.', 
+                'is_new': False
+            }), 201
+        
+    except psycopg2.IntegrityError as e:
+        if conn: conn.rollback()
+        # Erro comum: email duplicado (se tentou criar cliente que já existia por email)
+        if 'oceano_clientes_email_key' in str(e):
+             return jsonify({'erro': 'Este email já está cadastrado. Por favor, insira seu Código de Acesso ou use outro email.'}), 409
+        print(f"ERRO de Integridade no orçamento público: {e}")
+        return jsonify({'erro': 'Erro de banco de dados. Verifique os dados.'}), 500
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"ERRO ao criar novo orçamento público: {e}")
+        traceback.print_exc()
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        if conn: conn.close()
+
+
+# =====================================================================
+# --- [ANTIGA PARTE 4] API DO CHATBOT ---
 # =====================================================================
 
 # --- Ferramentas do Chatbot ---
