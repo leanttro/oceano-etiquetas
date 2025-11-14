@@ -269,10 +269,6 @@
         }
         .chatbot-preview-button:hover { transform: scale(1.03); }
         .chatbot-preview-button.hidden { opacity: 0; transform: scale(0.9); visibility: hidden; height: 0; padding: 0; }
-        .preview-close {
-            position: absolute; top: 5px; right: 5px; background: none; border: none;
-            color: var(--text-secondary); font-size: 0.8rem; cursor: pointer; padding: 5px; z-index: 100;
-        }
         .chatbot-minimized-icon {
             width: 60px; height: 60px;
             background: var(--accent);
@@ -406,7 +402,6 @@
 </head>
 <body>
 
-    <!-- [TELA 1: LOGIN] -->
     <div id="login-screen">
         <div class="login-box">
             <img src="/static/oceanologo.png" alt="Oceano Etiquetas Logo" class="logo-img">
@@ -422,9 +417,7 @@
         </div>
     </div>
 
-    <!-- [TELA 2: PORTAL DO CLIENTE] -->
     <div id="client-portal">
-        <!-- Sidebar Fixa -->
         <div class="sidebar">
             <div class="sidebar-logo">
                 <img src="/static/oceanologo.png" alt="Oceano Etiquetas Logo">
@@ -441,13 +434,11 @@
             </div>
         </div>
 
-        <!-- Conteúdo Principal -->
         <div class="main-content">
             <div class="content-header">
                 <h1 id="page-title">Dashboard</h1>
             </div>
 
-            <!-- View 1: Dashboard -->
             <div class="content-view active" id="dashboard-view">
                 <div class="content-section">
                     <div class="stats-grid">
@@ -477,17 +468,14 @@
                 </div>
             </div>
 
-            <!-- View 2: Novo Orçamento -->
             <div class="content-view" id="novo-orcamento-view" style="display:none;">
                  <div class="content-section">
                     <div class="layout">
-                        <!-- Coluna 1: Lista de Produtos -->
                         <div class="product-list-container">
                             <div id="product-list">
                                 <p style="padding: 2rem; text-align: center;">Carregando produtos...</p>
                             </div>
                         </div>
-                        <!-- Coluna 2: Carrinho -->
                         <div class="cart-summary">
                             <h3>Itens da Solicitação</h3>
                             <div id="cart-items-list" style="margin: 1rem 0;">
@@ -503,7 +491,6 @@
                 </div>
             </div>
 
-            <!-- View 3: Meus Pedidos -->
             <div class="content-view" id="meus-pedidos-view" style="display:none;">
                 <div class="content-section">
                     <h2>Histórico de Orçamentos e Pedidos</h2>
@@ -518,30 +505,28 @@
                 </div>
             </div>
             
-            <!-- View 4: Falar com Chat (Apenas abre o chat) -->
             <div class="content-view" id="falar-chat-view" style="display:none;">
                 <div class="content-section">
-                    <h2>Oceabot - Agente Virtual</h2>
+                    <h2>Oceano Bot - Agente Virtual</h2>
                     <p>O chatbot foi aberto no canto da tela. Faça sua pergunta por lá!</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- --- [CHATBOT HTML] --- -->
     <div class="floating-chatbot" id="floatingChatbot" style="display:none;">
         <div id="chatbotButtonContainer">
              <div class="chatbot-minimized-icon" id="minimizedIcon" aria-label="Abrir Chatbot">
                 <i class="fas fa-robot"></i>
             </div>
-            <div class="chatbot-preview-button" id="chatbotButton" aria-label="Abrir Oceabot">
+            <div class="chatbot-preview-button" id="chatbotButton" aria-label="Abrir Oceano Bot">
                 <button class="preview-close" id="previewClose" aria-label="Minimizar Preview">
                     <i class="fas fa-times"></i>
                 </button>
                 <div class="preview-header">
                     <div class="preview-avatar">O</div>
                     <div class="preview-info">
-                        <strong>Oceabot</strong>
+                        <strong>Oceano Bot</strong>
                         <span>Assistente Virtual</span>
                     </div>
                 </div>
@@ -557,7 +542,7 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="chatbot-header-info">
-                    <h3>Oceabot</h3>
+                    <h3>Oceano Bot</h3>
                     <p>Assistente Virtual Oceano</p>
                 </div>
                 <button class="chatbot-close" id="chatbotClose" aria-label="Fechar chat">
@@ -565,8 +550,7 @@
                 </button>
             </div>
             <div class="chatbot-messages" id="chatbotMessages">
-                <!-- Mensagens são adicionadas dinamicamente -->
-            </div>
+                </div>
             <div class="chatbot-input-area">
                 <input 
                     type="text" 
@@ -581,7 +565,6 @@
         </div>
     </div>
 
-    <!-- --- [MODAL DE DIÁLOGO] --- -->
     <div id="custom-dialog-modal" class="modal-overlay">
         <div style="background: var(--surface); padding: 2rem; border-radius: 8px; max-width: 400px; text-align: center;">
             <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
@@ -591,9 +574,6 @@
         </div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- --- JAVASCRIPT DO PORTAL DO CLIENTE --- -->
-    <!-- ============================================================= -->
     <script>
         // URLs da API (do app.py)
         const API_CLIENT_URL = '/api/oceano/cliente';
@@ -1038,7 +1018,7 @@
         function startChatbotSession() {
             chatHistory = [];
             chatbotMessages.innerHTML = '';
-            addChatMessage(`Olá, ${CLIENT_NAME}! Sou o Oceabot, seu assistente. Como posso ajudar a rastrear um pedido ou encontrar um produto?`, false);
+            addChatMessage(`Olá, ${CLIENT_NAME}! Sou o Oceano Bot, seu assistente. Como posso ajudar a rastrear um pedido ou encontrar um produto?`, false);
         }
         
         async function sendChatMessage() {
