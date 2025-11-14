@@ -120,7 +120,6 @@ def cliente_token_required(f):
 
 # =====================================================================
 # --- PARTE 1: ROTAS PÚBLICAS (O Site 'oceano-etiquetas') ---
-# (Funcionalidade 100% preservada)
 # =====================================================================
 
 @app.context_processor
@@ -128,21 +127,27 @@ def inject_dynamic_menu():
     """Injeta dados do menu em todos os templates renderizados."""
     conn = None
     categorias_ordem = ['Lacres', 'Adesivos', 'Brindes', 'Impressos']
-    menu_data = collections.OrderedDict([(cat, []) for cat in categorias_ordem])
+    # --- MUDANÇA 1: O valor de cada categoria agora é um dicionário para subcategorias ---
+    menu_data = collections.OrderedDict([(cat, collections.OrderedDict()) for cat in categorias_ordem])
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        # --- MUDANÇA 2: Adicionado 'subcategoria' à query ---
         query = """
-            SELECT nome_produto, url_slug, categoria 
+            SELECT nome_produto, url_slug, categoria, subcategoria
             FROM oceano_produtos 
             WHERE categoria IS NOT NULL AND categoria != '' AND url_slug IS NOT NULL AND url_slug != ''
-            ORDER BY categoria, nome_produto;
+            ORDER BY categoria, subcategoria, nome_produto;
         """
         cur.execute(query)
         produtos = cur.fetchall()
         cur.close()
+        
         for produto in produtos:
             cat = produto['categoria']
+            # --- MUDANÇA 3: Pega a subcategoria ---
+            subcat = produto['subcategoria'] if produto['subcategoria'] else 'Outros' # Define 'Outros' se for nulo
+            
             slug_do_bd = produto['url_slug']
             if slug_do_bd.startswith('/produtos/'):
                 slug_limpo = slug_do_bd[len('/produtos/'):]
@@ -150,10 +155,14 @@ def inject_dynamic_menu():
                 slug_limpo = slug_do_bd
             url_final_para_link = f"/produtos/{slug_limpo}"
             produto_data = {'nome': produto['nome_produto'], 'url': url_final_para_link}
+            
+            # --- MUDANÇA 4: Lógica para aninhar produtos dentro de subcategorias ---
             if cat in menu_data:
-                menu_data[cat].append(produto_data)
-            elif cat not in menu_data: 
-                menu_data[cat] = [produto_data]
+                if subcat not in menu_data[cat]:
+                    menu_data[cat][subcat] = [] # Cria a lista para a nova subcategoria
+                menu_data[cat][subcat].append(produto_data)
+
+        # Filtra categorias que não têm nenhum item
         menu_data_final = {k: v for k, v in menu_data.items() if v}
         return dict(menu_categorias=menu_data_final)
     except Exception as e:
@@ -170,7 +179,8 @@ def get_api_produtos():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        query = "SELECT id, nome_produto, codigo_produto, categoria, imagem_principal_url, descricao_curta FROM oceano_produtos ORDER BY nome_produto;"
+        # --- MUDANÇA 5: Adicionado 'url_slug' à query (ESSA ERA A CAUSA DO ERRO 'undefined') ---
+        query = "SELECT id, nome_produto, codigo_produto, categoria, imagem_principal_url, descricao_curta, url_slug FROM oceano_produtos ORDER BY nome_produto;"
         cur.execute(query)
         produtos_raw = cur.fetchall()
         cur.close()
@@ -224,7 +234,6 @@ def index_route():
 
 # =====================================================================
 # --- PARTE 2: ROTAS DO PAINEL ADMIN B2B ('/admin' e '/api/oceano/admin') ---
-# (Funcionalidade 100% preservada)
 # =====================================================================
 
 @app.route('/admin')
@@ -952,3 +961,14 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     # Mude debug=True para desenvolvimento local
     app.run(host="0.0.0.0", port=port, debug=False)
+}
+O menu ainda não está 100%, ele lista os produtos, mas não agrupa por subcategoria. Veja:
+
+
+Eu queria que ficasse:
+
+Adesivos (Hover)
+  > Rádio (Hover)
+     - ADESIVOS PARA RÁDIO | TELECOMUNICAÇÃO
+  > Outra Subcategoria (Hover)
+     - Outro Produto
