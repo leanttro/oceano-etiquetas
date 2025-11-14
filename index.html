@@ -905,62 +905,64 @@
 </head>
 <body>
     
-    <!-- Header -->
     <header class="header">
         <nav class="nav">
             <a href="#" class="logo"> 
                 <img src="oceanologo.png" alt="Logo Oceano Etiquetas">
             </a>
             <ul class="nav-links">
-                <!-- Item 1: Lacres -->
                 <li class="nav-item">
                     <a href="#">
                         Lacres
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Lacre Destrutível (Casca de Ovo)</a></li>
-                        <li><a href="#">Lacre de Segurança VOID</a></li>
-                        <li><a href="#">Selos de Garantia</a></li>
+                        {% for produto in menu_categorias.Lacres %}
+                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% else %}
+                            <li><a href="#">Nenhum produto</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
-                <!-- Item 2: Adesivos -->
                 <li class="nav-item">
                     <a href="#">
                         Adesivos
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Etiquetas Industriais (PVC)</a></li>
-                        <li><a href="#">Painel de Policarbonato</a></li>
-                        <li><a href="#">Etiquetas para Rádios</a></li>
-                        <li><a href="#">Etiquetas (Nº Sequencial)</a></li>
+                        {% for produto in menu_categorias.Adesivos %}
+                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% else %}
+                            <li><a href="#">Nenhum produto</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
-                <!-- Item 3: Brindes -->
                 <li class="nav-item">
                     <a href="#">
                         Brindes
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Mouse Pads Personalizados</a></li>
-                        <li><a href="#">Brindes Corporativos</a></li>
+                        {% for produto in menu_categorias.Brindes %}
+                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% else %}
+                            <li><a href="#">Nenhum produto</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
-                <!-- Item 4: Impressos -->
                 <li class="nav-item">
                     <a href="#">
                         Impressos
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Cartões de Visita Premium</a></li>
-                        <li><a href="#">Banners e Roll-ups</a></li>
-                        <li><a href="#">Material Gráfico</a></li>
+                        {% for produto in menu_categorias.Impressos %}
+                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% else %}
+                            <li><a href="#">Nenhum produto</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
-                <!-- Item 5: Contato -->
                 <li class="nav-item">
                     <a href="#contato">Contato</a>
                 </li>
@@ -979,67 +981,66 @@
         </nav>
     </header>
 
-    <!-- Menu Mobile (Painel) -->
     <div class="mobile-nav">
-        <!-- Item 1: Lacres -->
         <div class="mobile-nav-item">
             <div class="mobile-nav-toggle-sub">
                 <span>Lacres</span>
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                <a href="#">Lacre Destrutível (Casca de Ovo)</a>
-                <a href="#">Lacre de Segurança VOID</a>
-                <a href="#">Selos de Garantia</a>
+                {% for produto in menu_categorias.Lacres %}
+                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% else %}
+                    <a href="#">Nenhum produto</a>
+                {% endfor %}
             </div>
         </div>
-        <!-- Item 2: Adesivos -->
         <div class="mobile-nav-item">
             <div class="mobile-nav-toggle-sub">
                 <span>Adesivos</span>
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                <a href="#">Etiquetas Industriais (PVC)</a>
-                <a href="#">Painel de Policarbonato</a>
-                <a href="#">Etiquetas para Rádios</a>
-                <a href="#">Etiquetas (Nº Sequencial)</a>
+                {% for produto in menu_categorias.Adesivos %}
+                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% else %}
+                    <a href="#">Nenhum produto</a>
+                {% endfor %}
             </div>
         </div>
-        <!-- Item 3: Brindes -->
         <div class="mobile-nav-item">
             <div class="mobile-nav-toggle-sub">
                 <span>Brindes</span>
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                <a href="#">Mouse Pads Personalizados</a>
-                <a href="#">Brindes Corporativos</a>
+                {% for produto in menu_categorias.Brindes %}
+                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% else %}
+                    <a href="#">Nenhum produto</a>
+                {% endfor %}
             </div>
         </div>
-        <!-- Item 4: Impressos -->
         <div class="mobile-nav-item">
             <div class="mobile-nav-toggle-sub">
                 <span>Impressos</span>
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                <a href="#">Cartões de Visita Premium</a>
-                <a href="#">Banners e Roll-ups</a>
-                <a href="#">Material Gráfico</a>
+                {% for produto in menu_categorias.Impressos %}
+                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% else %}
+                    <a href="#">Nenhum produto</a>
+                {% endfor %}
             </div>
         </div>
-        <!-- Item 5: Contato -->
         <a href="#contato" class="mobile-nav-link">Contato</a>
     </div>
 
-    <!-- Hero Slider -->
     <section class="hero">
         
-        <!-- Canvas da Animação de Fundo (AGORA DENTRO DO HERO) -->
         <canvas id="fish-background"></canvas>
 
-        <!-- Slide 1 -->
         <div class="hero-slide active" style="background-image: url('fundo1.png');">
             <div class="hero-content">
                 <div class="hero-label">Soluções Industriais</div>
@@ -1052,7 +1053,6 @@
             </div>
         </div>
 
-        <!-- Slide 2 -->
         <div class="hero-slide" style="background-image: url('fundo2.png');">
             <div class="hero-content">
                 <div class="hero-label">Soluções Industriais</div>
@@ -1065,7 +1065,6 @@
             </div>
         </div>
 
-        <!-- Slide 3 -->
         <div class="hero-slide" style="background-image: url('fundo3.png');">
             <div class="hero-content">
                 <div class="hero-label">Soluções Industriais</div>
@@ -1078,7 +1077,6 @@
             </div>
         </div>
 
-        <!-- Slide 4 -->
         <div class="hero-slide" style="background-image: url('fundo4.png');">
             <div class="hero-content">
                 <div class="hero-label">Soluções Industriais</div>
@@ -1091,7 +1089,6 @@
             </div>
         </div>
 
-        <!-- Slide 5 -->
         <div class="hero-slide" style="background-image: url('fundo5.png');">
             <div class="hero-content">
                 <div class="hero-label">Soluções Industriais</div>
@@ -1106,7 +1103,6 @@
 
     </section>
 
-    <!-- Stats -->
     <section id="sobre" class="stats">
         <div class="stats-container">
             <div class="stat-item">
@@ -1128,7 +1124,6 @@
         </div>
     </section>
 
-    <!-- Services -->
     <section id="servicos" class="services">
         <div class="container">
             <div class="section-header">
@@ -1160,16 +1155,12 @@
         </div>
     </section>
 
-    <!-- Products -->
     <section id="produtos" class="products">
         <div class="container">
-            <!-- MUDADO - .section-header agora contém os botões -->
             <div class="section-header">
-                <div> <!-- Wrapper para o título -->
-                    <div class="section-label">Catálogo</div>
+                <div> <div class="section-label">Catálogo</div>
                     <h2 class="section-title">Produtos mais comprados</h2>
                 </div>
-                <!-- ADICIONADO - Botões de controle do carrossel -->
                 <div class="carousel-controls">
                     <button id="scroll-prev" class="carousel-btn" aria-label="Anterior">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -1179,13 +1170,11 @@
                     </button>
                 </div>
             </div>
-            <!-- PASSO 1: O grid de produtos agora está vazio, pronto para ser preenchido via JS -->
             <div class="products-grid">
             </div>
         </div>
     </section>
 
-    <!-- CTA -->
     <section class="cta-section">
         <div class="container">
             <h2>Pronto para elevar o padrão de qualidade?</h2>
@@ -1194,7 +1183,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer id="contato" class="footer">
         <div class="footer-content">
             <div class="footer-brand">
@@ -1486,7 +1474,6 @@
                                     <h3>${produto.nome_produto || 'Produto sem nome'}</h3>
                                     <p>${produto.descricao_curta || 'Clique para ver mais detalhes.'}</p>
                                     
-                                    <!-- [CORREÇÃO 2] O href agora inclui o prefixo /produtos/ -->
                                     <a href="/produtos/${produto.url_slug}" class="product-link">
                                         Ver detalhes →
                                     </a>
