@@ -1360,10 +1360,14 @@
             
             const isActive = chatbotWindow.classList.contains('active');
             if (isActive && !forceOpen) {
+                // [INÍCIO DA CORREÇÃO]
+                // Ao fechar a janela, ele deve MINIMIZAR (mostrar ícone), não voltar ao preview.
                 chatbotWindow.classList.remove('active');
-                chatbotButton.classList.remove('hidden');
-                minimizedIcon.classList.remove('minimized');
+                chatbotButton.classList.add('hidden'); // <-- ALTERADO (era .remove)
+                minimizedIcon.classList.add('minimized'); // <-- ALTERADO (era .remove)
+                // [FIM DA CORREÇÃO]
             } else {
+                // Lógica de abertura (estava correta)
                 chatbotWindow.classList.add('active');
                 chatbotButton.classList.add('hidden');
                 minimizedIcon.classList.add('minimized');
