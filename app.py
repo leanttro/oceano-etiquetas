@@ -632,7 +632,7 @@ def handle_pedido_id(id):
 @app.route('/portal')
 def cliente_portal_route():
     """Serve a página HTML do portal do cliente."""
-    return render_template('cliente.html')
+    return render_template('portal.html')
 
 @app.route('/api/oceano/cliente/login', methods=['POST'])
 def cliente_login():
