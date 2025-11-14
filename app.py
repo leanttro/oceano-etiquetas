@@ -162,9 +162,10 @@ def inject_dynamic_menu():
                     menu_data[cat][subcat] = [] # Cria a lista para a nova subcategoria
                 menu_data[cat][subcat].append(produto_data)
 
-        # Filtra categorias que não têm nenhum item
-        menu_data_final = {k: v for k, v in menu_data.items() if v}
-        return dict(menu_categorias=menu_data_final)
+        # --- [CORREÇÃO DO ERRO] ---
+        # A linha que filtrava categorias vazias foi REMOVIDA.
+        # Agora, ele sempre retorna o dicionário completo.
+        return dict(menu_categorias=menu_data)
     except Exception as e:
         print(f"ERRO CRÍTICO ao gerar menu dinâmico: {e}")
         traceback.print_exc()
@@ -722,9 +723,6 @@ def get_cliente_orcamentos(cliente_id):
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         # 1. Pega Orçamentos pendentes
-        # --- [CORREÇÃO AQUI] ---
-        # Adicionado 'NULL as codigo_rastreio' para que a UNION funcione,
-        # já que a tabela de orçamentos não possui esse campo.
         sql_orc = "SELECT id, 'orcamento' as tipo, data_criacao, data_atualizacao, status, valor_final_total, chave_pix, NULL as codigo_rastreio, observacoes_admin FROM oceano_orcamentos WHERE cliente_id = %s"
         
         # 2. Pega Pedidos aprovados
@@ -868,7 +866,7 @@ if GEMINI_API_KEY:
     
     # Inicializa o modelo
     gemini_model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash-preview-09-2025",
+        model_name="gemini-1.5-flash-latest", # Modelo atualizado
         system_instruction=SYSTEM_PROMPT,
         tools=tools_to_use # MUDANÇA: Passa a lista `tools_to_use`
     )
@@ -888,9 +886,13 @@ def handle_chat(cliente_id):
     # Constrói o histórico para o Gemini
     chat_history = []
     for item in history_raw:
-        chat_history.append({'role': item['role'], 'parts': [{'text': item['content']}]})
+        # Gemini espera 'model' para o bot e 'user' para o usuário
+        role = 'model' if item['role'] == 'bot' else 'user'
+        chat_history.append({'role': role, 'parts': [{'text': item['content']}]})
 
     # [GROUNDING] Adiciona o prefixo do site para o Google Search
+    # (Nota: Gemini 1.5 pode não precisar mais disso se a ferramenta de busca for integrada,
+    # mas manteremos por enquanto)
     grounded_message = f"site:www.oceanoetiquetas.com.br {message}"
 
     try:
@@ -910,7 +912,7 @@ def handle_chat(cliente_id):
                 pedido_id = args.get('pedido_id')
                 # Chama a ferramenta com o ID do cliente logado (para segurança)
                 tool_result_json = tool_check_status_pedido(pedido_id, cliente_id)
-                tool_result = json.loads(tool_result_json)
+                tool_result = json.loads(tool_result_json) # A ferramenta já retorna uma string JSON
             
             # 3. Envia o resultado da ferramenta de volta para a IA
             if tool_result:
@@ -918,7 +920,7 @@ def handle_chat(cliente_id):
                     part=genai.Part(
                         function_response=genai.FunctionResponse(
                             name=function_call.name,
-                            response={"result": tool_result}
+                            response=tool_result # Gemini 1.5 espera o objeto/dicionário direto
                         )
                     )
                 )
@@ -928,7 +930,7 @@ def handle_chat(cliente_id):
                     part=genai.Part(
                         function_response=genai.FunctionResponse(
                             name=function_call.name,
-                            response={"result": {"erro": "Ferramenta não reconhecida."}}
+                            response={"erro": "Ferramenta não reconhecida."}
                         )
                     )
                 )
@@ -957,8 +959,14 @@ def serve_static_or_404(path):
     # Esta função só será chamada se a rota não for
     # '/', '/admin', '/portal', '/produtos/<slug>', ou '/api/...'
     
-    print(f"AVISO: Rota não encontrada (404) para: {path}")
-    return "Página não encontrada", 404
+    # Tenta servir como arquivo estático PRIMEIRO
+    # (Necessário se você tiver 'logochat.png' ou 'fundo1.png' na pasta static)
+    try:
+        return send_from_directory(app.static_folder, path)
+    except Exception:
+        # Se não for um arquivo estático, é 404
+        print(f"AVISO: Rota não encontrada (404) para: {path}")
+        return "Página não encontrada", 404
 
 # --- Execução do App ---
 if __name__ == '__main__':
