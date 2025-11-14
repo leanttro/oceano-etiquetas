@@ -7,7 +7,8 @@ from flask_cors import CORS
 import datetime
 import traceback
 import decimal
-import json # [CORREÇÃO 4] Importa a biblioteca JSON
+import json 
+import collections # <-- NOVO: Importa collections para o menu ordenado
 
 # Carrega variáveis de ambiente de um arquivo .env, se existir (para dev local)
 # No Render, você vai setar as variáveis de ambiente na interface
@@ -62,6 +63,64 @@ def format_db_data(data_dict):
     return formatted_dict
 
 
+# --- NOVO: PROVEDOR DE CONTEXTO PARA O MENU DINÂMICO ---
+@app.context_processor
+def inject_dynamic_menu():
+    """
+    Injeta dados do menu em todos os templates renderizados.
+    Consulta o BD e agrupa os produtos por categoria.
+    """
+    conn = None
+    # Garante a ordem desejada das categorias
+    categorias_ordem = ['Lacres', 'Adesivos', 'Brindes', 'Impressos']
+    menu_data = collections.OrderedDict([(cat, []) for cat in categorias_ordem])
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        # Busca apenas os campos necessários para o menu
+        query = """
+            SELECT nome_produto, url_slug, categoria 
+            FROM oceano_produtos 
+            WHERE categoria IS NOT NULL AND categoria != '' AND url_slug IS NOT NULL AND url_slug != ''
+            ORDER BY categoria, nome_produto;
+        """
+        cur.execute(query)
+        produtos = cur.fetchall()
+        cur.close()
+
+        # Agrupa os produtos
+        for produto in produtos:
+            cat = produto['categoria']
+            produto_data = {
+                'nome': produto['nome_produto'],
+                'url': produto['url_slug'] # O BD já salva o /produtos/slug
+            }
+            
+            if cat in menu_data:
+                menu_data[cat].append(produto_data)
+            else: 
+                # Adiciona categorias não previstas (ex: 'Outros') no final
+                if cat not in menu_data:
+                    menu_data[cat] = []
+                menu_data[cat].append(produto_data)
+        
+        # Remove categorias que buscamos mas que não têm produtos
+        menu_data_final = {k: v for k, v in menu_data.items() if v}
+        
+        return dict(menu_categorias=menu_data_final)
+
+    except Exception as e:
+        print(f"ERRO CRÍTICO ao gerar menu dinâmico: {e}")
+        traceback.print_exc()
+        # Retorna um dicionário vazio em caso de falha no BD
+        return dict(menu_categorias=collections.OrderedDict())
+    finally:
+        if conn: conn.close()
+# --- FIM DO PROVEDOR DE CONTEXTO ---
+
+
 # --- ROTAS DA 'OCEANO ETIQUETAS' ---
 
 @app.route('/api/produtos')
@@ -110,17 +169,17 @@ def get_api_produtos():
 def produto_detalhe(slug):
     """Renderiza a página de detalhe de um produto buscando pelo 'url_slug'."""
     conn = None
-    try: # [CORREÇÃO 5] Adiciona os dois-pontos que faltavam.
+    try: 
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Busca pelo campo 'url_slug'
+        # [CORREÇÃO 1 - APLICADA]
+        # O 'slug' da URL é 'lacre-destrutivel-casca-ovo'
+        # O banco de dados (via Colab) salva '/produtos/lacre-destrutivel-casca-ovo'
+        # A consulta DEVE buscar pelo caminho completo.
+        url_busca = f"/produtos/{slug}"
         
-        # [CORREÇÃO 1]
-        # REMOVIDA A LÓGICA DE MANIPULAÇÃO 'url_busca'.
-        # A consulta agora usa 'slug' diretamente, como veio da URL.
-        
-        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (slug,))
+        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (url_busca,))
         produto = cur.fetchone()
         cur.close()
 
@@ -151,8 +210,8 @@ def produto_detalhe(slug):
             # e injeta os dados do banco na variável 'produto'
             return render_template('oceano-produto-detalhe.html', produto=produto_formatado)
         else:
-            # [CORREÇÃO 1] Log atualizado para usar 'slug'
-            print(f"AVISO: Produto com slug/url '{slug}' não encontrado.")
+            # [CORREÇÃO 1] Log atualizado para usar 'url_busca'
+            print(f"AVISO: Produto com slug/url '{url_busca}' não encontrado.")
             return "Produto não encontrado", 404
             
     except Exception as e:
@@ -167,8 +226,11 @@ def produto_detalhe(slug):
 
 @app.route('/')
 def index_route():
-    """Serve o 'index.html' (que deve ser o seu 'teste.html' renomeado)"""
-    return send_from_directory('.', 'index.html')
+    """
+    [ALTERADO] Renderiza o 'index.html' dinamicamente usando Jinja2.
+    O arquivo 'index.html' DEVE estar na pasta 'templates/'.
+    """
+    return render_template('index.html')
 
 @app.route('/<path:path>')
 def serve_static_files(path):
@@ -186,6 +248,7 @@ def serve_static_files(path):
         return "Not Found", 404
         
     # 2. Se contém um ponto, TENTA servir como arquivo estático (.html, .css, .png, etc.)
+    #    (O 'index.html' não é mais pego aqui, pois foi movido para 'templates/')
     if os.path.exists(os.path.join('.', path)):
         return send_from_directory('.', path)
     else:
@@ -193,8 +256,11 @@ def serve_static_files(path):
         return "Not Found", 404
 
 # --- Execução do App ---
-if __name__ == '____':
+if __name__ == '__main__':
     # O Render usa a variável 'PORT'
     port = int(os.environ.get("PORT", 10000))
     # debug=False é o padrão para produção
+    # debug=True é útil para desenvolvimento local, pois recarrega
+    # automaticamente e mostra erros detalhados no navegador.
+    # Mude para True se estiver testando localmente.
     app.run(host="0.0.0.0", port=port, debug=False)

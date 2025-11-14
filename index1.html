@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oceano Etiquetas - Soluções Industriais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --dark: #0f172a;
+            --accent: #dc2626;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg-light: #f8fafc;
+            --light-blue: #3672d4; 
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: #ffffff; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* --- ANIMAÇÃO DE FUNDO 'OCEANO' (Agora dentro do Hero) --- */
+        #fish-background {
+            position: absolute; /* MUDADO de fixed para absolute */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Fica acima do overlay (1) e abaixo do conteúdo (3) */
+            pointer-events: none; 
+            opacity: 0.5; /* MUDADO - Aumentado para 50% para ver no fundo escuro */
+        }
+        /* --- FIM DA ANIMAÇÃO --- */
+
+
+        /* Header Ultra Clean */
+        .header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000; 
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            height: 75px; 
+        }
+
+        .nav {
+            max-width: 1400px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--dark); 
+        }
+
+        .logo img {
+            height: 55px; 
+            width: auto; 
+            object-fit: contain; 
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* --- Estilos do Dropdown (Desktop) --- */
+        .nav-item {
+            position: relative;
+        }
+
+        .dropdown-arrow {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-left: 4px;
+            stroke: currentColor;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 150%; 
+            left: -1rem;
+            min-width: 240px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            padding: 0.5rem 0;
+            list-style: none;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease-out;
+        }
+
+        .nav-item:hover > .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            top: 100%; 
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        
+        .dropdown-menu a:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+        /* --- Fim Estilos Dropdown --- */
+
+
+        .nav-cta {
+            padding: 0.6rem 1.5rem;
+            background: var(--dark);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-cta .full-text { display: inline; }
+        .nav-cta .short-text { display: none; }
+
+        /* Botão Menu Mobile */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 10px;
+        }
+
+        .hamburger {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--dark);
+            position: relative;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background: var(--dark);
+            left: 0;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .hamburger::before { top: -7px; }
+        .hamburger::after { bottom: -7px; }
+
+        /* Estado Ativo (X) do Hamburger */
+        .nav-toggle.active .hamburger { background: transparent; }
+        .nav-toggle.active .hamburger::before { transform: translateY(7px) rotate(45deg); }
+        .nav-toggle.active .hamburger::after { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Painel do Menu Mobile */
+        .mobile-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: fixed;
+            top: 75px; 
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 75px);
+            background: white;
+            z-index: 999; 
+            padding: 4rem 2rem;
+            text-align: center;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-nav.active {
+            transform: translateX(0);
+        }
+
+        .mobile-nav a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        /* --- Estilos Dropdown (Mobile) --- */
+        .mobile-nav-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-nav-toggle-sub {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            cursor: pointer;
+        }
+        
+        .mobile-nav-toggle-sub span {
+            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .mobile-nav-toggle-sub .dropdown-arrow {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-nav-toggle-sub.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .mobile-sub-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding-left: 1.5rem;
+        }
+        
+        .mobile-sub-menu.active {
+            max-height: 500px; 
+            padding-bottom: 1rem;
+        }
+        
+        .mobile-sub-menu a {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-light);
+            padding: 0.75rem 0;
+        }
+
+        .mobile-nav-link { 
+            display: block;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        /* --- Fim Estilos Mobile Dropdown --- */
+
+
+        /* Hero Minimalista (Slider) */
+        .hero {
+            margin-top: 75px; 
+            min-height: 90vh;
+            background: var(--dark); 
+            position: relative;
+            overflow: hidden;
+            z-index: 1; /* Hero fica acima do body, mas abaixo do header */
+        }
+
+        .hero::before {
+            display: none; 
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center center;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out; 
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-slide.active {
+            opacity: 1; 
+        }
+
+        /* Overlay escuro para garantir legibilidade */
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)); 
+            z-index: 1; /* MUDADO - Fica atrás dos peixes (2) e do conteúdo (3) */
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            position: relative;
+            z-index: 3; /* MUDADO - Fica na frente dos peixes (2) */
+        }
+
+        .hero-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            max-width: 900px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3rem;
+            max-width: 650px;
+            font-weight: 400;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: white;
+            color: var(--dark);
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--light-blue); 
+            border-bottom: 1px solid var(--border); 
+            position: relative; 
+            z-index: 1; /* z-index não é mais necessário aqui, mas mantido */
+        }
+
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 3rem; 
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white; 
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8); 
+            font-weight: 500;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 4rem 3rem 4rem; /* MUDADO - padding-bottom de 8rem para 4rem */
+            background: white; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 5rem;
+        }
+        
+        /* ADICIONADO - Ajuste específico para o header da seção de produtos */
+        .products .section-header {
+            margin-bottom: 2.5rem; 
+            /* ADICIONADO - Flexbox para alinhar título e botões */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Para quebrar em telas menores */
+            gap: 1rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.2;
+            letter-spacing: -1px;
+            max-width: 700px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .service-card {
+            background: white;
+            padding: 3rem;
+            transition: background 0.3s;
+        }
+
+        .service-card:hover {
+            background: var(--bg-light);
+        }
+
+        .service-number {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 4rem 3rem 4rem; /* MUDADO - padding-bottom de 8rem para 4rem */
+            background: var(--bg-light); 
+            position: relative; 
+            z-index: 1; 
+        }
+        
+        /* --- ADICIONADO: Estilos dos Controles do Carrossel --- */
+        .carousel-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .carousel-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .carousel-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .carousel-btn:hover {
+            background: white;
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .carousel-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: transparent;
+            color: var(--text-light);
+            border-color: var(--border);
+            box-shadow: none;
+        }
+        /* --- Fim Estilos Controles --- */
+
+
+        .products-grid {
+            /* display: grid; */ /* MUDADO */
+            /* grid-template-columns: repeat(3, 1fr); */ /* MUDADO */
+            display: flex; /* ADICIONADO */
+            overflow-x: auto; /* ADICIONADO */
+            padding-bottom: 1.5rem; /* ADICIONADO - Espaço para a scrollbar */
+            gap: 2rem;
+            scroll-behavior: smooth; /* ADICIONADO - Necessário para o JS */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+            /* ADICIONADO - Altura mínima para o grid vazio não colapsar */
+            min-height: 150px; 
+            align-items: center; /* Centraliza a msg de erro/loading */
+        }
+
+        /* Estilização da Scrollbar para o Carrossel (ADICIONADO) */
+        .products-grid::-webkit-scrollbar {
+            height: 8px; /* Altura da scrollbar */
+            /* display: none; */ /* Esconde a scrollbar no Chrome/Safari */
+        }
+        
+        .products-grid::-webkit-scrollbar-track {
+            background: var(--border); /* Cor do trilho */
+            border-radius: 4px;
+        }
+        
+        .products-grid::-webkit-scrollbar-thumb {
+            background-color: var(--text-light); /* Cor da barra */
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .products-grid::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary); /* Cor no hover */
+        }
+        /* Fim da Estilização da Scrollbar */
+
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            flex: 0 0 340px; /* ADICIONADO - Largura fixa para os cards do carrossel */
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-image {
+            aspect-ratio: 4/3;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden; 
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05); 
+        }
+
+        .product-content {
+            padding: 2rem;
+        }
+
+        .product-code {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+
+        .product-link:hover {
+            gap: 0.75rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 3rem; /* MUDADO - padding top/bottom de 2rem para 3rem (laterais já eram 3rem) */
+            background: var(--dark); 
+            text-align: center;
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: white; 
+            border-top: 1px solid var(--border);
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 3rem 3rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-brand p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .footer-contact a {
+            display: block;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-contact a:hover {
+            color: var(--primary);
+        }
+
+        .footer-links h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-links a {
+            display: block;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 3rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            /* Ajustes de espaçamento para mobile */
+            .nav { padding: 0 1.5rem; }
+            .hero-content { padding: 0 1.5rem; }
+            .stats-container { padding: 2rem 1.5rem; } 
+            .services { padding: 3rem 1.5rem 6rem; } 
+            .products { padding: 3rem 1.5rem 3rem; } /* MUDADO - padding-bottom de 6rem para 3rem */
+            .cta-section { padding: 3rem 1.5rem 3rem; } 
+            .footer-content { padding: 5rem 1.5rem 3rem; }
+
+            /* Esconde links desktop, mostra botão mobile */
+            .nav-links {
+                display: none;
+            }
+            .nav-toggle {
+                display: block;
+            }
+            
+            /* Ajusta o botão CTA para mobile */
+            .nav-cta {
+                padding: 0.6rem 1rem; 
+            }
+            .nav-cta .full-text { display: none; }
+            .nav-cta .short-text { display: inline; }
+
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .services-grid { /* MUDADO - Separado do .products-grid */
+                grid-template-columns: 1fr;
+            }
+
+            .products-grid {
+                 /* A regra grid-template-columns: 1fr; foi REMOVIDA daqui para manter o carrossel */
+            }
+            
+            /* ADICIONADO - Ajuste dos botões do carrossel no mobile */
+            .products .section-header {
+                flex-direction: column;
+                align-items: flex-start; /* MUDADO - de center de volta para flex-start */
+                gap: 1.5rem;
+            }
+            .carousel-controls {
+                width: 100%;
+                justify-content: center; /* MUDADO - de flex-end para center */
+            }
+
+
+            .service-card {
+                padding: 2rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+        }
+        
+        @media (max-width: 767px) {
+            .hero-buttons {
+                flex-direction: column;
+            }
+            .btn-primary, .btn-secondary {
+                text-align: center;
+            }
+
+            .product-card {
+                flex: 0 0 300px; /* ADICIONADO - Cards um pouco menores no mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo"> 
+                <img src="oceanologo.png" alt="Logo Oceano Etiquetas">
+            </a>
+            <!-- Bloco 1: Menu Desktop Dinâmico com Jinja2 -->
+            <ul class="nav-links">
+                {% for categoria, produtos in menu_categorias.items() %}
+                <li class="nav-item">
+                    <a href="#"> <!-- Link principal da categoria -->
+                        {{ categoria }}
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for produto in produtos %}
+                            <!-- O 'produto.url' já contém o caminho completo, ex: /produtos/meu-slug -->
+                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% else %}
+                            <li><a href="#">Nenhum produto</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+                
+                <!-- O item de Contato estático DEVE permanecer -->
+                <li class="nav-item">
+                    <a href="#contato">Contato</a>
+                </li>
+            </ul>
+            
+            <div class="nav-controls"> 
+                <a href="https://wa.me/5511997223828" class="nav-cta">
+                    <span class="full-text">Solicitar Orçamento</span>
+                    <span class="short-text">Orçamento</span>
+                </a>
+                
+                <button class="nav-toggle" aria-label="Abrir menu">
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Menu Mobile (Painel) -->
+    <!-- Bloco 2: Menu Mobile Dinâmico com Jinja2 -->
+    <div class="mobile-nav">
+        {% for categoria, produtos in menu_categorias.items() %}
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>{{ categoria }}</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                {% for produto in produtos %}
+                    <!-- O 'produto.url' já contém o caminho completo, ex: /produtos/meu-slug -->
+                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% else %}
+                    <a href="#">Nenhum produto</a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- O item de Contato estático DEVE permanecer -->
+        <a href="#contato" class="mobile-nav-link">Contato</a>
+    </div>
+
+    <!-- Hero Slider -->
+    <section class="hero">
+        
+        <!-- Canvas da Animação de Fundo (AGORA DENTRO DO HERO) -->
+        <canvas id="fish-background"></canvas>
+
+        <!-- Slide 1 -->
+        <div class="hero-slide active" style="background-image: url('fundo1.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Da Impressão à Produção: Velocidade e Precisão Industrial.</h1>
+                <p>Nossa tecnologia de impressão digital garante rolos de etiquetas com acabamento perfeito e prontos para sua linha de montagem.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="hero-slide" style="background-image: url('fundo2.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>A Arte da Serigrafia: Durabilidade que Supera Desafios.</h1>
+                <p>Especialistas em impressão serigráfica de alta performance para painéis, brindes e etiquetas que resistem ao tempo.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="hero-slide" style="background-image: url('fundo3.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Mais que Brindes: A Identidade da Sua Marca.</h1>
+                <p>De mouse pads a sacolas personalizadas, produzimos brindes corporativos que fortalecem sua presença no mercado.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="hero-slide" style="background-image: url('fundo4.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Etiquetas de Alta Performance para Ambientes Extremos.</h1>
+                <p>Soluções em PS transparente e policarbonato que garantem identificação clara e duradoura para seus equipamentos.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="hero-slide" style="background-image: url('fundo5.png');">
+            <div class="hero-content">
+                <div class="hero-label">Soluções Industriais</div>
+                <h1>Tecnologia de Ponta para Soluções Industriais.</h1>
+                <p>Nosso parque gráfico combina impressão digital e serigrafia para entregar precisão absoluta em cada produto.</p>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Stats -->
+    <section id="sobre" class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Anos de Mercado</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Clientes Ativos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Satisfação</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24h</div>
+                <div class="stat-label">Suporte Técnico</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="servicos" class="services">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Especialidades</div>
+                <h2 class="section-title">Soluções completas para identificação e segurança industrial</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-number">01</div>
+                    <h3>Etiquetas Industriais</h3>
+                    <p>P.V.C. jateado, cristal e poliéster com impressão UV resistente. Durabilidade extrema para painéis de máquinas e ambientes agressivos.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">02</div>
+                    <h3>Lacres de Segurança</h3>
+                    <p>Tecnologia VOID e casca de ovo destrutível. Selos invioláveis para garantia de produtos eletrônicos e equipamentos de alto valor.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">03</div>
+                    <h3>Material Gráfico</h3>
+                    <p>Cartões de visita, banners, roll-ups e impressos com acabamento premium. Qualidade offset e digital para comunicação profissional.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-number">04</div>
+                    <h3>Brindes Corporativos</h3>
+                    <p>Mouse pads personalizados com impressão fotográfica de alta resolução. Produtos promocionais que valorizam sua marca.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section id="produtos" class="products">
+        <div class="container">
+            <!-- MUDADO - .section-header agora contém os botões -->
+            <div class="section-header">
+                <div> <!-- Wrapper para o título -->
+                    <div class="section-label">Catálogo</div>
+                    <h2 class="section-title">Produtos mais comprados</h2>
+                </div>
+                <!-- ADICIONADO - Botões de controle do carrossel -->
+                <div class="carousel-controls">
+                    <button id="scroll-prev" class="carousel-btn" aria-label="Anterior">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button id="scroll-next" class="carousel-btn" aria-label="Próximo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+            <!-- PASSO 1: O grid de produtos agora está vazio, pronto para ser preenchido via JS -->
+            <div class="products-grid">
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Pronto para elevar o padrão de qualidade?</h2>
+            <p>Entre em contato com nossa equipe técnica e receba uma consultoria especializada para seu projeto.</p>
+            <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contato" class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>OCEANO</h3>
+                <p>Especialistas em soluções industriais de etiquetas, lacres de garantia e comunicação visual. Atendimento técnico especializado.</p>
+                <div class="footer-contact">
+                    <a href="https://wa.me/5511997223828">(11) 99722-3828</a>
+                    <a href="mailto:vendas@oceanoetiquetas.com.br">vendas@oceanoetiquetas.com.br</a>
+                    <a href="http://www.oceanoetiquetas.com.br">www.oceanoetiquetas.com.br</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>Produtos</h4>
+                <a href="#produtos">Lacres de Garantia</a>
+                <a href="#produtos">Etiquetas P.V.C.</a>
+                <a href="#produtos">Painéis Industriais</a>
+                <a href="#produtos">Etiquetas Rádios</a>
+            </div>
+
+            <div class="footer-links">
+                <h4>Serviços</h4>
+                <a href="#servicos">Impressão Digital</a>
+                <a href="#servicos">Serigrafia</a>
+                <a href="#servicos">Corte Especial</a>
+                <a href="#servicos">Consultoria</a>
+            </div>
+
+            <div class="footer-links">
+                <h4>Empresa</h4>
+                <a href="#sobre">Sobre Nós</a>
+                <a href="#servicos">Qualidade</a>
+                <a href="#contato">Contato</a>
+                <a href="https://wa.me/5511997223828">Orçamento</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Oceano Etiquetas. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    // Fecha o menu mobile (se estiver aberto) antes de rolar
+                    if (mobileNav && mobileNav.classList.contains('active')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Lógica do Menu Mobile
+        const navToggle = document.querySelector('.nav-toggle');
+        const mobileNav = document.querySelector('.mobile-nav');
+
+        if (navToggle && mobileNav) {
+            navToggle.addEventListener('click', () => {
+                navToggle.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                
+                // Trava o scroll da página quando o menu está aberto
+                if (mobileNav.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Fecha o menu principal ao clicar em um link SIMPLES (como Contato)
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => { 
+                    if (!link.getAttribute('href').startsWith('#')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+
+            // --- LÓGICA DO SUB-MENU MOBILE (Sanfona/Accordion) ---
+            document.querySelectorAll('.mobile-nav-toggle-sub').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    document.querySelectorAll('.mobile-nav-toggle-sub').forEach(otherToggle => {
+                        if (otherToggle !== toggle && otherToggle.classList.contains('active')) {
+                            otherToggle.classList.remove('active');
+                            const otherSubMenu = otherToggle.nextElementSibling;
+                            otherSubMenu.classList.remove('active');
+                            otherSubMenu.style.maxHeight = '0px';
+                        }
+                    });
+
+                    toggle.classList.toggle('active');
+                    const subMenu = toggle.nextElementSibling;
+                    subMenu.classList.toggle('active');
+
+                    if (subMenu.classList.contains('active')) {
+                        subMenu.style.maxHeight = subMenu.scrollHeight + 'px';
+                    } else {
+                        subMenu.style.maxHeight = '0px';
+                    }
+                });
+            });
+
+            // Fecha o menu principal ao clicar em um link de SUB-MENU
+            document.querySelectorAll('.mobile-sub-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!link.getAttribute('href').startsWith('#')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                        document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => {
+                            toggle.classList.remove('active');
+                        });
+                        document.querySelectorAll('.mobile-sub-menu.active').forEach(subMenu => {
+                            subMenu.classList.remove('active');
+                            subMenu.style.maxHeight = '0px';
+                        });
+                    }
+                });
+            });
+        }
+
+        // --- LÓGICA DO HERO SLIDER E ANIMAÇÃO DE FUNDO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- LÓGICA DO HERO SLIDER ---
+            const slides = document.querySelectorAll('.hero-slide');
+            if (slides.length > 0) {
+                let currentSlide = 0;
+
+                function showSlide(n) {
+                    slides.forEach(slide => slide.classList.remove('active'));
+                    currentSlide = (n + slides.length) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }
+
+                function nextSlide() {
+                    showSlide(currentSlide + 1);
+                }
+
+                showSlide(0);
+                setInterval(nextSlide, 5000); // 5s
+            }
+
+            // --- LÓGICA DA ANIMAÇÃO DE FUNDO 'OCEANO' (AGORA NO HERO) ---
+            const canvas = document.getElementById('fish-background');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const heroSection = document.querySelector('.hero');
+                let width = heroSection.clientWidth;
+                let height = heroSection.clientHeight;
+                let fishArray = [];
+                const fishCount = 10; 
+                
+                const fishColor = getComputedStyle(document.documentElement).getPropertyValue('--light-blue') || '#3672d4';
+
+                canvas.width = width;
+                canvas.height = height;
+
+                // Ajusta o canvas se o tamanho do hero mudar (ex: resize da janela)
+                new ResizeObserver(() => {
+                    width = heroSection.clientWidth;
+                    height = heroSection.clientHeight;
+                    canvas.width = width;
+                    canvas.height = height;
+                }).observe(heroSection);
+
+
+                class Fish {
+                    constructor() {
+                        this.size = Math.random() * 15 + 10; // Tamanho 10-25
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                        this.direction = Math.random() > 0.5 ? 1 : -1; 
+                        this.vx = (Math.random() * 0.8 + 0.2) * this.direction; 
+                    }
+
+                    update() {
+                        this.x += this.vx;
+                        
+                        if (this.direction === 1 && this.x > width + this.size * 2) { 
+                            this.x = -this.size * 2;
+                            this.y = Math.random() * height; 
+                        } else if (this.direction === -1 && this.x < -this.size * 2) { 
+                            this.x = width + this.size * 2;
+                            this.y = Math.random() * height; 
+                        }
+                    }
+
+                    draw() {
+                        ctx.fillStyle = fishColor;
+                        ctx.beginPath();
+                        
+                        ctx.save();
+                        ctx.translate(this.x, this.y);
+                        ctx.scale(this.direction, 1); 
+
+                        // Corpo (forma de amêndoa/folha)
+                        ctx.moveTo(0, 0);
+                        ctx.quadraticCurveTo(this.size / 2, -this.size / 3, this.size, 0);
+                        ctx.quadraticCurveTo(this.size / 2, this.size / 3, 0, 0);
+                        
+                        // Cauda (duas linhas)
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(-this.size / 3, -this.size / 4);
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(-this.size / 3, this.size / 4);
+                        
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+
+                function initFish() {
+                    for (let i = 0; i < fishCount; i++) {
+                        fishArray.push(new Fish());
+                    }
+                }
+
+                function animateFish() {
+                    ctx.clearRect(0, 0, width, height);
+                    for (let i = 0; i < fishArray.length; i++) {
+                        fishArray[i].update();
+                        fishArray[i].draw();
+                    }
+                    requestAnimationFrame(animateFish);
+                }
+
+                initFish();
+                animateFish();
+            }
+
+            // --- PASSO 2: Mover seletores e função de estado para o escopo principal ---
+            const scrollContainer = document.querySelector('.products-grid');
+            const prevBtn = document.getElementById('scroll-prev');
+            const nextBtn = document.getElementById('scroll-next');
+
+            // Função para habilitar/desabilitar botões no início/fim
+            const updateButtonState = () => {
+                // Verificação robusta para garantir que os elementos existem
+                if (!scrollContainer || !prevBtn || !nextBtn) {
+                    if(prevBtn) prevBtn.disabled = true;
+                    if(nextBtn) nextBtn.disabled = true;
+                    return;
+                }
+                
+                const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+                
+                // Permite uma pequena margem de erro (1px)
+                prevBtn.disabled = scrollContainer.scrollLeft <= 1;
+                nextBtn.disabled = scrollContainer.scrollLeft >= maxScroll - 1;
+            };
+
+            // --- PASSO 3: Inserir Lógica de Fetch ---
+            // --- INÍCIO: LÓGICA PARA CARREGAR PRODUTOS DINAMICAMENTE ---
+            const productsGrid = scrollContainer; // Reutiliza o seletor
+            if (productsGrid) {
+                fetch('/api/produtos')
+                    .then(response => {
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        return response.json();
+                    })
+                    .then(produtos => {
+                        if (!produtos || produtos.length === 0) {
+                            // Não faz nada, o carrossel já está vazio e os botões desabilitados
+                            return; 
+                        }
+                        let productsHTML = '';
+                        produtos.forEach(produto => {
+                            const imageUrl = produto.imagem_principal_url || `https://placehold.co/400x300/f8fafc/6b7280?text=${produto.codigo_produto || 'Sem Imagem'}`;
+                            const imageAlt = produto.imagem_principal_alt || produto.nome_produto || 'Imagem do Produto';
+                            
+                            productsHTML += `
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="${imageUrl}" alt="${imageAlt}" loading="lazy">
+                                </div>
+                                <div class="product-content">
+                                    <div class="product-code">${produto.codigo_produto || 'Cód. N/D'}</div>
+                                    <h3>${produto.nome_produto || 'Produto sem nome'}</h3>
+                                    <p>${produto.descricao_curta || 'Clique para ver mais detalhes.'}</p>
+                                    
+                                    <!-- [CORREÇÃO 2] O href agora inclui o prefixo /produtos/ -->
+                                    <a href="/produtos/${produto.url_slug}" class="product-link">
+                                        Ver detalhes →
+                                    </a>
+                                </div>
+                            </div>
+                            `;
+                        });
+                        
+                        productsGrid.innerHTML = productsHTML;
+                        
+                        // CHAVE DA MUDANÇA:
+                        // Chama a função dos botões DE NOVO, agora que o grid está cheio.
+                        updateButtonState();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar produtos:', error);
+                        productsGrid.innerHTML = '<p style="color: var(--accent); padding: 0 1rem; width: 100%; text-align: center;">Erro ao carregar produtos.</p>';
+                    });
+            }
+            // --- FIM: LÓGICA PARA CARREGAR PRODUTOS ---
+
+
+            // --- PASSO 4: Lógica de controle do carrossel (listeners e init) ---
+            if (scrollContainer && prevBtn && nextBtn) {
+                // O scrollAmount é a largura de um card (340px) + gap (2rem = 32px)
+                const scrollAmount = 372; 
+
+                nextBtn.addEventListener('click', () => {
+                    scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+
+                // Observa o scroll para atualizar os botões
+                scrollContainer.addEventListener('scroll', updateButtonState);
+                
+                // Também verifica no resize (caso o número de cards visíveis mude)
+                new ResizeObserver(updateButtonState).observe(scrollContainer);
+                
+                // Define o estado inicial no carregamento (com grid vazio)
+                // Isso desabilitará os botões corretamente na inicialização.
+                updateButtonState();
+            }
+
+        });
+    </script>
+</body>
+</html>
