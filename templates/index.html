@@ -1237,9 +1237,9 @@
             </ul>
             
             <div class="nav-controls"> 
-                <a class="nav-cta open-orcamento-modal-btn">
-                    <span class="full-text">Solicitar Orçamento</span>
-                    <span class="short-text">Orçamento</span>
+                <a href="portal.html" class="nav-cta">
+                    <span class="full-text">Portal do Cliente</span>
+                    <span class="short-text">Portal</span>
                 </a>
                 
                 <button class="nav-toggle" aria-label="Abrir menu">
@@ -2093,7 +2093,7 @@
             // --- [NOVO] Seletores Modal Público ---
             const publicOrcamentoModal = document.getElementById('public-orcamento-modal');
             const publicOrcamentoModalCloseBtn = document.getElementById('public-orcamento-modal-close-btn');
-            const openOrcamentoModalBtns = document.querySelectorAll('.open-orcamento-modal-btn');
+            const openOrcamentoModalBtns = document.querySelectorAll('.open-orcamento-modal-btn'); // Mantidos para os botões do corpo
             const publicNextStepBtn = document.getElementById('public-next-step-btn');
             const publicIsCadastradoCheck = document.getElementById('public-is-cadastrado');
             const publicLoginFields = document.getElementById('public-login-fields');
@@ -2119,7 +2119,7 @@
 
             // --- [INÍCIO] LÓGICA DO MODAL PÚBLICO ---
 
-            // 1. Abre o Modal Principal (o botão que não funcionava)
+            // 1. Abre o Modal Principal (o botão do header foi removido desta lógica)
             openOrcamentoModalBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
