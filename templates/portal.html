@@ -275,6 +275,11 @@
         #add-item-controls .btn {
             flex: 1;
         }
+        
+        /* [NOVO] Botão de Iniciar Orçamento no topo da seção */
+        #start-orcamento-btn {
+            margin-bottom: 30px;
+        }
 
         .product-list-container {
             max-height: 60vh;
@@ -634,6 +639,12 @@
             <!-- [INÍCIO] SEÇÃO NOVO ORÇAMENTO (TOTALMENTE REFEITA) -->
             <div class="content-view" id="novo-orcamento-view" style="display:none;">
                  <div class="content-section">
+                    
+                    <!-- [NOVO] Botão de Iniciar Novo Orçamento (para limpar o carrinho e começar) -->
+                    <button class="btn btn-primary" id="start-new-orcamento-btn" style="width: 100%;">
+                        <i class="fas fa-file-invoice"></i> Iniciar Novo Orçamento
+                    </button>
+
                     
                     <!-- 1. O Carrinho de Orçamento (Agora no topo) -->
                     <div id="orcamento-cart-container">
@@ -1043,7 +1054,8 @@
         // [ALTERADO] Carrega produtos para a lista E para os seletores do modal
         async function loadProductsAndCategories() {
             const productListContainer = document.getElementById('product-list');
-            productListContainer.innerHTML = '<p style="padding: 2rem; text-align: center;">Carregando produtos...</p>';
+            // [ALTERADO] Apenas mostra que está carregando, sem renderizar o catálogo ainda
+            productListContainer.innerHTML = '<p style="padding: 2rem; text-align: center;">Carregando dados do catálogo...</p>';
             
             // Reseta mapas
             productsMap = {};
@@ -1054,9 +1066,9 @@
                 if (!response.ok) throw new Error('Falha ao carregar produtos.');
                 
                 const products = await response.json();
-                productListContainer.innerHTML = '';
+                productListContainer.innerHTML = ''; // Limpa, já que não vamos renderizar aqui
                 
-                // Popula o Mapa de Categorias e a Lista de Produtos
+                // Popula o Mapa de Produtos e Categorias
                 products.forEach(p => {
                     productsMap[p.id] = p; // Salva no mapa de produtos
                     
@@ -1070,26 +1082,6 @@
                         categoryMap[cat][subcat] = [];
                     }
                     categoryMap[cat][subcat].push(p);
-
-                    // Adiciona ao HTML da lista de catálogo
-                    const item = document.createElement('div');
-                    item.className = 'product-item';
-                    item.innerHTML = `
-                        <div class="product-image-box">
-                            <img src="${p.imagem_principal_url || '/static/oceanologo.png'}" alt="${p.nome_produto}" onerror="this.src='/static/oceanologo.png';">
-                        </div>
-                        <div class="product-details">
-                            <h3>${p.nome_produto} (${p.codigo_produto || 'S/C'})</h3>
-                            <p>${p.descricao_curta || 'Sem descrição.'}</p>
-                        </div>
-                        <div class="product-actions">
-                            <input type="number" min="1" value="1" id="qty-${p.id}" placeholder="Qtd.">
-                            <button class="btn btn-primary" onclick="addCatalogItemToCart(${p.id})">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    `;
-                    productListContainer.appendChild(item);
                 });
                 
                 // [NOVO] Popula o <select> de categoria principal no modal
@@ -1104,8 +1096,60 @@
                 });
 
             } catch (error) {
-                productListContainer.innerHTML = '<p style="color:var(--status-rejected);">Erro ao carregar produtos.</p>';
+                // Se der erro, garante que a lista de produtos no catálogo seja limpa (se for aberto)
+                document.getElementById('product-list').innerHTML = '<p style="color:var(--status-rejected); padding: 2rem; text-align: center;">Erro ao carregar produtos do catálogo.</p>';
             }
+        }
+        
+        // [NOVO] Renderiza o catálogo de produtos no elemento #product-list
+        function renderProductCatalog() {
+            const productListContainer = document.getElementById('product-list');
+            productListContainer.innerHTML = ''; // Limpa antes de renderizar
+
+            const productIds = Object.keys(productsMap);
+
+            if (productIds.length === 0) {
+                 productListContainer.innerHTML = '<p style="padding: 2rem; text-align: center;">Nenhum produto encontrado no catálogo.</p>';
+                 return;
+            }
+
+            productIds.forEach(id => {
+                const p = productsMap[id];
+                const imageUrl = p.imagem_principal_url || `https://placehold.co/60x60/f8fafc/6b7280?text=S/I`;
+                
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.innerHTML = `
+                    <div class="product-image-box">
+                        <img src="${imageUrl}" alt="${p.nome_produto}" onerror="this.src='https://placehold.co/60x60/f8fafc/6b7280?text=S/I';">
+                    </div>
+                    <div class="product-details">
+                        <h3>${p.nome_produto} (${p.codigo_produto || 'S/C'})</h3>
+                        <p>${p.descricao_curta || 'Sem descrição.'}</p>
+                    </div>
+                    <div class="product-actions">
+                        <input type="number" min="1" value="1" id="qty-${p.id}" placeholder="Qtd.">
+                        <button class="btn btn-primary" onclick="addCatalogItemToCart(${p.id})">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                `;
+                productListContainer.appendChild(item);
+            });
+        }
+        
+        // [NOVO] Função para Iniciar Novo Orçamento (Botão no topo)
+        function startNewOrcamento() {
+            // 1. Limpa o carrinho atual
+            orcamentoCart = []; 
+            updateOrcamentoCartUI();
+            
+            // 2. Garante que as mensagens de status estão limpas
+            document.getElementById('orcamento-success-msg').style.display = 'none';
+            document.getElementById('orcamento-error-msg').style.display = 'none';
+            
+            // 3. Abre o modal de item personalizado para começar a adicionar
+            showCustomItemModal();
         }
 
         // [ALTERADO] Adiciona item do CATÁLOGO ao carrinho
@@ -1421,6 +1465,8 @@
             const showCustomItemModalBtn = document.getElementById('show-custom-item-modal-btn');
             const showCatalogBtn = document.getElementById('show-catalog-btn');
             const productListContainer = document.getElementById('product-list-container');
+            // [NOVO] Botão de Iniciar Novo Orçamento
+            const startNewOrcamentoBtn = document.getElementById('start-new-orcamento-btn');
             
             // --- [NOVO] Seletores Modal Item Personalizado ---
             const customItemModal = document.getElementById('custom-item-modal');
@@ -1488,6 +1534,9 @@
                 }
             });
 
+            // --- [NOVO] Listener do Botão "Iniciar Novo Orçamento" ---
+            startNewOrcamentoBtn.addEventListener('click', startNewOrcamento);
+
             // --- [NOVO] Listeners da página "Novo Orçamento" ---
             showCustomItemModalBtn.addEventListener('click', showCustomItemModal);
             
@@ -1498,6 +1547,11 @@
                 showCatalogBtn.innerHTML = isVisible 
                     ? '<i class="fas fa-book-open"></i> Adicionar Produto do Catálogo'
                     : '<i class="fas fa-eye-slash"></i> Esconder Catálogo';
+                
+                // [NOVO] Se estiver mostrando o catálogo, o renderizamos
+                if (!isVisible) {
+                    renderProductCatalog();
+                }
             });
 
             // --- [NOVO] Listeners do Modal de Item Personalizado ---
