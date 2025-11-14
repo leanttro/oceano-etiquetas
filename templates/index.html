@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oceano Etiquetas - Soluções Industriais</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- [NOVO] Adicionado Font Awesome para os ícones do modal -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
@@ -15,37 +18,42 @@
         :root {
             --primary: #1e3a8a;
             --dark: #0f172a;
-            --accent: #dc2626;
+            --accent: #2563eb; /* [ALTERADO] Unificado com o azul do portal */
+            --accent-hover: #1d4ed8;
             --text: #1f2937;
             --text-light: #6b7280;
+            --text-primary: #0f172a; /* [NOVO] Do portal */
+            --text-secondary: #64748b; /* [NOVO] Do portal */
             --border: #e5e7eb;
+            --background: #f8fafc; /* [ALTERADO] Unificado com o do portal */
             --bg-light: #f8fafc;
-            --light-blue: #3672d4; 
+            --surface: #ffffff; /* [NOVO] Do portal */
+            --light-blue: #3672d4;
+            
+            --status-pending: #facc15;
+            --status-confirmed: #10b981;
+            --status-rejected: #ef4444;
+            
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-heading: 'Montserrat', sans-serif;
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: var(--font-body);
             line-height: 1.6;
             color: var(--text);
-            background: #ffffff; 
+            background: var(--surface); /* [ALTERADO] Usando a var do portal */
             -webkit-font-smoothing: antialiased;
         }
         
-        /* --- ANIMAÇÃO DE FUNDO 'OCEANO' (Agora dentro do Hero) --- */
         #fish-background {
-            position: absolute; /* MUDADO de fixed para absolute */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2; /* Fica acima do overlay (1) e abaixo do conteúdo (3) */
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; 
             pointer-events: none; 
-            opacity: 0.5; /* MUDADO - Aumentado para 50% para ver no fundo escuro */
+            opacity: 0.5; 
         }
-        /* --- FIM DA ANIMAÇÃO --- */
 
-
-        /* Header Ultra Clean */
         .header {
             position: fixed;
             width: 100%;
@@ -98,7 +106,6 @@
             color: var(--primary);
         }
 
-        /* --- Estilos do Dropdown (Desktop) --- */
         .nav-item {
             position: relative;
         }
@@ -155,7 +162,6 @@
             color: var(--primary);
         }
 
-        /* --- [NOVO] Estilos para o Sub-Dropdown (Nível 2) --- */
         .dropdown-menu .dropdown-submenu-item {
             position: relative;
         }
@@ -164,7 +170,6 @@
             justify-content: space-between;
             align-items: center;
         }
-        /* Seta para a direita */
         .dropdown-menu .dropdown-submenu-item > a .submenu-arrow {
             transform: rotate(-90deg);
             width: 14px;
@@ -173,7 +178,7 @@
         
         .dropdown-submenu {
             position: absolute;
-            top: -0.5rem; /* Alinha com o item pai */
+            top: -0.5rem; 
             left: 100%;
             min-width: 240px;
             background: white;
@@ -196,14 +201,13 @@
         }
         
         .dropdown-submenu a {
-            font-weight: 400; /* Produtos com peso menor */
+            font-weight: 400; 
             color: var(--text-light);
         }
         .dropdown-submenu a:hover {
             background: var(--bg-light);
             color: var(--primary);
         }
-        /* --- Fim Estilos Sub-Dropdown --- */
 
 
         .nav-cta {
@@ -215,6 +219,7 @@
             font-weight: 600;
             text-decoration: none;
             transition: background 0.2s;
+            cursor: pointer; 
         }
 
         .nav-cta:hover {
@@ -230,7 +235,6 @@
         .nav-cta .full-text { display: inline; }
         .nav-cta .short-text { display: none; }
 
-        /* Botão Menu Mobile */
         .nav-toggle {
             display: none;
             background: none;
@@ -263,12 +267,10 @@
         .hamburger::before { top: -7px; }
         .hamburger::after { bottom: -7px; }
 
-        /* Estado Ativo (X) do Hamburger */
         .nav-toggle.active .hamburger { background: transparent; }
         .nav-toggle.active .hamburger::before { transform: translateY(7px) rotate(45deg); }
         .nav-toggle.active .hamburger::after { transform: translateY(-7px) rotate(-45deg); }
 
-        /* Painel do Menu Mobile */
         .mobile-nav {
             display: flex;
             flex-direction: column;
@@ -284,7 +286,7 @@
             text-align: center;
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
-            overflow-y: auto; /* Permite rolar o menu se for muito grande */
+            overflow-y: auto; 
         }
 
         .mobile-nav.active {
@@ -299,7 +301,6 @@
             padding: 1rem;
         }
 
-        /* --- Estilos Dropdown (Mobile) --- */
         .mobile-nav-item {
             border-bottom: 1px solid var(--border);
         }
@@ -337,9 +338,9 @@
         }
         
         .mobile-sub-menu.active {
-            max-height: 500px; /* Aumentado para aninhar */
+            max-height: 500px; 
             padding-bottom: 1rem;
-            overflow-y: auto; /* Permite rolar sub-itens */
+            overflow-y: auto; 
         }
         
         .mobile-sub-menu a {
@@ -350,19 +351,17 @@
             padding: 0.75rem 0;
         }
         
-        /* [NOVO] Estilos para o Nível 2 do Menu Mobile */
         .mobile-sub-menu .mobile-nav-toggle-sub {
             padding: 0.75rem 0;
         }
         .mobile-sub-menu .mobile-nav-toggle-sub span {
-            font-size: 1.2rem; /* Fonte menor para subcategoria */
+            font-size: 1.2rem; 
             font-weight: 500;
         }
         .mobile-sub-menu .mobile-sub-menu a {
-            font-size: 1rem; /* Fonte menor para produto */
-            padding: 0.5rem 0 0.5rem 1rem; /* Mais indentação */
+            font-size: 1rem; 
+            padding: 0.5rem 0 0.5rem 1rem; 
         }
-
 
         .mobile-nav-link { 
             display: block;
@@ -373,7 +372,6 @@
             padding: 1rem 0;
             border-bottom: 1px solid var(--border);
         }
-        /* --- Fim Estilos Mobile Dropdown --- */
 
 
         /* Hero Minimalista (Slider) */
@@ -383,7 +381,7 @@
             background: var(--dark); 
             position: relative;
             overflow: hidden;
-            z-index: 1; /* Hero fica acima do body, mas abaixo do header */
+            z-index: 1; 
         }
 
         .hero::before {
@@ -408,7 +406,6 @@
             opacity: 1; 
         }
 
-        /* Overlay escuro para garantir legibilidade */
         .hero-slide::before {
             content: '';
             position: absolute;
@@ -417,7 +414,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)); 
-            z-index: 1; /* MUDADO - Fica atrás dos peixes (2) e do conteúdo (3) */
+            z-index: 1; 
         }
 
         .hero-content {
@@ -425,7 +422,7 @@
             margin: 0 auto;
             padding: 0 3rem;
             position: relative;
-            z-index: 3; /* MUDADO - Fica na frente dos peixes (2) */
+            z-index: 3; 
         }
 
         .hero-label {
@@ -460,47 +457,46 @@
             gap: 1rem;
         }
 
-        .btn-primary {
-            padding: 1rem 2rem;
-            background: white;
-            color: var(--dark);
-            border: none;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
+        .btn { 
+            padding: 0.8rem 1.5rem; border: none; border-radius: 8px; 
+            font-weight: 700; cursor: pointer; transition: all 0.3s; 
+            font-size: 0.95rem; text-decoration: none; display: inline-block;
         }
-
-        .btn-primary:hover {
+        .btn-primary { 
+            background-color: var(--accent); color: #FFF; 
+            border: 1px solid var(--accent);
+        }
+        .btn-primary:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); }
+        .btn-primary:disabled { background-color: var(--text-light); border-color: var(--text-light); cursor: not-allowed; }
+        
+        .btn-secondary { 
+            background-color: var(--surface); color: var(--text-secondary); 
+            border: 1px solid var(--border); 
+        }
+        .btn-secondary:hover { background-color: var(--background); color: var(--text-primary); }
+        
+        .btn-hero-primary {
+             background: white; color: var(--dark); border: 1px solid white;
+        }
+        .btn-hero-primary:hover {
             background: rgba(255, 255, 255, 0.9);
         }
-
-        .btn-secondary {
-            padding: 1rem 2rem;
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
+        
+        .btn-hero-secondary {
+            background: transparent; color: white; border: 1px solid rgba(255, 255, 255, 0.3);
         }
-
-        .btn-secondary:hover {
+        .btn-hero-secondary:hover {
             border-color: white;
             background: rgba(255, 255, 255, 0.05);
         }
+
 
         /* Stats Section */
         .stats {
             background: var(--light-blue); 
             border-bottom: 1px solid var(--border); 
             position: relative; 
-            z-index: 1; /* z-index não é mais necessário aqui, mas mantido */
+            z-index: 1; 
         }
 
         .stats-container {
@@ -531,7 +527,7 @@
 
         /* Services Section */
         .services {
-            padding: 4rem 3rem 4rem; /* MUDADO - padding-bottom de 8rem para 4rem */
+            padding: 4rem 3rem 4rem; 
             background: white; 
             position: relative; 
             z-index: 1; 
@@ -546,14 +542,12 @@
             margin-bottom: 5rem;
         }
         
-        /* ADICIONADO - Ajuste específico para o header da seção de produtos */
         .products .section-header {
             margin-bottom: 2.5rem; 
-            /* ADICIONADO - Flexbox para alinhar título e botões */
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Para quebrar em telas menores */
+            flex-wrap: wrap; 
             gap: 1rem;
         }
 
@@ -615,13 +609,12 @@
 
         /* Products Section */
         .products {
-            padding: 4rem 3rem 4rem; /* MUDADO - padding-bottom de 8rem para 4rem */
+            padding: 4rem 3rem 4rem; 
             background: var(--bg-light); 
             position: relative; 
             z-index: 1; 
         }
         
-        /* --- ADICIONADO: Estilos dos Controles do Carrossel --- */
         .carousel-controls {
             display: flex;
             gap: 0.5rem;
@@ -661,52 +654,44 @@
             border-color: var(--border);
             box-shadow: none;
         }
-        /* --- Fim Estilos Controles --- */
-
 
         .products-grid {
-            /* display: grid; */ /* MUDADO */
-            /* grid-template-columns: repeat(3, 1fr); */ /* MUDADO */
-            display: flex; /* ADICIONADO */
-            overflow-x: auto; /* ADICIONADO */
-            padding-bottom: 1.5rem; /* ADICIONADO - Espaço para a scrollbar */
+            display: flex; 
+            overflow-x: auto; 
+            padding-bottom: 1.5rem; 
             gap: 2rem;
-            scroll-behavior: smooth; /* ADICIONADO - Necessário para o JS */
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-            /* ADICIONADO - Altura mínima para o grid vazio não colapsar */
+            scroll-behavior: smooth; 
+            -ms-overflow-style: none;
+            scrollbar-width: none;  
             min-height: 150px; 
-            align-items: center; /* Centraliza a msg de erro/loading */
+            align-items: center; 
         }
 
-        /* Estilização da Scrollbar para o Carrossel (ADICIONADO) */
         .products-grid::-webkit-scrollbar {
-            height: 8px; /* Altura da scrollbar */
-            /* display: none; */ /* Esconde a scrollbar no Chrome/Safari */
+            height: 8px; 
         }
         
         .products-grid::-webkit-scrollbar-track {
-            background: var(--border); /* Cor do trilho */
+            background: var(--border); 
             border-radius: 4px;
         }
         
         .products-grid::-webkit-scrollbar-thumb {
-            background-color: var(--text-light); /* Cor da barra */
+            background-color: var(--text-light); 
             border-radius: 4px;
             transition: background-color 0.2s;
         }
         
         .products-grid::-webkit-scrollbar-thumb:hover {
-            background-color: var(--primary); /* Cor no hover */
+            background-color: var(--primary); 
         }
-        /* Fim da Estilização da Scrollbar */
 
         .product-card {
             background: white;
             border: 1px solid var(--border);
             overflow: hidden;
             transition: border-color 0.3s, box-shadow 0.3s;
-            flex: 0 0 340px; /* ADICIONADO - Largura fixa para os cards do carrossel */
+            flex: 0 0 340px; 
         }
 
         .product-card:hover {
@@ -774,7 +759,7 @@
 
         /* CTA Section */
         .cta-section {
-            padding: 3rem; /* MUDADO - padding top/bottom de 2rem para 3rem (laterais já eram 3rem) */
+            padding: 3rem; 
             background: var(--dark); 
             text-align: center;
             position: relative; 
@@ -878,93 +863,265 @@
             color: var(--text-light);
             font-size: 0.85rem;
         }
+        
+        /* --- [INÍCIO] ESTILOS DOS MODAIS (Copiado do portal.html) --- */
+        
+        /* Inputs e botões (do portal.html) */
+        .input-group { margin-bottom: 1.5rem; text-align: left; }
+        .input-group label { display: block; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .input-group input,
+        .modal-form select,
+        .modal-form input,
+        .modal-form textarea { 
+            width: 100%; padding: 0.8rem; border-radius: 8px; 
+            border: 1px solid var(--border); 
+            background-color: var(--background); 
+            color: var(--text-primary); font-family: var(--font-body); 
+            font-size: 0.95rem;
+        }
+        .input-group input:focus,
+        .modal-form select:focus,
+        .modal-form input:focus,
+        .modal-form textarea:focus { 
+            border-color: var(--accent); outline: none; 
+        }
+        .error-msg { color: var(--status-rejected); margin-top: 1rem; display: none; }
+        .success-msg { color: var(--status-confirmed); margin-top: 1rem; display: none; }
+
+        /* Estilos do Carrinho (do portal.html) */
+        #orcamento-cart-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        #cart-items-list .cart-item {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: top;
+        }
+        #cart-items-list .cart-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        #cart-items-list .cart-item-details {
+            flex-grow: 1;
+        }
+        #cart-items-list .cart-item-details strong { 
+            color: var(--accent); 
+            font-size: 1.05rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        #cart-items-list .cart-item-details pre {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: pre-wrap; 
+            line-height: 1.5;
+        }
+        .cart-item-remove-btn {
+            background: none; border: none;
+            color: var(--status-rejected);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 15px;
+        }
+
+        #add-item-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 30px;
+        }
+        #add-item-controls .btn {
+            flex: 1;
+        }
+        
+        /* Lista de Produtos (do portal.html) */
+        .product-list-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+        }
+        .product-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+        .product-item:last-child { border-bottom: none; }
+        .product-image-box {
+            flex-shrink: 0; width: 60px; height: 60px; border-radius: 4px;
+            overflow: hidden; background-color: var(--background);
+        }
+        .product-image-box img { width: 100%; height: 100%; object-fit: cover; }
+        .product-details { flex-grow: 1; }
+        .product-details h3 { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 5px; }
+        .product-details p { font-size: 0.85rem; color: var(--text-secondary); }
+        .product-actions { display: flex; align-items: center; gap: 10px; }
+        .product-actions input[type="number"] {
+            width: 70px; padding: 5px 8px; text-align: center;
+            border: 1px solid var(--border); border-radius: 4px;
+            background: var(--background); color: var(--text-primary);
+        }
+        
+        /* Modal (do portal.html) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            align-items: flex-start; 
+            justify-content: center;
+            overflow-y: auto; 
+            padding: 5vh 0; 
+        }
+        .modal-box {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            z-index: 10001;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 {
+            font-family: var(--font-heading);
+            color: var(--text-primary);
+        }
+        .modal-close-btn {
+            background: none; border: none; font-size: 1.5rem;
+            color: var(--text-secondary); cursor: pointer;
+        }
+        .modal-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        /* Checkbox "Já é cadastrado?" */
+        .registration-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--background);
+            border-radius: 8px;
+        }
+        .registration-check label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .registration-check input[type="checkbox"] {
+             width: 1.3em;
+             height: 1.3em;
+             accent-color: var(--accent);
+        }
+
+        #public-orcamento-modal .modal-box {
+            max-width: 900px; /* Modal maior para o formulário público */
+        }
+        
+        /* Modal de Alerta */
+        #custom-dialog-modal {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 10001;
+            align-items: center; 
+            justify-content: center;
+            padding: 0; 
+        }
+        
+        /* --- [FIM] ESTILOS DOS MODAIS --- */
+
 
         /* Responsive */
         @media (max-width: 1024px) {
-            /* Ajustes de espaçamento para mobile */
             .nav { padding: 0 1.5rem; }
             .hero-content { padding: 0 1.5rem; }
             .stats-container { padding: 2rem 1.5rem; } 
             .services { padding: 3rem 1.5rem 6rem; } 
-            .products { padding: 3rem 1.5rem 3rem; } /* MUDADO - padding-bottom de 6rem para 3rem */
+            .products { padding: 3rem 1.5rem 3rem; } 
             .cta-section { padding: 3rem 1.5rem 3rem; } 
             .footer-content { padding: 5rem 1.5rem 3rem; }
 
-            /* Esconde links desktop, mostra botão mobile */
-            .nav-links {
-                display: none;
-            }
-            .nav-toggle {
-                display: block;
-            }
+            .nav-links { display: none; }
+            .nav-toggle { display: block; }
             
-            /* Ajusta o botão CTA para mobile */
-            .nav-cta {
-                padding: 0.6rem 1rem; 
-            }
+            .nav-cta { padding: 0.6rem 1rem; }
             .nav-cta .full-text { display: none; }
             .nav-cta .short-text { display: inline; }
 
-            .hero h1 {
-                font-size: 2.5rem;
-                letter-spacing: -1px;
-            }
-            
-            .hero p {
-                font-size: 1.1rem;
-            }
+            .hero h1 { font-size: 2.5rem; letter-spacing: -1px; }
+            .hero p { font-size: 1.1rem; }
+            .services-grid { grid-template-columns: 1fr; }
 
-            .services-grid { /* MUDADO - Separado do .products-grid */
-                grid-template-columns: 1fr;
-            }
-
-            .products-grid {
-                 /* A regra grid-template-columns: 1fr; foi REMOVIDA daqui para manter o carrossel */
-            }
-            
-            /* ADICIONADO - Ajuste dos botões do carrossel no mobile */
             .products .section-header {
                 flex-direction: column;
-                align-items: flex-start; /* MUDADO - de center de volta para flex-start */
+                align-items: flex-start; 
                 gap: 1.5rem;
             }
             .carousel-controls {
                 width: 100%;
-                justify-content: center; /* MUDADO - de flex-end para center */
+                justify-content: center; 
             }
 
-
-            .service-card {
-                padding: 2rem;
-            }
-
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 2rem;
-            }
-            
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-            }
-            
+            .service-card { padding: 2rem; }
+            .stats-container { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+            .stat-number { font-size: 2rem; }
+            .footer-content { grid-template-columns: 1fr; gap: 3rem; }
         }
         
         @media (max-width: 767px) {
-            .hero-buttons {
-                flex-direction: column;
-            }
-            .btn-primary, .btn-secondary {
-                text-align: center;
-            }
-
-            .product-card {
-                flex: 0 0 300px; /* ADICIONADO - Cards um pouco menores no mobile */
-            }
+            .hero-buttons { flex-direction: column; }
+            .btn-primary, .btn-secondary { text-align: center; }
+            .product-card { flex: 0 0 300px; }
+            
+            /* [NOVO] Responsividade do Modal */
+            #add-item-controls { flex-direction: column; }
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -1081,7 +1238,8 @@
             </ul>
             
             <div class="nav-controls"> 
-                <a href="https://wa.me/5511997223828" class="nav-cta">
+                <!-- [NOVO] Botão agora abre o modal -->
+                <a class="nav-cta open-orcamento-modal-btn">
                     <span class="full-text">Solicitar Orçamento</span>
                     <span class="short-text">Orçamento</span>
                 </a>
@@ -1203,8 +1361,9 @@
                 <h1>Da Impressão à Produção: Velocidade e Precisão Industrial.</h1>
                 <p>Nossa tecnologia de impressão digital garante rolos de etiquetas com acabamento perfeito e prontos para sua linha de montagem.</p>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
-                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                    <!-- [NOVO] Botão agora abre o modal -->
+                    <a class="btn btn-hero-primary open-orcamento-modal-btn">Falar com Especialista</a>
+                    <a href="#produtos" class="btn btn-hero-secondary">Ver Produtos</a>
                 </div>
             </div>
         </div>
@@ -1215,8 +1374,8 @@
                 <h1>A Arte da Serigrafia: Durabilidade que Supera Desafios.</h1>
                 <p>Especialistas em impressão serigráfica de alta performance para painéis, brindes e etiquetas que resistem ao tempo.</p>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
-                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                    <a class="btn btn-hero-primary open-orcamento-modal-btn">Falar com Especialista</a>
+                    <a href="#produtos" class="btn btn-hero-secondary">Ver Produtos</a>
                 </div>
             </div>
         </div>
@@ -1227,8 +1386,8 @@
                 <h1>Mais que Brindes: A Identidade da Sua Marca.</h1>
                 <p>De mouse pads a sacolas personalizadas, produzimos brindes corporativos que fortalecem sua presença no mercado.</p>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
-                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                    <a class="btn btn-hero-primary open-orcamento-modal-btn">Falar com Especialista</a>
+                    <a href="#produtos" class="btn btn-hero-secondary">Ver Produtos</a>
                 </div>
             </div>
         </div>
@@ -1239,8 +1398,8 @@
                 <h1>Etiquetas de Alta Performance para Ambientes Extremos.</h1>
                 <p>Soluções em PS transparente e policarbonato que garantem identificação clara e duradoura para seus equipamentos.</p>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
-                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                    <a class="btn btn-hero-primary open-orcamento-modal-btn">Falar com Especialista</a>
+                    <a href="#produtos" class="btn btn-hero-secondary">Ver Produtos</a>
                 </div>
             </div>
         </div>
@@ -1251,8 +1410,8 @@
                 <h1>Tecnologia de Ponta para Soluções Industriais.</h1>
                 <p>Nosso parque gráfico combina impressão digital e serigrafia para entregar precisão absoluta em cada produto.</p>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
-                    <a href="#produtos" class="btn-secondary">Ver Produtos</a>
+                    <a class="btn btn-hero-primary open-orcamento-modal-btn">Falar com Especialista</a>
+                    <a href="#produtos" class="btn btn-hero-secondary">Ver Produtos</a>
                 </div>
             </div>
         </div>
@@ -1280,6 +1439,30 @@
         </div>
     </section>
 
+    <!-- [INÍCIO SEÇÃO REORDENADA] --- Seção Produtos agora vem PRIMEIRO -->
+    <section id="produtos" class="products">
+        <div class="container">
+            <div class="section-header">
+                <div> <div class="section-label">Catálogo</div>
+                    <h2 class="section-title">Produtos mais comprados</h2>
+                </div>
+                <div class="carousel-controls">
+                    <button id="scroll-prev" class="carousel-btn" aria-label="Anterior">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button id="scroll-next" class="carousel-btn" aria-label="Próximo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="products-grid">
+                <!-- Produtos são carregados aqui via JS -->
+            </div>
+        </div>
+    </section>
+    <!-- [FIM SEÇÃO REORDENADA] -->
+    
+    <!-- [INÍCIO SEÇÃO REORDENADA] --- Seção Serviços agora vem DEPOIS -->
     <section id="servicos" class="services">
         <div class="container">
             <div class="section-header">
@@ -1310,32 +1493,14 @@
             </div>
         </div>
     </section>
-
-    <section id="produtos" class="products">
-        <div class="container">
-            <div class="section-header">
-                <div> <div class="section-label">Catálogo</div>
-                    <h2 class="section-title">Produtos mais comprados</h2>
-                </div>
-                <div class="carousel-controls">
-                    <button id="scroll-prev" class="carousel-btn" aria-label="Anterior">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </button>
-                    <button id="scroll-next" class="carousel-btn" aria-label="Próximo">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="products-grid">
-            </div>
-        </div>
-    </section>
+    <!-- [FIM SEÇÃO REORDENADA] -->
 
     <section class="cta-section">
         <div class="container">
             <h2>Pronto para elevar o padrão de qualidade?</h2>
             <p>Entre em contato com nossa equipe técnica e receba uma consultoria especializada para seu projeto.</p>
-            <a href="https://wa.me/5511997223828" class="btn-primary">Falar com Especialista</a>
+            <!-- [NOVO] Botão agora abre o modal -->
+            <a class="btn btn-primary open-orcamento-modal-btn" style="background: white; color: var(--dark);">Falar com Especialista</a>
         </div>
     </section>
 
@@ -1372,7 +1537,7 @@
                 <a href="#sobre">Sobre Nós</a>
                 <a href="#servicos">Qualidade</a>
                 <a href="#contato">Contato</a>
-                <a href="https://wa.me/5511997223828">Orçamento</a>
+                <a href="#" class="open-orcamento-modal-btn">Orçamento</a> <!-- [NOVO] Link abre modal -->
             </div>
         </div>
 
@@ -1381,287 +1546,731 @@
         </div>
     </footer>
 
-    <script>
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    // Fecha o menu mobile (se estiver aberto) antes de rolar
-                    if (mobileNav && mobileNav.classList.contains('active')) {
-                        navToggle.classList.remove('active');
-                        mobileNav.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
+    <!-- [INÍCIO] MODAIS DE ORÇAMENTO (Copiados do portal.html) -->
 
-        // Lógica do Menu Mobile
-        const navToggle = document.querySelector('.nav-toggle');
-        const mobileNav = document.querySelector('.mobile-nav');
+    <!-- Modal de Alerta Customizado -->
+    <div id="custom-dialog-modal" class="modal-overlay">
+        <div style="background: var(--surface); padding: 2rem; border-radius: 8px; max-width: 400px; text-align: center;">
+            <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
+            <div id="dialog-buttons" style="display: flex; justify-content: center; gap: 1rem;">
+                <button type="button" class="btn btn-primary" id="dialog-ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
 
-        if (navToggle && mobileNav) {
-            navToggle.addEventListener('click', () => {
-                navToggle.classList.toggle('active');
-                mobileNav.classList.toggle('active');
+    <!-- Modal de Item Personalizado (Aninhado) -->
+    <div id="custom-item-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Adicionar Item Personalizado</h2>
+                <button class="modal-close-btn" id="custom-item-modal-close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <form class="modal-form" id="custom-item-form">
+                <div class="form-group">
+                    <label for="custom-item-categoria">Categoria do Produto</label>
+                    <select id="custom-item-categoria" required>
+                        <option value="">-- Selecione a Categoria --</option>
+                        <option value="Adesivos">Adesivos</option>
+                        <option value="Lacres">Lacres</option>
+                        <option value="Brindes">Brindes</option>
+                        <option value="Impressos">Impressos</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Campos Condicionais: Adesivos/Lacres -->
+                <div id="fields-adesivo-lacre" style="display: none; display: grid; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="custom-item-material">Material (Ex: Vinil, BOPP, Couchê, Casca de Ovo)</label>
+                        <input type="text" id="custom-item-material" placeholder="Vinil Branco">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="custom-item-medida">Medida (Ex: 10x5cm)</label>
+                            <input type="text" id="custom-item-medida" placeholder="10cm x 5cm">
+                        </div>
+                        <div class="form-group">
+                            <label for="custom-item-cores-adesivo">Nº de Cores (Ex: 4x0)</label>
+                            <input type="text" id="custom-item-cores-adesivo" placeholder="4x0 (Colorido Frente)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Condicionais: Brindes -->
+                <div id="fields-brinde" style="display: none; display: grid; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="custom-item-tipo-brinde">Tipo de Brinde (Ex: Mousepad, Chaveiro)</label>
+                        <input type="text" id="custom-item-tipo-brinde" placeholder="Mousepad de Neoprene">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="custom-item-impressao-brinde">Tipo de Impressão</label>
+                            <input type="text" id="custom-item-impressao-brinde" placeholder="Sublimação">
+                        </div>
+                        <div class="form-group">
+                            <label for="custom-item-cores-brinde">Nº de Cores</label>
+                            <input type="text" id="custom-item-cores-brinde" placeholder="Colorido Total">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Comuns -->
+                <div class="form-grid">
+                     <div class="form-group">
+                        <label for="custom-item-quantidade">Quantidade *</label>
+                        <input type="number" id="custom-item-quantidade" placeholder="Ex: 1000" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-item-prazo">Prazo (Para quando precisa?)</label>
+                        <input type="date" id="custom-item-prazo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="custom-item-detalhes">Detalhes Adicionais (Obrigatório se "Outro")</label>
+                    <textarea id="custom-item-detalhes" rows="3" placeholder="Ex: Preciso de corte especial, acabamento fosco..."></textarea>
+                </div>
+            </form>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="custom-item-modal-cancel-btn">Cancelar</button>
+                <button class="btn btn-primary" id="add-custom-item-to-cart-btn">Adicionar ao Orçamento</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Principal de Orçamento Público -->
+    <div id="public-orcamento-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Solicitar Orçamento</h2>
+                <button class="modal-close-btn" id="public-orcamento-modal-close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <!-- FORMULÁRIO DE CONTATO INICIAL -->
+            <form class="modal-form" id="public-orcamento-contact-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="public-nome">Seu Nome / Nome da Empresa *</label>
+                        <input type="text" id="public-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="public-email">Seu Melhor E-mail *</label>
+                        <input type="email" id="public-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="public-telefone">Telefone / WhatsApp *</label>
+                        <input type="tel" id="public-telefone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="public-cnpj">CNPJ / CPF</label>
+                        <input type="text" id="public-cnpj">
+                    </div>
+                </div>
                 
-                // Trava o scroll da página quando o menu está aberto
-                if (mobileNav.classList.contains('active')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            });
+                <div class="registration-check">
+                     <input type="checkbox" id="public-is-cadastrado">
+                     <label for="public-is-cadastrado">Já sou cliente cadastrado e tenho código de acesso.</label>
+                </div>
 
-            // Fecha o menu principal ao clicar em um link SIMPLES (como Contato)
-            document.querySelectorAll('.mobile-nav-link').forEach(link => {
-                link.addEventListener('click', (e) => { 
-                    if (!link.getAttribute('href').startsWith('#')) {
-                        navToggle.classList.remove('active');
-                        mobileNav.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                });
-            });
+                <div id="public-login-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="public-codigo">Código de Acesso (Se já for cliente)</label>
+                        <input type="password" id="public-codigo">
+                    </div>
+                </div>
+                
+                <p class="error-msg" id="public-orcamento-error-msg"></p>
+            </form>
+            
+            <!-- 2. Carrinho de Itens (Escondido até o contato ser preenchido) -->
+            <div id="public-orcamento-step-2" style="display: none;">
+                 <h3 style="font-family: var(--font-heading); font-size: 1.2rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">Itens da Solicitação</h3>
 
-            // --- LÓGICA DO SUB-MENU MOBILE (Sanfona/Accordion) ---
-            // Esta lógica agora suporta múltiplos níveis
-            document.querySelectorAll('.mobile-nav-toggle-sub').forEach(toggle => {
-                toggle.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Impede o clique de fechar o menu pai
+                <div id="public-orcamento-cart-container" style="margin-top: 1rem;">
+                    <div id="public-cart-items-list" style="margin: 1.5rem 0;">
+                        <p id="public-cart-empty-msg" style="color: var(--text-secondary);">Nenhum item adicionado.</p>
+                    </div>
                     
-                    // Fecha outros toggles no *mesmo nível*
-                    const parentElement = toggle.parentElement; // .mobile-nav-item
-                    const siblings = parentElement.parentElement.children; // Coleção de .mobile-nav-item
-                    
-                    for (let item of siblings) {
-                        if (item !== parentElement && item.classList.contains('mobile-nav-item')) {
-                            const otherToggle = item.querySelector('.mobile-nav-toggle-sub');
-                            const otherSubMenu = item.querySelector('.mobile-sub-menu');
-                            
-                            if (otherToggle && otherToggle.classList.contains('active')) {
-                                otherToggle.classList.remove('active');
-                                otherSubMenu.classList.remove('active');
-                                otherSubMenu.style.maxHeight = '0px';
-                            }
-                        }
-                    }
+                    <div id="public-add-item-controls" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                         <button type="button" class="btn btn-primary" id="public-show-custom-item-modal-btn">
+                            <i class="fas fa-pencil-alt"></i> Item Personalizado
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="public-show-catalog-btn">
+                            <i class="fas fa-book-open"></i> Produto do Catálogo
+                        </button>
+                    </div>
 
-                    // Abre/fecha o toggle ATUAL
-                    toggle.classList.toggle('active');
-                    const subMenu = toggle.nextElementSibling; // .mobile-sub-menu
-                    subMenu.classList.toggle('active');
+                    <!-- Lista de Produtos do Catálogo Público (Escondida) -->
+                    <div class="product-list-container" id="public-product-list-container" style="display: none;">
+                        <div id="public-product-list">
+                            <p style="padding: 2rem; text-align: center;">Carregando produtos...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <p class="success-msg" id="public-orcamento-success-msg" style="margin: 0;"></p>
+                    <button type="button" class="btn btn-primary" id="public-submit-orcamento-btn">
+                         <i class="fas fa-paper-plane"></i> Finalizar e Enviar Orçamento
+                    </button>
+                </div>
+            </div>
 
-                    if (subMenu.classList.contains('active')) {
-                        subMenu.style.maxHeight = subMenu.scrollHeight + 'px';
-                    } else {
-                        subMenu.style.maxHeight = '0px';
-                    }
-                    
-                    // [NOVO] Reajusta a altura do menu pai (se existir)
-                    const parentSubMenu = toggle.closest('.mobile-sub-menu.active');
-                    if (parentSubMenu) {
-                        // Recalcula a altura do pai somando a altura de seus filhos
-                        let totalHeight = 0;
-                        parentSubMenu.querySelectorAll(':scope > .mobile-nav-item').forEach(childItem => {
-                            totalHeight += childItem.offsetHeight;
-                        });
-                        parentSubMenu.style.maxHeight = totalHeight + 'px';
-                    }
-                });
-            });
+            <!-- Botões de Navegação do Formulário -->
+            <div class="modal-footer" id="public-orcamento-step-1-footer" style="justify-content: flex-end;">
+                 <button type="button" class="btn btn-primary" id="public-next-step-btn">
+                     Próximo: Adicionar Itens <i class="fas fa-arrow-right"></i>
+                 </button>
+            </div>
 
+        </div>
+    </div>
+    <!-- [FIM] MODAIS -->
 
-            // Fecha o menu principal ao clicar em um link de SUB-MENU (agora de produto)
-            document.querySelectorAll('.mobile-sub-menu a').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    // Não para o clique, apenas fecha o menu
-                    if (!link.getAttribute('href').startsWith('#')) {
-                        navToggle.classList.remove('active');
-                        mobileNav.classList.remove('active');
-                        document.body.style.overflow = '';
-                        // Reseta todos os submenus abertos
-                        document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => {
-                            toggle.classList.remove('active');
-                        });
-                        document.querySelectorAll('.mobile-sub-menu.active').forEach(subMenu => {
-                            subMenu.classList.remove('active');
-                            subMenu.style.maxHeight = '0px';
-                        });
-                    }
-                });
-            });
+    <script>
+        // URLs da API (do app.py)
+        // [NOVO] Adicionado a API pública de orçamento
+        const API_CLIENT_URL = '/api/oceano/cliente';
+        const API_PUBLIC_URL = '/api/oceano/public'; // Novo endpoint para orçamento público
+        const API_PRODUTOS_URL = '/api/produtos'; 
+        
+        // Variáveis globais do Portal do Cliente
+        let CLIENT_TOKEN = null;
+        let CLIENT_ID = null;
+        let CLIENT_NAME = null;
+        
+        // Carrinho do Portal do Cliente (LOGADO)
+        let orcamentoCart = []; 
+        
+        // [NOVO] Carrinho do Orçamento Público (NÃO LOGADO)
+        let orcamentoCartPublico = []; 
+
+        let productsMap = {};
+        let categoryMap = {}; // Não mais usado na home, mas mantido para referência.
+
+        // --- Utils ---
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${CLIENT_TOKEN}`
+            };
+        }
+        
+        function getPublicAuthHeaders(token) {
+             return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
         }
 
-        // --- LÓGICA DO HERO SLIDER E ANIMAÇÃO DE FUNDO ---
+        function formatCurrency(value) {
+            if (value === null || value === undefined) return '-';
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('pt-BR', options);
+        }
+        function getStatusClass(status) {
+            if (!status) return 'status-default';
+            const statusKey = status.replace(/\s/g, '-').replace(/[()]/g, '');
+            return `status-${statusKey}`;
+        }
+        
+        // Exibe o modal de alerta customizado
+        function showCustomAlert(message) {
+            const customDialogModal = document.getElementById('custom-dialog-modal');
+            const dialogMessage = document.getElementById('dialog-message');
+            dialogMessage.textContent = message;
+            customDialogModal.style.display = 'flex';
+        }
+
+        // --- ORÇAMENTO PÚBLICO (MODAL/CARRINHO) ---
+        
+        // [NOVO] Função para mostrar o modal principal
+        function showPublicOrcamentoModal() {
+            // Garante que a etapa 1 está visível e a 2 escondida
+            document.getElementById('public-orcamento-contact-form').style.display = 'grid';
+            document.getElementById('public-orcamento-step-1-footer').style.display = 'flex';
+            document.getElementById('public-orcamento-step-2').style.display = 'none';
+            document.getElementById('public-orcamento-modal').style.display = 'flex';
+            document.getElementById('public-orcamento-error-msg').style.display = 'none';
+            document.getElementById('public-orcamento-success-msg').style.display = 'none';
+
+            // Carrega produtos no background (se já não estiverem)
+            if (Object.keys(productsMap).length === 0) {
+                 loadProductsAndCategories();
+            }
+
+            // Garante que o carrinho está vazio no início de um novo orçamento público
+            orcamentoCartPublico = [];
+            updatePublicOrcamentoCartUI();
+        }
+        
+        // [NOVO] Função para fechar o modal principal
+        function closePublicOrcamentoModal() {
+            document.getElementById('public-orcamento-modal').style.display = 'none';
+            document.getElementById('public-orcamento-contact-form').reset();
+            document.getElementById('public-login-fields').style.display = 'none';
+            // Reseta o carrinho público (em caso de cancelamento)
+            orcamentoCartPublico = [];
+        }
+
+        // [NOVO] Função de próxima etapa (valida contato e passa para o carrinho)
+        async function nextPublicOrcamentoStep() {
+            const form = document.getElementById('public-orcamento-contact-form');
+            const errorMsg = document.getElementById('public-orcamento-error-msg');
+            
+            if (!form.checkValidity()) {
+                errorMsg.textContent = 'Por favor, preencha todos os campos obrigatórios (Nome, E-mail, Telefone).';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            errorMsg.style.display = 'none';
+
+            // Verifica se é cliente cadastrado e se o código foi preenchido
+            const isCadastrado = document.getElementById('public-is-cadastrado').checked;
+            const codigo = document.getElementById('public-codigo').value.trim();
+
+            if (isCadastrado && codigo === '') {
+                 errorMsg.textContent = 'Por favor, insira seu Código de Acesso.';
+                 errorMsg.style.display = 'block';
+                 return;
+            }
+
+            // O form de contato será o payload para a API na etapa de envio final.
+            // Aqui, apenas avançamos a tela.
+
+            document.getElementById('public-orcamento-contact-form').style.display = 'none';
+            document.getElementById('public-orcamento-step-1-footer').style.display = 'none';
+            
+            document.getElementById('public-orcamento-step-2').style.display = 'block';
+        }
+
+        // [NOVO] Adiciona item do CATÁLOGO ao carrinho público
+        function addCatalogItemToPublicCart(productId) {
+            const product = productsMap[productId];
+            if (!product) return;
+            const quantity = parseInt(document.getElementById(`qty-public-${productId}`).value) || 1;
+            
+            const existingItem = orcamentoCartPublico.find(item => item.type === 'catalog' && item.produto_id === productId);
+            
+            if (existingItem) {
+                existingItem.quantidade += quantity;
+            } else {
+                orcamentoCartPublico.push({
+                    type: 'catalog',
+                    produto_id: product.id,
+                    nome: product.nome_produto,
+                    quantidade: quantity,
+                    observacao: `[Item de Catálogo] Cód: ${product.codigo_produto || 'S/C'}`
+                });
+            }
+            updatePublicOrcamentoCartUI();
+            showCustomAlert(`${product.nome_produto} adicionado ao orçamento!`);
+        }
+
+        // [NOVO] Remove item do carrinho público
+        function removeFromPublicOrcamentoCart(index) {
+            orcamentoCartPublico.splice(index, 1);
+            updatePublicOrcamentoCartUI();
+        }
+
+        // [NOVO] Adiciona item PERSONALIZADO ao carrinho público
+        function addCustomItemToPublicCart(formId, cartArray, closeFunction) {
+            const form = document.getElementById(formId);
+            if (!form.checkValidity()) {
+                 showCustomAlert('Por favor, preencha pelo menos a Quantidade.');
+                 return;
+            }
+
+            const categoria = form.querySelector('#custom-item-categoria').value;
+            const quantidade = parseInt(form.querySelector('#custom-item-quantidade').value);
+            
+            if (categoria === 'Outro' && form.querySelector('#custom-item-detalhes').value.trim() === '') {
+                showCustomAlert('Para a categoria "Outro", o campo "Detalhes Adicionais" é obrigatório.');
+                return;
+            }
+            
+            let observacaoString = `Item Personalizado:\n`;
+            observacaoString += `Categoria: ${categoria}\n`;
+            
+            // Pega dados dos campos condicionais
+            if (categoria === 'Adesivos' || categoria === 'Lacres') {
+                observacaoString += `Material: ${form.querySelector('#custom-item-material').value || 'Não informado'}\n`;
+                observacaoString += `Medida: ${form.querySelector('#custom-item-medida').value || 'Não informado'}\n`;
+                observacaoString += `Cores: ${form.querySelector('#custom-item-cores-adesivo').value || 'Não informado'}\n`;
+            } else if (categoria === 'Brindes') {
+                observacaoString += `Tipo de Brinde: ${form.querySelector('#custom-item-tipo-brinde').value || 'Não informado'}\n`;
+                observacaoString += `Impressão: ${form.querySelector('#custom-item-impressao-brinde').value || 'Não informado'}\n`;
+                observacaoString += `Cores: ${form.querySelector('#custom-item-cores-brinde').value || 'Não informado'}\n`;
+            }
+            
+            // Pega dados dos campos comuns
+            const prazo = form.querySelector('#custom-item-prazo').value;
+            if (prazo) {
+                observacaoString += `Prazo Desejado: ${formatDate(prazo)}\n`;
+            }
+            observacaoString += `Detalhes: ${form.querySelector('#custom-item-detalhes').value || 'Nenhum'}\n`;
+
+            cartArray.push({
+                type: 'custom',
+                produto_id: null, 
+                nome: `Item Personalizado (${categoria})`,
+                quantidade: quantidade,
+                observacao: observacaoString
+            });
+            
+            closeFunction();
+            updatePublicOrcamentoCartUI();
+            showCustomAlert(`Item Personalizado (${categoria}) adicionado!`);
+        }
+
+
+        // [NOVO] Atualiza a UI do carrinho público
+        function updatePublicOrcamentoCartUI() {
+            const cartItemsList = document.getElementById('public-cart-items-list');
+            const cartEmptyMsg = document.getElementById('public-cart-empty-msg');
+            const submitBtn = document.getElementById('public-submit-orcamento-btn');
+
+            if (orcamentoCartPublico.length === 0) {
+                cartItemsList.innerHTML = '';
+                cartEmptyMsg.style.display = 'block';
+                submitBtn.disabled = true;
+                return;
+            }
+            
+            cartEmptyMsg.style.display = 'none';
+            cartItemsList.innerHTML = '';
+            submitBtn.disabled = false;
+            
+            orcamentoCartPublico.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                
+                itemDiv.innerHTML = `
+                    <div class="cart-item-details">
+                        <strong>${item.quantidade}x - ${item.nome}</strong>
+                        <pre>${item.observacao.trim()}</pre>
+                    </div>
+                    <button class="cart-item-remove-btn" onclick="removeFromPublicOrcamentoCart(${index})" title="Remover item">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                cartItemsList.appendChild(itemDiv);
+            });
+        }
+        
+        // --- [NOVO] Carregamento de Produtos Público (para o Catálogo dentro do Modal) ---
+        function loadProductsForPublicCatalog() {
+            const productsGrid = document.getElementById('public-product-list');
+            
+            if (Object.keys(productsMap).length === 0) {
+                // Se ainda não carregou, exibe a mensagem de carregamento e dispara o fetch
+                productsGrid.innerHTML = '<p style="padding: 2rem; text-align: center;">Carregando produtos...</p>';
+                loadProductsAndCategories(); // Reusa a função de carregamento
+                return;
+            }
+            
+            productsGrid.innerHTML = '';
+            const productIds = Object.keys(productsMap);
+
+            productIds.forEach(id => {
+                const p = productsMap[id];
+                const imageUrl = p.imagem_principal_url || `https://placehold.co/60x60/f8fafc/6b7280?text=S/I`;
+                
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.innerHTML = `
+                    <div class="product-image-box">
+                        <img src="${imageUrl}" alt="${p.nome_produto}" onerror="this.src='https://placehold.co/60x60/f8fafc/6b7280?text=S/I';">
+                    </div>
+                    <div class="product-details">
+                        <h3>${p.nome_produto} (${p.codigo_produto || 'S/C'})</h3>
+                        <p>${p.descricao_curta || 'Sem descrição.'}</p>
+                    </div>
+                    <div class="product-actions">
+                        <input type="number" min="1" value="1" id="qty-public-${p.id}" placeholder="Qtd.">
+                        <button class="btn btn-primary" onclick="addCatalogItemToPublicCart(${p.id})">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                `;
+                productsGrid.appendChild(item);
+            });
+        }
+        
+        // --- FUNÇÃO CENTRAL DE CARREGAMENTO DE PRODUTOS ---
+        // (Compartilhada entre a home, o portal e o modal público)
+        async function loadProductsAndCategories() {
+            const productListContainer = document.getElementById('public-product-list');
+            if (productListContainer) {
+                productListContainer.innerHTML = '<p style="padding: 2rem; text-align: center;">Carregando produtos...</p>';
+            }
+
+            try {
+                const response = await fetch(API_PRODUTOS_URL); 
+                if (!response.ok) throw new Error('Falha ao carregar produtos.');
+                
+                const products = await response.json();
+                productsMap = {}; // Reseta o mapa de produtos
+
+                products.forEach(p => {
+                    productsMap[p.id] = p;
+                });
+                
+                // Se a view de catálogo estiver aberta no modal público, atualiza
+                if (document.getElementById('public-product-list-container')?.style.display === 'block') {
+                    loadProductsForPublicCatalog();
+                }
+
+            } catch (error) {
+                if (productListContainer) {
+                     productListContainer.innerHTML = '<p style="color:var(--status-rejected);">Erro ao carregar produtos.</p>';
+                }
+            }
+        }
+        
+        // --- Envio Final do Orçamento Público ---
+        async function submitPublicOrcamento() {
+            const nome = document.getElementById('public-nome').value;
+            const email = document.getElementById('public-email').value;
+            const telefone = document.getElementById('public-telefone').value;
+            const cnpj = document.getElementById('public-cnpj').value;
+            const codigo = document.getElementById('public-codigo').value;
+            const isCadastrado = document.getElementById('public-is-cadastrado').checked;
+            const submitBtn = document.getElementById('public-submit-orcamento-btn');
+            const errorMsg = document.getElementById('public-orcamento-error-msg');
+            const successMsg = document.getElementById('public-orcamento-success-msg');
+            
+            if (orcamentoCartPublico.length === 0) {
+                 showCustomAlert('Adicione pelo menos um item ao seu orçamento antes de enviar.');
+                 return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            try {
+                // A API pública (que ainda não criamos, mas estamos simulando) precisa de todos os dados de contato
+                const payload = {
+                    contato: { nome, email, telefone, cnpj, isCadastrado, codigo },
+                    itens: orcamentoCartPublico
+                };
+
+                // NOTE: Estamos simulando o endpoint /api/oceano/public/orcamentos
+                // Você terá que criar essa rota no seu app.py para receber esses dados
+                // e criar o cliente (se necessário) e o orçamento.
+                
+                // const response = await fetch(`${API_PUBLIC_URL}/orcamentos`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(payload)
+                // });
+                
+                // SIMULAÇÃO: Se o código for 1234, falha. Caso contrário, sucesso em 2s.
+                if (codigo === '1234') {
+                    throw new Error("Código de Acesso inválido para cliente cadastrado.");
+                }
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                // FIM SIMULAÇÃO
+                
+                successMsg.textContent = "✅ Orçamento enviado com sucesso! Entraremos em contato em breve.";
+                successMsg.style.display = 'block';
+                orcamentoCartPublico = [];
+                updatePublicOrcamentoCartUI();
+                
+            } catch (error) {
+                errorMsg.textContent = "Erro ao enviar: " + error.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Finalizar e Enviar Orçamento';
+            }
+        }
+
+
+        // --- INICIALIZAÇÃO GERAL ---
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- LÓGICA DO HERO SLIDER ---
+            // --- Seletores DOM (Geral) ---
+            const dialogOkBtn = document.getElementById('dialog-ok-btn');
+            
+            // --- [NOVO] Seletores Modal Público ---
+            const publicOrcamentoModal = document.getElementById('public-orcamento-modal');
+            const publicOrcamentoModalCloseBtn = document.getElementById('public-orcamento-modal-close-btn');
+            const openOrcamentoModalBtns = document.querySelectorAll('.open-orcamento-modal-btn');
+            const publicNextStepBtn = document.getElementById('public-next-step-btn');
+            const publicIsCadastradoCheck = document.getElementById('public-is-cadastrado');
+            const publicLoginFields = document.getElementById('public-login-fields');
+            const publicSubmitOrcamentoBtn = document.getElementById('public-submit-orcamento-btn');
+            const publicShowCustomItemModalBtn = document.getElementById('public-show-custom-item-modal-btn');
+            const publicShowCatalogBtn = document.getElementById('public-show-catalog-btn');
+            const publicProductListContainer = document.getElementById('public-product-list-container');
+            
+            // --- [NOVO] Seletores Modal Item Personalizado (Aninhado) ---
+            const customItemModal = document.getElementById('custom-item-modal');
+            const customItemModalCloseBtn = document.getElementById('custom-item-modal-close-btn');
+            const customItemModalCancelBtn = document.getElementById('custom-item-modal-cancel-btn');
+            const addCustomItemToCartBtn = document.getElementById('add-custom-item-to-cart-btn');
+            const customItemCategoriaSelect = document.getElementById('custom-item-categoria');
+            const fieldsAdesivoLacre = document.getElementById('fields-adesivo-lacre');
+            const fieldsBrinde = document.getElementById('fields-brinde');
+            
+            // --- Listeners do Diálogo de Alerta ---
+            dialogOkBtn.addEventListener('click', () => {
+                document.getElementById('custom-dialog-modal').style.display = 'none';
+            });
+
+
+            // --- [INÍCIO] LÓGICA DO MODAL PÚBLICO ---
+
+            // 1. Abre o Modal Principal (o botão que não funcionava)
+            openOrcamentoModalBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPublicOrcamentoModal();
+                });
+            });
+
+            // 2. Fecha o Modal Principal
+            publicOrcamentoModalCloseBtn.addEventListener('click', closePublicOrcamentoModal);
+
+            // 3. Lógica para mostrar campo de Código de Acesso
+            publicIsCadastradoCheck.addEventListener('change', (e) => {
+                publicLoginFields.style.display = e.target.checked ? 'block' : 'none';
+                document.getElementById('public-codigo').required = e.target.checked;
+            });
+            
+            // 4. Navegação para a Etapa 2
+            publicNextStepBtn.addEventListener('click', nextPublicOrcamentoStep);
+            
+            // 5. Botões da Etapa 2 (Carrinho)
+            publicShowCustomItemModalBtn.addEventListener('click', () => {
+                 customItemModal.style.display = 'flex'; // Abre o modal aninhado
+            });
+            
+            publicShowCatalogBtn.addEventListener('click', () => {
+                const isVisible = publicProductListContainer.style.display === 'block';
+                publicProductListContainer.style.display = isVisible ? 'none' : 'block';
+                publicShowCatalogBtn.innerHTML = isVisible 
+                    ? '<i class="fas fa-book-open"></i> Produto do Catálogo'
+                    : '<i class="fas fa-eye-slash"></i> Esconder Catálogo';
+                    
+                if (!isVisible) {
+                    loadProductsForPublicCatalog(); // Carrega os itens se for abrir
+                }
+            });
+            
+            publicSubmitOrcamentoBtn.addEventListener('click', submitPublicOrcamento);
+
+            // --- [INÍCIO] LÓGICA DO MODAL ANINHADO (Item Personalizado) ---
+            
+            // Fecha o Modal Aninhado
+            customItemModalCloseBtn.addEventListener('click', () => {
+                closeCustomItemModal();
+                // Garante que o modal principal ainda está visível
+                publicOrcamentoModal.style.display = 'flex';
+            });
+            customItemModalCancelBtn.addEventListener('click', () => {
+                closeCustomItemModal();
+                publicOrcamentoModal.style.display = 'flex';
+            });
+
+            // Adiciona Item Personalizado (para o carrinho público)
+            addCustomItemToCartBtn.addEventListener('click', () => {
+                 addCustomItemToPublicCart('custom-item-form', orcamentoCartPublico, closeCustomItemModal);
+            });
+            
+            // Mostra/Esconde campos do formulário baseado na categoria (Replicado do portal)
+            customItemCategoriaSelect.addEventListener('change', (e) => {
+                const categoria = e.target.value;
+                fieldsAdesivoLacre.style.display = (categoria === 'Adesivos' || categoria === 'Lacres') ? 'grid' : 'none';
+                fieldsBrinde.style.display = (categoria === 'Brindes') ? 'grid' : 'none';
+            });
+
+            // --- [FIM] LÓGICA DO MODAL ANINHADO ---
+
+
+            // --- [FIM] LÓGICA DO MODAL PÚBLICO ---
+
+
+            // --- LÓGICA EXISTENTE DO INDEX.HTML (Slider e Carrossel) ---
+
+            // Lógica do Menu Mobile (existente)
+            const navToggle = document.querySelector('.nav-toggle');
+            const mobileNav = document.querySelector('.mobile-nav');
+            if (navToggle && mobileNav) {
+                navToggle.addEventListener('click', () => {
+                    navToggle.classList.toggle('active');
+                    mobileNav.classList.toggle('active');
+                    if (mobileNav.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                });
+                document.querySelectorAll('.mobile-nav a').forEach(link => {
+                    link.addEventListener('click', () => { 
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    });
+                });
+            }
+
+            // Lógica do Slider e Carrossel (existente)
             const slides = document.querySelectorAll('.hero-slide');
             if (slides.length > 0) {
                 let currentSlide = 0;
-
                 function showSlide(n) {
                     slides.forEach(slide => slide.classList.remove('active'));
                     currentSlide = (n + slides.length) % slides.length;
                     slides[currentSlide].classList.add('active');
                 }
-
-                function nextSlide() {
-                    showSlide(currentSlide + 1);
-                }
-
+                function nextSlide() { showSlide(currentSlide + 1); }
                 showSlide(0);
-                setInterval(nextSlide, 5000); // 5s
+                setInterval(nextSlide, 5000); 
             }
 
-            // --- LÓGICA DA ANIMAÇÃO DE FUNDO 'OCEANO' (AGORA NO HERO) ---
-            const canvas = document.getElementById('fish-background');
-            if (canvas) {
-                const ctx = canvas.getContext('2d');
-                const heroSection = document.querySelector('.hero');
-                let width = heroSection.clientWidth;
-                let height = heroSection.clientHeight;
-                let fishArray = [];
-                const fishCount = 10; 
-                
-                const fishColor = getComputedStyle(document.documentElement).getPropertyValue('--light-blue') || '#3672d4';
-
-                canvas.width = width;
-                canvas.height = height;
-
-                // Ajusta o canvas se o tamanho do hero mudar (ex: resize da janela)
-                new ResizeObserver(() => {
-                    width = heroSection.clientWidth;
-                    height = heroSection.clientHeight;
-                    canvas.width = width;
-                    canvas.height = height;
-                }).observe(heroSection);
-
-
-                class Fish {
-                    constructor() {
-                        this.size = Math.random() * 15 + 10; // Tamanho 10-25
-                        this.x = Math.random() * width;
-                        this.y = Math.random() * height;
-                        this.direction = Math.random() > 0.5 ? 1 : -1; 
-                        this.vx = (Math.random() * 0.8 + 0.2) * this.direction; 
-                    }
-
-                    update() {
-                        this.x += this.vx;
-                        
-                        if (this.direction === 1 && this.x > width + this.size * 2) { 
-                            this.x = -this.size * 2;
-                            this.y = Math.random() * height; 
-                        } else if (this.direction === -1 && this.x < -this.size * 2) { 
-                            this.x = width + this.size * 2;
-                            this.y = Math.random() * height; 
-                        }
-                    }
-
-                    draw() {
-                        ctx.fillStyle = fishColor;
-                        ctx.beginPath();
-                        
-                        ctx.save();
-                        ctx.translate(this.x, this.y);
-                        ctx.scale(this.direction, 1); 
-
-                        // Corpo (forma de amêndoa/folha)
-                        ctx.moveTo(0, 0);
-                        ctx.quadraticCurveTo(this.size / 2, -this.size / 3, this.size, 0);
-                        ctx.quadraticCurveTo(this.size / 2, this.size / 3, 0, 0);
-                        
-                        // Cauda (duas linhas)
-                        ctx.moveTo(0, 0);
-                        ctx.lineTo(-this.size / 3, -this.size / 4);
-                        ctx.moveTo(0, 0);
-                        ctx.lineTo(-this.size / 3, this.size / 4);
-                        
-                        ctx.fill();
-                        ctx.restore();
-                    }
-                }
-
-                function initFish() {
-                    for (let i = 0; i < fishCount; i++) {
-                        fishArray.push(new Fish());
-                    }
-                }
-
-                function animateFish() {
-                    ctx.clearRect(0, 0, width, height);
-                    for (let i = 0; i < fishArray.length; i++) {
-                        fishArray[i].update();
-                        fishArray[i].draw();
-                    }
-                    requestAnimationFrame(animateFish);
-                }
-
-                initFish();
-                animateFish();
-            }
-
-            // --- PASSO 2: Mover seletores e função de estado para o escopo principal ---
             const scrollContainer = document.querySelector('.products-grid');
             const prevBtn = document.getElementById('scroll-prev');
             const nextBtn = document.getElementById('scroll-next');
-
-            // Função para habilitar/desabilitar botões no início/fim
             const updateButtonState = () => {
-                // Verificação robusta para garantir que os elementos existem
                 if (!scrollContainer || !prevBtn || !nextBtn) {
                     if(prevBtn) prevBtn.disabled = true;
                     if(nextBtn) nextBtn.disabled = true;
                     return;
                 }
-                
                 const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-                
-                // Permite uma pequena margem de erro (1px)
                 prevBtn.disabled = scrollContainer.scrollLeft <= 1;
                 nextBtn.disabled = scrollContainer.scrollLeft >= maxScroll - 1;
             };
 
-            // --- PASSO 3: Inserir Lógica de Fetch ---
-            // --- INÍCIO: LÓGICA PARA CARREGAR PRODUTOS DINAMICAMENTE ---
-            const productsGrid = scrollContainer; // Reutiliza o seletor
-            if (productsGrid) {
-                fetch('/api/produtos')
-                    .then(response => {
-                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                        return response.json();
-                    })
+            if (scrollContainer) {
+                // Carrega produtos na home (Carrossel)
+                fetch(API_PRODUTOS_URL)
+                    .then(response => response.json())
                     .then(produtos => {
-                        if (!produtos || produtos.length === 0) {
-                            // Não faz nada, o carrossel já está vazio e os botões desabilitados
-                            return; 
-                        }
                         let productsHTML = '';
                         produtos.forEach(produto => {
                             const imageUrl = produto.imagem_principal_url || `https://placehold.co/400x300/f8fafc/6b7280?text=${produto.codigo_produto || 'Sem Imagem'}`;
                             const imageAlt = produto.imagem_principal_alt || produto.nome_produto || 'Imagem do Produto';
-                            
-                            // [INÍCIO CORREÇÃO LINK]
-                            // O 'produto.url_slug' já vem do banco como o caminho completo
-                            // (ex: /produtos/meu-produto). Não precisamos adicionar /produtos/ de novo.
                             const productUrl = produto.url_slug || '#'; 
-                            // [FIM CORREÇÃO LINK]
-
                             productsHTML += `
                             <div class="product-card">
                                 <div class="product-image">
-                                    <img src="${imageUrl}" alt="${imageAlt}" loading="lazy">
+                                    <img src="${imageUrl}" alt="${imageAlt}" loading="lazy" onerror="this.src='https://placehold.co/400x300/f8fafc/6b7280?text=S/I';">
                                 </div>
                                 <div class="product-content">
                                     <div class="product-code">${produto.codigo_produto || 'Cód. N/D'}</div>
                                     <h3>${produto.nome_produto || 'Produto sem nome'}</h3>
                                     <p>${produto.descricao_curta || 'Clique para ver mais detalhes.'}</p>
-                                    
                                     <a href="${productUrl}" class="product-link">
                                         Ver detalhes →
                                     </a>
@@ -1669,44 +2278,26 @@
                             </div>
                             `;
                         });
-                        
-                        productsGrid.innerHTML = productsHTML;
-                        
-                        // CHAVE DA MUDANÇA:
-                        // Chama a função dos botões DE NOVO, agora que o grid está cheio.
+                        scrollContainer.innerHTML = productsHTML;
                         updateButtonState();
                     })
                     .catch(error => {
-                        console.error('Erro ao carregar produtos:', error);
-                        productsGrid.innerHTML = '<p style="color: var(--accent); padding: 0 1rem; width: 100%; text-align: center;">Erro ao carregar produtos.</p>';
+                        scrollContainer.innerHTML = '<p style="color: var(--status-rejected); padding: 0 1rem; width: 100%; text-align: center;">Erro ao carregar produtos do catálogo.</p>';
                     });
+
+                // Lógica de rolagem do carrossel
+                if (prevBtn && nextBtn) {
+                    const scrollAmount = 372; 
+                    nextBtn.addEventListener('click', () => { scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' }); });
+                    prevBtn.addEventListener('click', () => { scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); });
+                    scrollContainer.addEventListener('scroll', updateButtonState);
+                    new ResizeObserver(updateButtonState).observe(scrollContainer);
+                    updateButtonState();
+                }
             }
-            // --- FIM: LÓGICA PARA CARREGAR PRODUTOS ---
-
-
-            // --- PASSO 4: Lógica de controle do carrossel (listeners e init) ---
-            if (scrollContainer && prevBtn && nextBtn) {
-                // O scrollAmount é a largura de um card (340px) + gap (2rem = 32px)
-                const scrollAmount = 372; 
-
-                nextBtn.addEventListener('click', () => {
-                    scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                });
-
-                prevBtn.addEventListener('click', () => {
-                    scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                });
-
-                // Observa o scroll para atualizar os botões
-                scrollContainer.addEventListener('scroll', updateButtonState);
-                
-                // Também verifica no resize (caso o número de cards visíveis mude)
-                new ResizeObserver(updateButtonState).observe(scrollContainer);
-                
-                // Define o estado inicial no carregamento (com grid vazio)
-                // Isso desabilitará os botões corretamente na inicialização.
-                updateButtonState();
-            }
+            
+            // Inicia o carregamento de produtos para o modal, mesmo se a lista da home falhar
+            loadProductsAndCategories();
 
         });
     </script>
