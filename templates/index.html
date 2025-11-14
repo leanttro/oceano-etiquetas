@@ -813,6 +813,44 @@
             color: var(--text-light);
             font-size: 0.85rem;
         }
+        
+        
+        <style>
+            .dropdown-header {
+                padding: 0.75rem 1.25rem 0.25rem;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: var(--dark);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            /* Indenta os produtos que vêm depois de um cabeçalho */
+            .dropdown-header + li a { 
+                 padding-left: 2rem; 
+            }
+
+            .mobile-sub-header {
+                display: block;
+                padding: 1rem 0 0.5rem 0;
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--dark);
+                text-transform: uppercase;
+                text-align: left;
+            }
+            
+            /* Ajusta links de produtos no mobile */
+            .mobile-sub-menu a:not([href="#"]) {
+                font-size: 1rem !important;
+                font-weight: 400 !important;
+                color: var(--text-light) !important;
+                padding: 0.5rem 0 0.5rem 1rem !important; /* Indenta */
+                text-align: left;
+                border-bottom: none; 
+            }
+        </style>
+        
 
         /* Responsive */
         @media (max-width: 1024px) {
@@ -910,6 +948,7 @@
             <a href="#" class="logo"> 
                 <img src="/static/oceanologo.png" alt="Logo Oceano Etiquetas">
             </a>
+            
             <ul class="nav-links">
                 <li class="nav-item">
                     <a href="#">
@@ -917,8 +956,11 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Lacres %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Lacres.items() %}
+                            <li class="dropdown-header"><span>{{ subcategoria }}</span></li>
+                            {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                            {% endfor %}
                         {% else %}
                             <li><a href="#">Nenhum produto</a></li>
                         {% endfor %}
@@ -930,8 +972,11 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Adesivos %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Adesivos.items() %}
+                            <li class="dropdown-header"><span>{{ subcategoria }}</span></li>
+                            {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                            {% endfor %}
                         {% else %}
                             <li><a href="#">Nenhum produto</a></li>
                         {% endfor %}
@@ -943,8 +988,11 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Brindes %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Brindes.items() %}
+                            <li class="dropdown-header"><span>{{ subcategoria }}</span></li>
+                            {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                            {% endfor %}
                         {% else %}
                             <li><a href="#">Nenhum produto</a></li>
                         {% endfor %}
@@ -956,8 +1004,11 @@
                         <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
                     <ul class="dropdown-menu">
-                        {% for produto in menu_categorias.Impressos %}
-                            <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                        {% for subcategoria, produtos in menu_categorias.Impressos.items() %}
+                            <li class="dropdown-header"><span>{{ subcategoria }}</span></li>
+                            {% for produto in produtos %}
+                                <li><a href="{{ produto.url }}">{{ produto.nome }}</a></li>
+                            {% endfor %}
                         {% else %}
                             <li><a href="#">Nenhum produto</a></li>
                         {% endfor %}
@@ -967,7 +1018,6 @@
                     <a href="#contato">Contato</a>
                 </li>
             </ul>
-            
             <div class="nav-controls"> 
                 <a href="https://wa.me/5511997223828" class="nav-cta">
                     <span class="full-text">Solicitar Orçamento</span>
@@ -988,8 +1038,11 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Lacres %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Lacres.items() %}
+                    <span class="mobile-sub-header">{{ subcategoria }}</span>
+                    {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                    {% endfor %}
                 {% else %}
                     <a href="#">Nenhum produto</a>
                 {% endfor %}
@@ -1001,8 +1054,11 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Adesivos %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Adesivos.items() %}
+                    <span class="mobile-sub-header">{{ subcategoria }}</span>
+                    {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                    {% endfor %}
                 {% else %}
                     <a href="#">Nenhum produto</a>
                 {% endfor %}
@@ -1014,8 +1070,11 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Brindes %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Brindes.items() %}
+                    <span class="mobile-sub-header">{{ subcategoria }}</span>
+                    {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                    {% endfor %}
                 {% else %}
                     <a href="#">Nenhum produto</a>
                 {% endfor %}
@@ -1027,8 +1086,11 @@
                 <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="mobile-sub-menu">
-                {% for produto in menu_categorias.Impressos %}
-                    <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                {% for subcategoria, produtos in menu_categorias.Impressos.items() %}
+                    <span class="mobile-sub-header">{{ subcategoria }}</span>
+                    {% for produto in produtos %}
+                        <a href="{{ produto.url }}">{{ produto.nome }}</a>
+                    {% endfor %}
                 {% else %}
                     <a href="#">Nenhum produto</a>
                 {% endfor %}
@@ -1036,7 +1098,6 @@
         </div>
         <a href="#contato" class="mobile-nav-link">Contato</a>
     </div>
-
     <section class="hero">
         
         <canvas id="fish-background"></canvas>
@@ -1171,7 +1232,7 @@
                 </div>
             </div>
             <div class="products-grid">
-            </div>
+                </div>
         </div>
     </section>
 
@@ -1463,6 +1524,10 @@
                         produtos.forEach(produto => {
                             const imageUrl = produto.imagem_principal_url || `https://placehold.co/400x300/f8fafc/6b7280?text=${produto.codigo_produto || 'Sem Imagem'}`;
                             const imageAlt = produto.imagem_principal_alt || produto.nome_produto || 'Imagem do Produto';
+                            
+                            // *** NENHUMA MUDANÇA NECESSÁRIA AQUI ***
+                            // O app.py anterior agora envia 'url_slug'
+                            // e este código (produto.url_slug) passa a funcionar.
                             
                             productsHTML += `
                             <div class="product-card">
