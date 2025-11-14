@@ -1359,18 +1359,18 @@
             const chatbotInput = document.getElementById('chatbotInput');
             
             const isActive = chatbotWindow.classList.contains('active');
+            
             if (isActive && !forceOpen) {
-                // [INÍCIO DA CORREÇÃO]
-                // Ao fechar a janela, ele deve MINIMIZAR (mostrar ícone), não voltar ao preview.
-                chatbotWindow.classList.remove('active');
-                chatbotButton.classList.add('hidden'); // <-- ALTERADO (era .remove)
-                minimizedIcon.classList.add('minimized'); // <-- ALTERADO (era .remove)
-                // [FIM DA CORREÇÃO]
+                // --- LÓGICA CORRIGIDA PARA FECHAR (MINIMIZAR) ---
+                chatbotWindow.classList.remove('active'); // 1. Esconde a janela de chat
+                chatbotButton.classList.add('hidden');     // 2. Garante que o preview bubble está escondido
+                minimizedIcon.classList.add('minimized');  // 3. MOSTRA o ícone minimizado (o 'O')
+                
             } else {
-                // Lógica de abertura (estava correta)
-                chatbotWindow.classList.add('active');
-                chatbotButton.classList.add('hidden');
-                minimizedIcon.classList.add('minimized');
+                // --- LÓGICA CORRIGIDA PARA ABRIR ---
+                chatbotWindow.classList.add('active');       // 1. Mostra a janela de chat
+                chatbotButton.classList.add('hidden');       // 2. Esconde o preview bubble
+                minimizedIcon.classList.remove('minimized'); // 3. ESCONDE o ícone minimizado (a linha que faltava corrigir)
                 setTimeout(() => chatbotInput.focus(), 300);
             }
         }
