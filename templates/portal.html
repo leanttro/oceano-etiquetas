@@ -376,6 +376,39 @@
         .chatbot-send:hover { background-color: var(--accent-hover); }
         .chatbot-send:disabled { opacity: 0.5; cursor: not-allowed; }
         
+        /* --- [NOVO] Estilos para o Logo do Chatbot --- */
+        .chatbot-logo-icon {
+            width: 100%; height: 100%;
+            object-fit: contain;
+        }
+        .nav-menu li a .chatbot-logo-icon {
+            width: 20px; height: 20px;
+            margin-left: 2px; /* Ajuste do alinhamento do ícone da nav */
+        }
+        .chatbot-minimized-icon {
+            font-size: inherit; /* Reseta o font-size */
+            padding: 12px; /* Adiciona padding para o logo respirar */
+        }
+        .chatbot-minimized-icon .chatbot-logo-icon {
+            width: 36px; height: 36px;
+        }
+        .chatbot-header-avatar {
+            font-size: inherit; /* Reseta o font-size */
+            padding: 5px;
+        }
+        .chatbot-header-avatar .chatbot-logo-icon {
+            width: 35px; height: 35px;
+        }
+        .message.bot .message-avatar {
+            font-size: inherit; /* Reseta o font-size */
+            padding: 5px;
+        }
+        .message.bot .message-avatar .chatbot-logo-icon {
+            width: 25px; height: 25px;
+        }
+        /* --- Fim dos Novos Estilos --- */
+
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: static; }
             .main-content { margin-left: 0; }
@@ -427,7 +460,10 @@
                 <li><a href="#" class="nav-link active" data-view="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
                 <li><a href="#" class="nav-link" data-view="novo-orcamento"><i class="fas fa-plus-circle"></i> <span>Novo Orçamento</span></a></li>
                 <li><a href="#" class="nav-link" data-view="meus-pedidos"><i class="fas fa-receipt"></i> <span>Meus Pedidos</span></a></li>
-                <li><a href="#" class="nav-link" data-view="falar-chat"><i class="fas fa-robot"></i> <span>Falar com Agente</span></a></li>
+                <li><a href="#" class="nav-link" data-view="falar-chat">
+                    <img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">
+                    <span>Falar com Agente</span>
+                </a></li>
             </ul>
             <div class="sidebar-footer">
                 <button class="btn-logout" id="logout-btn" style="width: 100%;">Sair <i class="fas fa-sign-out-alt"></i></button>
@@ -517,7 +553,7 @@
     <div class="floating-chatbot" id="floatingChatbot" style="display:none;">
         <div id="chatbotButtonContainer">
              <div class="chatbot-minimized-icon" id="minimizedIcon" aria-label="Abrir Chatbot">
-                <i class="fas fa-robot"></i>
+                <img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">
             </div>
             <div class="chatbot-preview-button" id="chatbotButton" aria-label="Abrir Oceano Bot">
                 <button class="preview-close" id="previewClose" aria-label="Minimizar Preview">
@@ -539,7 +575,7 @@
         <div class="chatbot-window" id="chatbotWindow">
             <div class="chatbot-header">
                 <div class="chatbot-header-avatar">
-                    <i class="fas fa-robot"></i>
+                    <img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">
                 </div>
                 <div class="chatbot-header-info">
                     <h3>Oceano Bot</h3>
@@ -588,55 +624,11 @@
         let orcamentoCart = {};
         let productsMap = {};
 
-        // --- Seletores DOM ---
-        const loginScreen = document.getElementById('login-screen');
-        const clientPortal = document.getElementById('client-portal');
-        const loginForm = document.getElementById('login-form');
-        const logoutButton = document.getElementById('logout-btn');
-        const loginErrorMsg = document.getElementById('login-error');
-        const clientNameDisplay = document.getElementById('client-name-display');
-        const pageTitle = document.getElementById('page-title');
+        // --- [CORREÇÃO JAVASCRIPT] ---
+        // Todos os seletores são movidos para dentro do 'DOMContentLoaded'
+        // para garantir que os elementos existam antes de selecioná-los.
         
-        // --- Seletores de View ---
-        const views = document.querySelectorAll('.content-view');
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        // --- Seletores Dashboard ---
-        const statAguardandoPagamento = document.getElementById('stat-aguardando-pagamento');
-        const statEmProducao = document.getElementById('stat-em-producao');
-        const statProntos = document.getElementById('stat-prontos');
-        const lastOrdersTable = document.querySelector('#last-orders-table tbody');
-        
-        // --- Seletores Novo Orçamento ---
-        const productListContainer = document.getElementById('product-list');
-        const cartItemsList = document.getElementById('cart-items-list');
-        const cartEmptyMsg = document.getElementById('cart-empty-msg');
-        const submitOrcamentoBtn = document.getElementById('submit-orcamento-btn');
-        const orcamentoSuccessMsg = document.getElementById('orcamento-success-msg');
-        const orcamentoErrorMsg = document.getElementById('orcamento-error-msg');
-        
-        // --- Seletores Meus Pedidos ---
-        const allOrdersTable = document.querySelector('#all-orders-table tbody');
-
-        // --- Seletores Chatbot ---
-        const floatingChatbot = document.getElementById('floatingChatbot');
-        const chatbotButton = document.getElementById('chatbotButton');
-        const chatbotWindow = document.getElementById('chatbotWindow');
-        const chatbotClose = document.getElementById('chatbotClose');
-        const chatbotInput = document.getElementById('chatbotInput');
-        const chatbotSend = document.getElementById('chatbotSend');
-        const chatbotMessages = document.getElementById('chatbotMessages');
-        const previewClose = document.getElementById('previewClose');
-        const minimizedIcon = document.getElementById('minimizedIcon');
-        const previewMessageEl = document.getElementById('preview-message-text');
-        let chatHistory = [];
-        
-        // --- Seletores Diálogo ---
-        const customDialogModal = document.getElementById('custom-dialog-modal');
-        const dialogMessage = document.getElementById('dialog-message');
-        const dialogOkBtn = document.getElementById('dialog-ok-btn');
-
-        // --- Utils ---
+        // --- Utils (Podem ficar fora, pois são apenas definições de função) ---
         function getAuthHeaders() {
             return {
                 'Content-Type': 'application/json',
@@ -657,16 +649,13 @@
             const statusKey = status.replace(/\s/g, '-').replace(/[()]/g, '');
             return `status-${statusKey}`;
         }
-        function showCustomAlert(message) {
-            dialogMessage.textContent = message;
-            customDialogModal.style.display = 'flex';
-        }
-        dialogOkBtn.addEventListener('click', () => {
-            customDialogModal.style.display = 'none';
-        });
-
+        
+        // --- Variáveis Globais de Chat ---
+        let chatHistory = [];
+        
         // --- Lógica de View (Troca de Painel) ---
-        function switchView(viewId) {
+        // (Definições de função podem ficar fora)
+        function switchView(viewId, pageTitleEl, views, navLinks) {
             views.forEach(view => view.classList.remove('active'));
             document.getElementById(`${viewId}-view`).classList.add('active');
 
@@ -674,7 +663,7 @@
                 link.classList.remove('active');
                 if (link.dataset.view === viewId) {
                     link.classList.add('active');
-                    pageTitle.textContent = link.querySelector('span').textContent;
+                    pageTitleEl.textContent = link.querySelector('span').textContent;
                 }
             });
 
@@ -685,23 +674,16 @@
             if (viewId === 'falar-chat') toggleChat(true); // Força abertura do chat
         }
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchView(e.currentTarget.dataset.view);
-            });
-        });
-
         // --- AUTENTICAÇÃO ---
-        function showPortal() {
+        function showPortal(loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks) {
             loginScreen.style.display = 'none';
             clientPortal.style.display = 'flex';
             clientNameDisplay.textContent = CLIENT_NAME;
             floatingChatbot.style.display = 'block'; // Mostra o chatbot
-            switchView('dashboard');
+            switchView('dashboard', pageTitle, views, navLinks);
             startChatbotSession(); // Inicia a sessão do chatbot
         }
-        function showLogin() {
+        function showLogin(loginScreen, clientPortal, floatingChatbot) {
             loginScreen.style.display = 'flex';
             clientPortal.style.display = 'none';
             floatingChatbot.style.display = 'none'; // Esconde o chatbot
@@ -715,7 +697,7 @@
             chatHistory = [];
         }
         
-        async function handleLogin(e) {
+        async function handleLogin(e, loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks, loginErrorMsg, loginForm) {
              e.preventDefault();
              const codigo = document.getElementById('client-codigo').value; 
              loginErrorMsg.style.display = 'none';
@@ -735,7 +717,7 @@
                      localStorage.setItem('oceano_client_token', data.token); 
                      localStorage.setItem('oceano_client_id', data.cliente_id);
                      localStorage.setItem('oceano_client_name', data.nome_cliente);
-                     showPortal();
+                     showPortal(loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks);
                  } else {
                      loginErrorMsg.textContent = data.erro || 'Código inválido.';
                      loginErrorMsg.style.display = 'block';
@@ -747,13 +729,20 @@
                  loginForm.querySelector('button').disabled = false;
              }
          }
-        logoutButton.addEventListener('click', showLogin);
-
+        
         // --- DASHBOARD ---
         async function loadDashboardStats() {
+            // Seletores são passados ou buscados aqui
+            const statAguardandoPagamento = document.getElementById('stat-aguardando-pagamento');
+            const statEmProducao = document.getElementById('stat-em-producao');
+            const statProntos = document.getElementById('stat-prontos');
+            const loginScreen = document.getElementById('login-screen');
+            const clientPortal = document.getElementById('client-portal');
+            const floatingChatbot = document.getElementById('floatingChatbot');
+
             try {
                 const response = await fetch(`${API_CLIENT_URL}/dashboard`, { headers: getAuthHeaders() });
-                if (response.status === 401) return showLogin();
+                if (response.status === 401) return showLogin(loginScreen, clientPortal, floatingChatbot);
                 const stats = await response.json();
                 statAguardandoPagamento.textContent = stats.stat_aguardando_pagamento;
                 statEmProducao.textContent = stats.stat_em_producao;
@@ -766,13 +755,19 @@
 
         // --- MEUS PEDIDOS & ÚLTIMOS PEDIDOS (Dashboard) ---
         async function loadOrderHistory(isDashboard = false) {
+            const lastOrdersTable = document.querySelector('#last-orders-table tbody');
+            const allOrdersTable = document.querySelector('#all-orders-table tbody');
+            const loginScreen = document.getElementById('login-screen');
+            const clientPortal = document.getElementById('client-portal');
+            const floatingChatbot = document.getElementById('floatingChatbot');
+
             const tableBody = isDashboard ? lastOrdersTable : allOrdersTable;
             const cols = isDashboard ? 5 : 7;
             tableBody.innerHTML = `<tr><td colspan="${cols}" style="text-align: center;">Carregando...</td></tr>`;
             
             try {
                 const response = await fetch(`${API_CLIENT_URL}/orcamentos`, { headers: getAuthHeaders() });
-                if (response.status === 401) return showLogin();
+                if (response.status === 401) return showLogin(loginScreen, clientPortal, floatingChatbot);
                 let orders = await response.json();
                 
                 if (isDashboard) {
@@ -819,6 +814,7 @@
         
         // --- NOVO ORÇAMENTO (Lógica do Carrinho) ---
         async function loadProductsForOrcamento() {
+            const productListContainer = document.getElementById('product-list');
             productListContainer.innerHTML = '<p style="padding: 2rem; text-align: center;">Carregando produtos...</p>';
             try {
                 const response = await fetch(API_PRODUTOS_URL); // API Pública
@@ -832,6 +828,7 @@
                     productsMap[p.id] = p; // Salva no mapa
                     const item = document.createElement('div');
                     item.className = 'product-item';
+                    // Adiciona o 'onclick' diretamente, já que esta função é chamada após o DOM carregar
                     item.innerHTML = `
                         <div class="product-image-box">
                             <img src="${p.imagem_principal_url || '/static/oceanologo.png'}" alt="${p.nome_produto}" onerror="this.src='/static/oceanologo.png';">
@@ -859,12 +856,11 @@
             if (!product) return;
             const quantity = parseInt(document.getElementById(`qty-${productId}`).value) || 1;
             
-            // Adiciona ou atualiza no carrinho
             orcamentoCart[productId] = {
                 produto_id: product.id,
                 nome: product.nome_produto,
                 quantidade: quantity,
-                observacao: '' // Opcional: pode adicionar um campo de obs
+                observacao: ''
             };
             updateOrcamentoCartUI();
         }
@@ -875,7 +871,10 @@
         }
 
         function updateOrcamentoCartUI() {
+            const cartItemsList = document.getElementById('cart-items-list');
+            const cartEmptyMsg = document.getElementById('cart-empty-msg');
             const productIds = Object.keys(orcamentoCart);
+            
             if (productIds.length === 0) {
                 cartItemsList.innerHTML = '';
                 cartEmptyMsg.style.display = 'block';
@@ -901,43 +900,12 @@
             });
         }
         
-        submitOrcamentoBtn.addEventListener('click', async () => {
-            const itens = Object.values(orcamentoCart);
-            if (itens.length === 0) {
-                showCustomAlert('Seu carrinho de orçamento está vazio.');
-                return;
-            }
-
-            submitOrcamentoBtn.disabled = true;
-            submitOrcamentoBtn.textContent = 'Enviando...';
-            orcamentoErrorMsg.style.display = 'none';
-            orcamentoSuccessMsg.style.display = 'none';
-
-            try {
-                const response = await fetch(`${API_CLIENT_URL}/orcamentos/novo`, {
-                    method: 'POST',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify({ itens: itens })
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    orcamentoSuccessMsg.textContent = data.mensagem;
-                    orcamentoSuccessMsg.style.display = 'block';
-                    orcamentoCart = {};
-                    updateOrcamentoCartUI();
-                    switchView('meus-pedidos'); // Pula para a tela de pedidos
-                } else {
-                    throw new Error(data.erro || 'Falha ao enviar solicitação.');
-                }
-            } catch (error) {
-                orcamentoErrorMsg.textContent = error.message;
-                orcamentoErrorMsg.style.display = 'block';
-            } finally {
-                submitOrcamentoBtn.disabled = false;
-                submitOrcamentoBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
-            }
-        });
-
+        function showCustomAlert(message) {
+            const customDialogModal = document.getElementById('custom-dialog-modal');
+            const dialogMessage = document.getElementById('dialog-message');
+            dialogMessage.textContent = message;
+            customDialogModal.style.display = 'flex';
+        }
 
         // --- CHATBOT (Lógica de UI e API) ---
         
@@ -946,6 +914,7 @@
         }
         
         function addChatMessage(text, isUser = false) {
+            const chatbotMessages = document.getElementById('chatbotMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
             let formattedText = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -956,9 +925,14 @@
                 chatHistory.push({ role: 'user', content: text });
             }
 
+            // [CORREÇÃO LOGO] Troca o ícone do robô pela tag <img>
+            const avatarIcon = isUser 
+                ? '<i class="fas fa-user"></i>' 
+                : '<img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">';
+
             messageDiv.innerHTML = `
                 <div class="message-avatar">
-                    <i class="fas fa-${isUser ? 'user' : 'robot'}"></i>
+                    ${avatarIcon}
                 </div>
                 <div class="message-content">
                     <div class="message-bubble">${formattedText}</div>
@@ -970,11 +944,16 @@
         }
         
         function showTypingIndicator() {
+            const chatbotMessages = document.getElementById('chatbotMessages');
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message bot typing-message';
             typingDiv.id = 'typing-indicator';
+            
+            // [CORREÇÃO LOGO] Troca o ícone do robô pela tag <img>
             typingDiv.innerHTML = `
-                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-avatar">
+                    <img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">
+                </div>
                 <div class="message-content">
                     <div class="message-bubble">
                         <div class="typing-indicator"><span></span><span></span><span></span></div>
@@ -993,15 +972,24 @@
         }
 
         function minimizePreview() {
+            const chatbotButton = document.getElementById('chatbotButton');
+            const minimizedIcon = document.getElementById('minimizedIcon');
             chatbotButton.classList.add('hidden');
             minimizedIcon.classList.add('minimized');
         }
         function maximizePreview() {
+            const chatbotButton = document.getElementById('chatbotButton');
+            const minimizedIcon = document.getElementById('minimizedIcon');
             chatbotButton.classList.remove('hidden');
             minimizedIcon.classList.remove('minimized');
         }
         
         function toggleChat(forceOpen = false) {
+            const chatbotWindow = document.getElementById('chatbotWindow');
+            const chatbotButton = document.getElementById('chatbotButton');
+            const minimizedIcon = document.getElementById('minimizedIcon');
+            const chatbotInput = document.getElementById('chatbotInput');
+            
             const isActive = chatbotWindow.classList.contains('active');
             if (isActive && !forceOpen) {
                 chatbotWindow.classList.remove('active');
@@ -1016,12 +1004,16 @@
         }
 
         function startChatbotSession() {
+            const chatbotMessages = document.getElementById('chatbotMessages');
             chatHistory = [];
             chatbotMessages.innerHTML = '';
             addChatMessage(`Olá, ${CLIENT_NAME}! Sou o Oceano Bot, seu assistente. Como posso ajudar a rastrear um pedido ou encontrar um produto?`, false);
         }
         
         async function sendChatMessage() {
+            const chatbotInput = document.getElementById('chatbotInput');
+            const chatbotSend = document.getElementById('chatbotSend');
+
             const messageText = chatbotInput.value.trim();
             if (messageText === '' || chatbotSend.disabled) return;
 
@@ -1063,33 +1055,121 @@
                 chatbotInput.focus();
             }
         }
-
-        // --- Listeners do Chatbot ---
-        chatbotButton.addEventListener('click', toggleChat);
-        chatbotClose.addEventListener('click', toggleChat);
-        previewClose.addEventListener('click', (e) => { e.stopPropagation(); minimizePreview(); });
-        minimizedIcon.addEventListener('click', toggleChat);
-        chatbotSend.addEventListener('click', sendChatMessage);
-        chatbotInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
         
         // --- INICIALIZAÇÃO GERAL ---
+        // [CORREÇÃO JAVASCRIPT]
+        // Todo o código que depende do DOM é movido para aqui dentro.
         document.addEventListener('DOMContentLoaded', () => {
             
-            // *** CORREÇÃO AQUI ***
-            loginForm.addEventListener('submit', handleLogin);
+            // --- Seletores DOM ---
+            const loginScreen = document.getElementById('login-screen');
+            const clientPortal = document.getElementById('client-portal');
+            const loginForm = document.getElementById('login-form');
+            const logoutButton = document.getElementById('logout-btn');
+            const loginErrorMsg = document.getElementById('login-error');
+            const clientNameDisplay = document.getElementById('client-name-display');
+            const pageTitle = document.getElementById('page-title');
+            const views = document.querySelectorAll('.content-view');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const submitOrcamentoBtn = document.getElementById('submit-orcamento-btn');
+            const orcamentoSuccessMsg = document.getElementById('orcamento-success-msg');
+            const orcamentoErrorMsg = document.getElementById('orcamento-error-msg');
             
+            // --- Seletores Chatbot ---
+            const floatingChatbot = document.getElementById('floatingChatbot');
+            const chatbotButton = document.getElementById('chatbotButton');
+            const chatbotWindow = document.getElementById('chatbotWindow');
+            const chatbotClose = document.getElementById('chatbotClose');
+            const chatbotInput = document.getElementById('chatbotInput');
+            const chatbotSend = document.getElementById('chatbotSend');
+            const chatbotMessages = document.getElementById('chatbotMessages');
+            const previewClose = document.getElementById('previewClose');
+            const minimizedIcon = document.getElementById('minimizedIcon');
+            
+            // --- Seletores Diálogo ---
+            const customDialogModal = document.getElementById('custom-dialog-modal');
+            const dialogOkBtn = document.getElementById('dialog-ok-btn');
+
+            // --- Listeners de Autenticação ---
+            loginForm.addEventListener('submit', (e) => {
+                handleLogin(e, loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks, loginErrorMsg, loginForm);
+            });
+            logoutButton.addEventListener('click', () => {
+                showLogin(loginScreen, clientPortal, floatingChatbot);
+            });
+
+            // --- Listener de Navegação ---
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchView(e.currentTarget.dataset.view, pageTitle, views, navLinks);
+                });
+            });
+
+            // --- Listener Novo Orçamento ---
+            submitOrcamentoBtn.addEventListener('click', async () => {
+                const itens = Object.values(orcamentoCart);
+                if (itens.length === 0) {
+                    showCustomAlert('Seu carrinho de orçamento está vazio.');
+                    return;
+                }
+
+                submitOrcamentoBtn.disabled = true;
+                submitOrcamentoBtn.textContent = 'Enviando...';
+                orcamentoErrorMsg.style.display = 'none';
+                orcamentoSuccessMsg.style.display = 'none';
+
+                try {
+                    const response = await fetch(`${API_CLIENT_URL}/orcamentos/novo`, {
+                        method: 'POST',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify({ itens: itens })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        orcamentoSuccessMsg.textContent = data.mensagem;
+                        orcamentoSuccessMsg.style.display = 'block';
+                        orcamentoCart = {};
+                        updateOrcamentoCartUI();
+                        switchView('meus-pedidos', pageTitle, views, navLinks); // Pula para a tela de pedidos
+                    } else {
+                        throw new Error(data.erro || 'Falha ao enviar solicitação.');
+                    }
+                } catch (error) {
+                    orcamentoErrorMsg.textContent = error.message;
+                    orcamentoErrorMsg.style.display = 'block';
+                } finally {
+                    submitOrcamentoBtn.disabled = false;
+                    submitOrcamentoBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
+                }
+            });
+
+            // --- Listeners do Chatbot ---
+            chatbotButton.addEventListener('click', toggleChat);
+            chatbotClose.addEventListener('click', toggleChat);
+            previewClose.addEventListener('click', (e) => { e.stopPropagation(); minimizePreview(); });
+            minimizedIcon.addEventListener('click', toggleChat);
+            chatbotSend.addEventListener('click', sendChatMessage);
+            chatbotInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendChatMessage();
+                }
+            });
+
+            // --- Listener do Diálogo ---
+            dialogOkBtn.addEventListener('click', () => {
+                customDialogModal.style.display = 'none';
+            });
+            
+            // --- Verificação Inicial de Login ---
             CLIENT_TOKEN = localStorage.getItem('oceano_client_token');
             CLIENT_ID = localStorage.getItem('oceano_client_id');
             CLIENT_NAME = localStorage.getItem('oceano_client_name');
             if (CLIENT_TOKEN && CLIENT_ID && CLIENT_NAME) {
-                showPortal();
+                showPortal(loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks);
             } else {
-                showLogin();
+                showLogin(loginScreen, clientPortal, floatingChatbot);
             }
         });
     </script>

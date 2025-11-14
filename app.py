@@ -722,7 +722,11 @@ def get_cliente_orcamentos(cliente_id):
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         # 1. Pega Orçamentos pendentes
-        sql_orc = "SELECT id, 'orcamento' as tipo, data_criacao, data_atualizacao, status, valor_final_total, chave_pix, codigo_rastreio, observacoes_admin FROM oceano_orcamentos WHERE cliente_id = %s"
+        # --- [CORREÇÃO AQUI] ---
+        # Adicionado 'NULL as codigo_rastreio' para que a UNION funcione,
+        # já que a tabela de orçamentos não possui esse campo.
+        sql_orc = "SELECT id, 'orcamento' as tipo, data_criacao, data_atualizacao, status, valor_final_total, chave_pix, NULL as codigo_rastreio, observacoes_admin FROM oceano_orcamentos WHERE cliente_id = %s"
+        
         # 2. Pega Pedidos aprovados
         sql_ped = "SELECT id, 'pedido' as tipo, data_criacao, data_atualizacao, status, valor_final_total, chave_pix, codigo_rastreio, observacoes_admin FROM oceano_pedidos WHERE cliente_id = %s"
         
@@ -961,14 +965,3 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     # Mude debug=True para desenvolvimento local
     app.run(host="0.0.0.0", port=port, debug=False)
-}
-O menu ainda não está 100%, ele lista os produtos, mas não agrupa por subcategoria. Veja:
-
-
-Eu queria que ficasse:
-
-Adesivos (Hover)
-  > Rádio (Hover)
-     - ADESIVOS PARA RÁDIO | TELECOMUNICAÇÃO
-  > Outra Subcategoria (Hover)
-     - Outro Produto
