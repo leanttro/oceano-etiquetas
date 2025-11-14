@@ -915,7 +915,7 @@ def post_orcamento_publico():
 
 
 # =====================================================================
-# --- [ANTIGA PARTE 4] API DO CHATBOT ---
+# --- [ALTERADO] PARTE 5: API DO CHATBOT ---
 # =====================================================================
 
 # --- Ferramentas do Chatbot ---
@@ -958,11 +958,57 @@ def tool_check_status_pedido(pedido_id_str, cliente_id):
     finally:
         if conn: conn.close()
 
+# [NOVA FERRAMENTA]
+def tool_get_product_list():
+    """Ferramenta: Busca a lista de produtos e categorias do banco de dados para vender."""
+    print(f"[Chatbot Tool] Buscando lista de produtos...")
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        # Agrupa produtos por categoria para uma resposta mais limpa
+        query = """
+        SELECT categoria, subcategoria, nome_produto 
+        FROM oceano_produtos 
+        WHERE categoria IS NOT NULL AND categoria != ''
+        ORDER BY categoria, subcategoria, nome_produto;
+        """
+        cur.execute(query)
+        produtos = cur.fetchall()
+        cur.close()
+
+        if not produtos:
+             return json.dumps({"erro": "Nenhum produto encontrado no catálogo."})
+
+        # Estrutura os dados para a IA
+        catalogo = collections.OrderedDict()
+        for p in produtos:
+            cat = p['categoria'] or 'Outros'
+            subcat = p['subcategoria'] or 'Geral'
+            
+            if cat not in catalogo:
+                catalogo[cat] = collections.OrderedDict()
+            if subcat not in catalogo[cat]:
+                catalogo[cat][subcat] = []
+                
+            catalogo[cat][subcat].append(p['nome_produto'])
+        
+        # Retorna o JSON estruturado
+        return json.dumps(catalogo)
+            
+    except Exception as e:
+        print(f"ERRO na ferramenta tool_get_product_list: {e}")
+        return json.dumps({"erro": "Erro interno ao consultar o catálogo de produtos."})
+    finally:
+        if conn: conn.close()
+
+
 # --- Configuração do Modelo Gemini ---
 if GEMINI_API_KEY:
-    # Definição das ferramentas que a IA pode usar
-    # MUDANÇA: A lista de ferramentas deve conter APENAS
-    # a declaração da sua função customizada.
+    # [ALTERADO] Definição das ferramentas
+    # REMOVIDO Google Search
+    # ADICIONADO tool_get_product_list
     tools_to_use = [
         {
             "function_declarations": [
@@ -976,29 +1022,49 @@ if GEMINI_API_KEY:
                         },
                         "required": ["pedido_id"]
                     }
+                },
+                {
+                    "name": "get_product_list",
+                    "description": "Busca a lista de todos os produtos e categorias disponíveis no banco de dados para vender ao cliente.",
+                    "parameters": {} # Não precisa de parâmetros
                 }
             ]
         }
     ]
     
-    # O "cérebro" do chatbot
+    # [ALTERADO] O "cérebro" do chatbot (Novo Prompt de Vendedor)
     SYSTEM_PROMPT = """
-    Você é o 'Oceano Bot', o assistente de vendas e atendimento da Oceano Etiquetas.
-    Seu único objetivo é ajudar clientes e vender produtos, baseando-se **estritamente** em informações do site www.oceanoetiquetas.com.br e nos dados do sistema interno.
+    Você é o 'Oceano Bot', o assistente de vendas especialista e proativo da Oceano Etiquetas.
+    Seu principal objetivo é ajudar os clientes com seus pedidos e vender ativamente os produtos da empresa.
+    Você ganha por comissão, então seja sempre prestativo, persuasivo e tente fechar um negócio.
 
     REGRAS PRINCIPAIS:
-    1.  **VENDAS (GROUNDING):** Para qualquer pergunta sobre produtos, materiais (VOID, BOPP, couchê, PVC), ou sobre a empresa, você SÓ PODE usar a ferramenta Google Search para pesquisar em `www.oceanoetiquetas.com.br`.
-    2.  **ATENDIMENTO (TOOLS):** Para perguntas sobre "meu pedido", "status", "rastreio", "preço do meu orçamento", você SÓ PODE usar a ferramenta `check_status_pedido`.
-    3.  **TOM DE VOZ:** Seja profissional, prestativo e técnico. Você é um especialista em etiquetas.
-    4.  **SEGURANÇA:** NUNCA forneça informações de um pedido a menos que o cliente pergunte e a ferramenta `check_status_pedido` retorne os dados (a ferramenta já filtra pelo ID do cliente).
-    5.  **LIMITAÇÃO:** Se a informação não estiver no site ou nas ferramentas, diga "Não encontrei essa informação nos nossos sistemas ou no site www.oceanoetiquetas.com.br". Não invente.
+    1.  **FONTES DE DADOS:** Você SÓ PODE usar informações de duas fontes:
+        a) A ferramenta `check_status_pedido` para dados de pedidos/orçamentos.
+        b) A ferramenta `get_product_list` para ver os produtos que vendemos.
+    
+    2.  **VERIFICAÇÃO DE SEGURANÇA (OBRIGATÓRIO):**
+        - Antes de usar a ferramenta `check_status_pedido`, você DEVE SEMPRE perguntar ao cliente qual é o "ID (número) do orçamento ou pedido" que ele deseja consultar.
+        - NUNCA forneça dados de um pedido sem que o cliente informe o ID primeiro. A ferramenta já filtra pelo cliente logado, mas você deve pedir o ID para confirmar.
+
+    3.  **VENDAS (PROATIVO):**
+        - Se o cliente perguntar "o que vocês vendem?", "quais produtos vocês têm?" ou algo similar, use IMEDIATAMENTE a ferramenta `get_product_list`.
+        - Ao receber a lista de produtos, apresente-os de forma organizada (por categoria) e tente ativamente vender algo. Pergunte: "Algum desses itens lhe interessa para um orçamento?".
+
+    4.  **FALLBACK (WHATSAPP):**
+        - Se o cliente perguntar sobre um produto que NÃO foi retornado pela ferramenta `get_product_list` (ex: "vocês fazem adesivo de resina?"), informe que este é um item personalizado.
+        - Ofereça encaminhar a solicitação para um especialista humano. Diga: "Este parece ser um item personalizado. Posso solicitar que um especialista entre em contato. Você pode também falar diretamente conosco pelo WhatsApp para um orçamento detalhado: https://wa.me/5511997223828"
+
+    5.  **LIMITAÇÃO (NÃO INVENTE):**
+        - NÃO use o Google. NÃO invente informações.
+        - Se a pergunta não for sobre produtos do catálogo ou status de pedidos, gentilmente redirecione para o WhatsApp: "Para este tipo de solicitação, por favor, fale com nossa equipe no WhatsApp: https://wa.me/5511997223828"
     """
     
     # Inicializa o modelo
     gemini_model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash-latest", # Modelo atualizado
+        model_name="gemini-1.5-flash-latest",
         system_instruction=SYSTEM_PROMPT,
-        tools=tools_to_use # MUDANÇA: Passa a lista `tools_to_use`
+        tools=tools_to_use # [ALTERADO] Passa a nova lista de ferramentas
     )
 else:
     gemini_model = None
@@ -1020,29 +1086,33 @@ def handle_chat(cliente_id):
         role = 'model' if item['role'] == 'bot' else 'user'
         chat_history.append({'role': role, 'parts': [{'text': item['content']}]})
 
-    # [GROUNDING] Adiciona o prefixo do site para o Google Search
-    # (Nota: Gemini 1.5 pode não precisar mais disso se a ferramenta de busca for integrada,
-    # mas manteremos por enquanto)
-    grounded_message = f"site:www.oceanoetiquetas.com.br {message}"
-
+    # [REMOVIDO] Não há mais 'grounded_message'
+    
     try:
         # Inicia o chat
         chat = gemini_model.start_chat(history=chat_history)
         
-        # 1. Envia a mensagem do usuário (com grounding)
-        response = chat.send_message(grounded_message)
+        # 1. Envia a mensagem do usuário (diretamente)
+        response = chat.send_message(message)
         
         # 2. Verifica se a IA quer usar uma ferramenta
         while response.candidates[0].content.parts[0].function_call:
             function_call = response.candidates[0].content.parts[0].function_call
             
             tool_result = None
+            
+            # [FERRAMENTA 1] Verificar Status
             if function_call.name == "check_status_pedido":
                 args = function_call.args
                 pedido_id = args.get('pedido_id')
                 # Chama a ferramenta com o ID do cliente logado (para segurança)
                 tool_result_json = tool_check_status_pedido(pedido_id, cliente_id)
-                tool_result = json.loads(tool_result_json) # A ferramenta já retorna uma string JSON
+                tool_result = json.loads(tool_result_json)
+            
+            # [FERRAMENTA 2 - NOVA] Obter Lista de Produtos
+            elif function_call.name == "get_product_list":
+                tool_result_json = tool_get_product_list()
+                tool_result = json.loads(tool_result_json)
             
             # 3. Envia o resultado da ferramenta de volta para a IA
             if tool_result:
@@ -1050,7 +1120,7 @@ def handle_chat(cliente_id):
                     part=genai.Part(
                         function_response=genai.FunctionResponse(
                             name=function_call.name,
-                            response=tool_result # Gemini 1.5 espera o objeto/dicionário direto
+                            response=tool_result 
                         )
                     )
                 )
@@ -1076,8 +1146,7 @@ def handle_chat(cliente_id):
 
 
 # =====================================================================
-# --- PARTE 5: ROTAS PÚBLICAS (Fallback) ---
-# (Deve vir por último)
+# --- PARTE 6: ROTAS PÚBLICAS (Fallback) ---
 # =====================================================================
 
 @app.route('/<path:path>')
