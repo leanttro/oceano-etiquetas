@@ -820,9 +820,9 @@ def tool_check_status_pedido(pedido_id_str, cliente_id):
 # --- Configuração do Modelo Gemini ---
 if GEMINI_API_KEY:
     # Definição das ferramentas que a IA pode usar
-    # MUDANÇA: A Google Search Tool deve ser listada separadamente.
+    # MUDANÇA: A lista de ferramentas deve conter APENAS
+    # a declaração da sua função customizada.
     tools_to_use = [
-        "google_search",  # Nome da ferramenta Google Search
         {
             "function_declarations": [
                 {
