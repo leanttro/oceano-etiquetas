@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 
+      REQUISITO DE SEO (de feira-detalhe.html):
+      Metadados dinâmicos para o SSG (Static Site Generator) 
+    -->
+    <title>{{ produto.meta_title }}</title>
+    <meta name="description" content="{{ produto.meta_description }}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 
+      REQUISITO "CASCA" (de teste.html):
+      Todo o Design System CSS é copiado exatamente, mantendo a consistência.
+    -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --dark: #0f172a;
+            --accent: #dc2626;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg-light: #f8fafc;
+            --light-blue: #3672d4; 
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: #ffffff; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* --- ESTILOS DO "teste.html" (Design System) --- */
+        #fish-background {
+            position: absolute; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; 
+            pointer-events: none; 
+            opacity: 0.5; 
+        }
+
+        .header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000; 
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            height: 75px; 
+        }
+
+        .nav {
+            max-width: 1400px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { display: flex; align-items: center; text-decoration: none; color: var(--dark); }
+        .logo img { height: 55px; width: auto; object-fit: contain; }
+        .nav-links { display: flex; gap: 3rem; list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-item { position: relative; }
+        .dropdown-arrow { width: 14px; height: 14px; vertical-align: middle; margin-left: 4px; stroke: currentColor; transition: transform 0.2s; }
+        .nav-item:hover .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-menu { position: absolute; top: 150%; left: -1rem; min-width: 240px; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); padding: 0.5rem 0; list-style: none; z-index: 1001; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease-out; }
+        .nav-item:hover > .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); top: 100%; }
+        .dropdown-menu a { display: block; padding: 0.75rem 1.25rem; font-size: 0.9rem; font-weight: 500; color: var(--text-light); white-space: nowrap; }
+        .dropdown-menu a:hover { background: var(--bg-light); color: var(--primary); }
+        .nav-cta { padding: 0.6rem 1.5rem; background: var(--dark); color: white; border-radius: 6px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: background 0.2s; }
+        .nav-cta:hover { background: var(--primary); }
+        .nav-controls { display: flex; align-items: center; gap: 1rem; }
+        .nav-cta .full-text { display: inline; }
+        .nav-cta .short-text { display: none; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; z-index: 1001; padding: 10px; }
+        .hamburger { display: block; width: 24px; height: 2px; background: var(--dark); position: relative; transition: background 0.3s ease-in-out; }
+        .hamburger::before,
+        .hamburger::after { content: ''; position: absolute; width: 24px; height: 2px; background: var(--dark); left: 0; transition: transform 0.3s ease-in-out; }
+        .hamburger::before { top: -7px; }
+        .hamburger::after { bottom: -7px; }
+        .nav-toggle.active .hamburger { background: transparent; }
+        .nav-toggle.active .hamburger::before { transform: translateY(7px) rotate(45deg); }
+        .nav-toggle.active .hamburger::after { transform: translateY(-7px) rotate(-45deg); }
+        .mobile-nav { display: flex; flex-direction: column; gap: 2rem; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: white; z-index: 999; padding: 4rem 2rem; text-align: center; transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
+        .mobile-nav.active { transform: translateX(0); }
+        .mobile-nav a { color: var(--dark); text-decoration: none; font-size: 1.5rem; font-weight: 600; padding: 1rem; }
+        .mobile-nav-item { border-bottom: 1px solid var(--border); }
+        .mobile-nav-toggle-sub { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; cursor: pointer; }
+        .mobile-nav-toggle-sub span { color: var(--dark); font-size: 1.5rem; font-weight: 600; }
+        .mobile-nav-toggle-sub .dropdown-arrow { width: 24px; height: 24px; stroke-width: 2.5; transition: transform 0.3s ease; }
+        .mobile-nav-toggle-sub.active .dropdown-arrow { transform: rotate(180deg); }
+        .mobile-sub-menu { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; padding-left: 1.5rem; }
+        .mobile-sub-menu.active { max-height: 500px; padding-bottom: 1rem; }
+        .mobile-sub-menu a { display: block; font-size: 1.1rem; font-weight: 400; color: var(--text-light); padding: 0.75rem 0; }
+        .mobile-nav-link { display: block; color: var(--dark); text-decoration: none; font-size: 1.5rem; font-weight: 600; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+        
+        /* Estilos de Seção Padrão (do teste.html) */
+        .container { max-width: 1400px; margin: 0 auto; }
+        .section-title { font-size: 2.5rem; font-weight: 700; color: var(--dark); line-height: 1.2; letter-spacing: -1px; max-width: 700px; }
+        .product-code { font-size: 0.75rem; color: var(--text-light); font-weight: 600; margin-bottom: 0.75rem; }
+        .btn-primary { padding: 1rem 2rem; background: white; color: var(--dark); border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-primary:hover { background: rgba(255, 255, 255, 0.9); }
+        
+        .footer { background: white; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+        .footer-content { max-width: 1400px; margin: 0 auto; padding: 5rem 3rem 3rem; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem; }
+        .footer-brand h3 { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .footer-brand p { color: var(--text-light); font-size: 0.9rem; line-height: 1.6; margin-bottom: 2rem; }
+        .footer-contact a { display: block; color: var(--text-light); text-decoration: none; font-size: 0.9rem; margin-bottom: 0.75rem; transition: color 0.2s; }
+        .footer-contact a:hover { color: var(--primary); }
+        .footer-links h4 { font-size: 0.75rem; font-weight: 600; color: var(--text); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-links a { display: block; color: var(--text-light); text-decoration: none; font-size: 0.9rem; margin-bottom: 0.75rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-bottom { max-width: 1400px; margin: 0 auto; padding: 2rem 3rem; border-top: 1px solid var(--border); text-align: center; }
+        .footer-bottom p { color: var(--text-light); font-size: 0.85rem; }
+        
+        /* --- FIM DOS ESTILOS DO "teste.html" --- */
+
+
+        /* REQUISITO (NOVO CSS MÍNIMO): 
+          Estilos específicos para a página de detalhe do produto.
+          Usa apenas variáveis e padrões existentes.
+        */
+        
+        .product-detail-section {
+            background: var(--bg-light);
+            padding: 4rem 3rem;
+            margin-top: 75px; /* Compensa o header fixo */
+            min-height: 60vh;
+        }
+
+        .breadcrumbs {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        .breadcrumbs a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .breadcrumbs a:hover {
+            color: var(--primary);
+        }
+        .breadcrumbs span {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: white;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .product-gallery .main-image img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .product-gallery .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .product-gallery .thumbnail img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+
+        .product-gallery .thumbnail.active img,
+        .product-gallery .thumbnail:hover img {
+            opacity: 1;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        /* Ajuste no H1 para o produto, usando estilo do .section-title */
+        .product-info h1 {
+            font-size: 2.2rem; /* Um pouco menor que o .section-title (2.5rem) */
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .product-info .short-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin: 1.5rem 0;
+            line-height: 1.7;
+        }
+
+        /* Botão CTA grande e responsivo */
+        .btn-full {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 1rem 2rem;
+            margin-top: 2rem;
+            /* Reutiliza o estilo .btn-primary, mas o fundo é escuro */
+            background: var(--dark);
+            color: white;
+        }
+        .btn-full:hover {
+            background: var(--primary);
+        }
+
+        /* Sistema de Abas */
+        .product-tabs {
+            margin-top: 4rem;
+            background: white;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: -1px; /* Alinha com a borda */
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem 0.5rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Estilos para o conteúdo da aba (descrição longa) */
+        .tab-content p {
+            margin-bottom: 1rem;
+        }
+        
+        /* Estilos para a aba de especificações */
+        .specs-list {
+            list-style: none;
+            padding: 0;
+        }
+        .specs-list li {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--bg-light); /* Fundo claro para linhas */
+        }
+        .specs-list li strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+
+        /* --- FIM DO NOVO CSS MÍNIMO --- */
+
+
+        /* --- INÍCIO DAS REGRAS RESPONSIVAS (do teste.html) --- */
+        @media (max-width: 1024px) {
+            /* Ajustes de espaçamento para mobile */
+            .nav { padding: 0 1.5rem; }
+            .hero-content { padding: 0 1.5rem; } /* Não usado aqui, mas mantido por consistência */
+            .footer-content { padding: 5rem 1.5rem 3rem; }
+
+            .nav-links { display: none; }
+            .nav-toggle { display: block; }
+            
+            .nav-cta { padding: 0.6rem 1rem; }
+            .nav-cta .full-text { display: none; }
+            .nav-cta .short-text { display: inline; }
+
+            .footer-content { grid-template-columns: 1fr; gap: 3rem; }
+            
+            /* REQUISITO (NOVO CSS RESPONSIVO): 
+              Ajustes para a página de produto.
+            */
+            .product-detail-section {
+                padding: 3rem 1.5rem;
+            }
+            .product-layout {
+                grid-template-columns: 1fr; /* Coluna única no mobile */
+                gap: 2rem;
+            }
+            .product-info h1 {
+                font-size: 1.8rem; /* Título menor no mobile */
+            }
+            .product-gallery .thumbnail-grid {
+                grid-template-columns: repeat(4, 1fr); /* Mantém 4 thumbnails */
+            }
+            .specs-list li {
+                grid-template-columns: 100px 1fr; /* Coluna de label menor */
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .product-card { flex: 0 0 300px; } /* Não usado aqui */
+            .product-detail-section {
+                padding: 2rem 1rem; /* Menos padding em telas pequenas */
+            }
+            .product-layout {
+                padding: 1.5rem;
+            }
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        /* --- FIM DAS REGRAS RESPONSIVAS --- */
+    </style>
+
+    <!-- 
+      REQUISITO DE SEO (de feira-detalhe.html):
+      Schema.org JSON-LD para Produto, adaptado para o SSG.
+    -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "{{ produto.nome_produto }}",
+      "sku": "{{ produto.codigo_produto }}",
+      "description": "{{ produto.descricao_curta }}",
+      "image": [
+        "{{ produto.imagem_principal_url }}"
+       ],
+       "offers": {
+        "@type": "Offer",
+        "availability": "https://schema.org/InStock",
+        "priceCurrency": "BRL", 
+        "price": "0.00", // Necessário para validação, mesmo que o preço seja sob consulta
+        "url": "{{ produto.url_canonica }}" // Adicione a URL da página do produto aqui
+      }
+    }
+    </script>
+</head>
+<body>
+    
+    <!-- 
+      REQUISITO "CASCA" (de teste.html):
+      Header oficial do site.
+    -->
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo"> <!-- Link para a Home -->
+                <img src="oceanologo.png" alt="Logo Oceano Etiquetas">
+            </a>
+            <ul class="nav-links">
+                <!-- Item 1: Lacres -->
+                <li class="nav-item">
+                    <a href="/produtos/lacres">
+                        Lacres
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/produto/lacre-destrutivel">Lacre Destrutível (Casca de Ovo)</a></li>
+                        <li><a href="/produto/lacre-void">Lacre de Segurança VOID</a></li>
+                        <li><a href="/produto/selos-garantia">Selos de Garantia</a></li>
+                    </ul>
+                </li>
+                <!-- Item 2: Adesivos -->
+                <li class="nav-item">
+                    <a href="/produtos/adesivos">
+                        Adesivos
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/produto/etiquetas-pvc">Etiquetas Industriais (PVC)</a></li>
+                        <li><a href="/produto/painel-policarbonato">Painel de Policarbonato</a></li>
+                        <li><a href="/produto/etiquetas-radio">Etiquetas para Rádios</a></li>
+                        <li><a href="/produto/etiquetas-sequenciais">Etiquetas (Nº Sequencial)</a></li>
+                    </ul>
+                </li>
+                <!-- Item 3: Brindes -->
+                <li class="nav-item">
+                    <a href="/produtos/brindes">
+                        Brindes
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/produto/mousepads">Mouse Pads Personalizados</a></li>
+                        <li><a href="/produto/brindes-corporativos">Brindes Corporativos</a></li>
+                    </ul>
+                </li>
+                <!-- Item 4: Impressos -->
+                <li class="nav-item">
+                    <a href="/produtos/impressos">
+                        Impressos
+                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/produto/cartoes-visita">Cartões de Visita Premium</a></li>
+                        <li><a href="/produto/banners">Banners e Roll-ups</a></li>
+                        <li><a href="/produto/material-grafico">Material Gráfico</a></li>
+                    </ul>
+                </li>
+                <!-- Item 5: Contato -->
+                <li class="nav-item">
+                    <a href="/#contato">Contato</a> <!-- Link para a seção na Home -->
+                </li>
+            </ul>
+            
+            <div class="nav-controls"> 
+                <a href="https://wa.me/5511997223828" class="nav-cta">
+                    <span class="full-text">Solicitar Orçamento</span>
+                    <span class="short-text">Orçamento</span>
+                </a>
+                
+                <button class="nav-toggle" aria-label="Abrir menu">
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 
+      REQUISITO "CASCA" (de teste.html):
+      Menu Mobile oficial do site.
+    -->
+    <div class="mobile-nav">
+        <!-- Item 1: Lacres -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Lacres</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="/produto/lacre-destrutivel">Lacre Destrutível (Casca de Ovo)</a>
+                <a href="/produto/lacre-void">Lacre de Segurança VOID</a>
+                <a href="/produto/selos-garantia">Selos de Garantia</a>
+            </div>
+        </div>
+        <!-- Item 2: Adesivos -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Adesivos</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="/produto/etiquetas-pvc">Etiquetas Industriais (PVC)</a>
+                <a href="/produto/painel-policarbonato">Painel de Policarbonato</a>
+                <a href="/produto/etiquetas-radio">Etiquetas para Rádios</a>
+                <a href="/produto/etiquetas-sequenciais">Etiquetas (Nº Sequencial)</a>
+            </div>
+        </div>
+        <!-- Item 3: Brindes -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Brindes</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="/produto/mousepads">Mouse Pads Personalizados</a>
+                <a href="/produto/brindes-corporativos">Brindes Corporativos</a>
+            </div>
+        </div>
+        <!-- Item 4: Impressos -->
+        <div class="mobile-nav-item">
+            <div class="mobile-nav-toggle-sub">
+                <span>Impressos</span>
+                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="mobile-sub-menu">
+                <a href="/produto/cartoes-visita">Cartões de Visita Premium</a>
+                <a href="/produto/banners">Banners e Roll-ups</a>
+                <a href="/produto/material-grafico">Material Gráfico</a>
+            </div>
+        </div>
+        <!-- Item 5: Contato -->
+        <a href="/#contato" class="mobile-nav-link">Contato</a>
+    </div>
+
+
+    <!-- 
+      REQUISITO "MIOLO":
+      Seção principal da página de detalhe do produto.
+    -->
+    <main class="product-detail-section">
+        <div class="container">
+            
+            <!-- 1. Breadcrumbs -->
+            <nav class="breadcrumbs">
+              <a href="/">Início</a> / 
+              <a href="/produtos.html">Produtos</a> / 
+              <a href="/produtos/{{ produto.categoria_slug }}">{{ produto.categoria }}</a> / 
+              <span>{{ produto.nome_produto }}</span>
+            </nav>
+
+            <!-- 2. Layout Principal (Grid) -->
+            <div class="product-layout">
+                
+                <!-- Coluna Esquerda: Galeria -->
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <img src="{{ produto.imagem_principal_url }}" alt="{{ produto.imagem_principal_alt }}" id="mainProductImage">
+                    </div>
+                    
+                    <!-- Galeria de Thumbnails (o SSG faria um loop aqui) -->
+                    <div class="thumbnail-grid">
+                        <div class="thumbnail active" onclick="changeImage('{{ produto.imagem_principal_url }}', this)">
+                            <img src="{{ produto.imagem_principal_url }}" alt="Thumbnail 1">
+                        </div>
+                        
+                        <!-- [CORREÇÃO 3]: Adicionando verificação 'if' para impedir o erro de índice -->
+                        
+                        {% if produto.galeria_imagens and produto.galeria_imagens[0] %}
+                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[0].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
+                            <img src="{{ produto.galeria_imagens[0].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 2">
+                        </div>
+                        {% endif %}
+
+                        {% if produto.galeria_imagens and produto.galeria_imagens[1] %}
+                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[1].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
+                            <img src="{{ produto.galeria_imagens[1].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 3">
+                        </div>
+                        {% endif %}
+
+                        {% if produto.galeria_imagens and produto.galeria_imagens[2] %}
+                        <div class="thumbnail" onclick="changeImage('{{ produto.galeria_imagens[2].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}', this)">
+                            <img src="{{ produto.galeria_imagens[2].url | default("https://placehold.co/100x100/f8fafc/e5e7eb?text=Img") }}" alt="Thumbnail 4">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Informações -->
+                <div class="product-info">
+                    <div class="product-code">{{ produto.codigo_produto }}</div>
+                    <h1>{{ produto.nome_produto }}</h1>
+                    <p class="short-description">{{ produto.descricao_curta }}</p>
+                    
+                    <!-- [CORREÇÃO 2]: Trocado 'url_encode' (errado) para 'urlencode' (correto) -->
+                    <a href="https://wa.me/5511997223828?text=Gostaria%20de%20orçar%20{{ produto.whatsapp_link_texto | urlencode }}" 
+                       class="btn-primary btn-full cta-button">
+                       Solicitar Orçamento via WhatsApp
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Seção de Detalhes (Abas) -->
+            <div class="product-tabs">
+                <div class="tab-navigation">
+                    <button class="tab-btn active" data-tab="descricao">Descrição</button>
+                    <button class="tab-btn" data-tab="specs">Especificações</button>
+                </div>
+                
+                <!-- Conteúdo Aba 1 -->
+                <div id="descricao" class="tab-content active">
+                    <p>{{ produto.descricao_longa | safe }}</p>
+                    <!-- O |safe é para o SSG renderizar HTML, se houver -->
+                </div>
+                
+                <!-- Conteúdo Aba 2 -->
+                <div id="specs" class="tab-content">
+                    <ul class="specs-list">
+                        <!-- O SSG faria um loop aqui sobre (key, value) em especificacoes_tecnicas -->
+                        <li><strong>Material:</strong> {{ produto.specs.material }}</li>
+                        <li><strong>Acabamento:</strong> {{ produto.specs.acabamento }}</li>
+                        <li><strong>Impressão:</strong> {{ produto.specs.impressao }}</li>
+                        <li><strong>Resistência:</strong> {{ produto.specs.resistencia }}</li>
+                        <li><strong>Uso:</strong> {{ produto.specs.uso }}</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 
+      REQUISITO "CASCA" (de teste.html):
+      Footer oficial do site.
+    -->
+    <footer id="contato" class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>OCEANO</h3>
+                <p>Especialistas em soluções industriais de etiquetas, lacres de garantia e comunicação visual. Atendimento técnico especializado.</p>
+                <div class="footer-contact">
+                    <a href="https://wa.me/5511997223828">(11) 99722-3828</a>
+                    <a href="mailto:vendas@oceanoetiquetas.com.br">vendas@oceanoetiquetas.com.br</a>
+                    <a href="http://www.oceanoetiquetas.com.br">www.oceanoetiquetas.com.br</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>Produtos</h4>
+                <a href="/produtos.html#lacres">Lacres de Garantia</a>
+                <a href="/produtos.html#adesivos">Etiquetas P.V.C.</a>
+                <a href="/produtos.html#adesivos">Painéis Industriais</a>
+                <a href="/produtos.html#adesivos">Etiquetas Rádios</a>
+            </div>
+
+            <div class="footer-links">
+                <h4>Serviços</h4>
+                <a href="/#servicos">Impressão Digital</a>
+                <a href="/#servicos">Serigrafia</a>
+                <a href="/#servicos">Corte Especial</a>
+                <a href="/#servicos">Consultoria</a>
+            </div>
+
+            <div class="footer-links">
+                <h4>Empresa</h4>
+                <a href="/#sobre">Sobre Nós</a>
+                <a href="/#servicos">Qualidade</a>
+                <a href="/#contato">Contato</a>
+                <a href="https://wa.me/5511997223828">Orçamento</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Oceano Etiquetas. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 
+      REQUISITO "CASCA" (de teste.html):
+      Script base para o menu mobile.
+    -->
+    <script>
+        // Lógica do Menu Mobile (do teste.html)
+        const navToggle = document.querySelector('.nav-toggle');
+        const mobileNav = document.querySelector('.mobile-nav');
+
+        if (navToggle && mobileNav) {
+            navToggle.addEventListener('click', () => {
+                navToggle.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+            });
+
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => { 
+                    if (link.getAttribute('href').startsWith('/#')) {
+                        navToggle.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.mobile-nav-toggle-sub').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    document.querySelectorAll('.mobile-nav-toggle-sub').forEach(otherToggle => {
+                        if (otherToggle !== toggle && otherToggle.classList.contains('active')) {
+                            otherToggle.classList.remove('active');
+                            const otherSubMenu = otherToggle.nextElementSibling;
+                            otherSubMenu.classList.remove('active');
+                            otherSubMenu.style.maxHeight = '0px';
+                        }
+                    });
+                    toggle.classList.toggle('active');
+                    const subMenu = toggle.nextElementSibling;
+                    subMenu.classList.toggle('active');
+                    subMenu.style.maxHeight = subMenu.classList.contains('active') ? subMenu.scrollHeight + 'px' : '0px';
+                });
+            });
+
+            document.querySelectorAll('.mobile-sub-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navToggle.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    document.body.style.overflow = '';
+                    document.querySelectorAll('.mobile-nav-toggle-sub.active').forEach(toggle => toggle.classList.remove('active'));
+                    document.querySelectorAll('.mobile-sub-menu.active').forEach(subMenu => {
+                        subMenu.classList.remove('active');
+                        subMenu.style.maxHeight = '0px';
+                    });
+                });
+            });
+        }
+        
+        // --- FIM DO SCRIPT BASE ---
+
+
+        // --- NOVO JS MÍNIMO para Galeria e Abas ---
+        
+        // Função Global para a galeria (chamada via onclick)
+        function changeImage(newSrc, clickedElement) {
+            if (!newSrc || newSrc.includes('placehold.co')) return; // Não troca se for placeholder
+            
+            document.getElementById('mainProductImage').src = newSrc;
+            
+            // Atualiza a classe 'active' nos thumbnails
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            clickedElement.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lógica das Abas
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            if(tabButtons.length > 0) {
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const tabId = button.getAttribute('data-tab');
+
+                        // Remove 'active' de todos
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        tabContents.forEach(content => content.classList.remove('active'));
+
+                        // Adiciona 'active' ao clicado
+                        button.classList.add('active');
+                        document.getElementById(tabId).classList.add('active');
+                    });
+                });
+            }
+
+            // A lógica do smooth scroll, slider, etc. do "teste.html"
+            // não foi incluída, pois esta é uma página de detalhe
+            // e não a home. O menu mobile é a única parte necessária.
+        });
+    </script>
+</body>
+</html>
