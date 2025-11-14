@@ -52,18 +52,32 @@
         .login-box h2 { font-size: 2rem; margin-bottom: 2rem; color: var(--text-primary); }
         .input-group { margin-bottom: 1.5rem; text-align: left; }
         .input-group label { display: block; margin-bottom: 0.5rem; color: var(--text-primary); }
-        .input-group input { 
+        .input-group input,
+        .modal-form select,
+        .modal-form input,
+        .modal-form textarea { 
             width: 100%; padding: 0.8rem; border-radius: 8px; 
             border: 1px solid var(--border); 
             background-color: var(--background); 
             color: var(--text-primary); font-family: var(--font-body); 
+            font-size: 0.95rem;
         }
-        .input-group input:focus { border-color: var(--accent); outline: none; }
+        .input-group input:focus,
+        .modal-form select:focus,
+        .modal-form input:focus,
+        .modal-form textarea:focus { 
+            border-color: var(--accent); outline: none; 
+        }
         .logo-img { height: 60px; margin-bottom: 1.5rem; border-radius: 8px;} 
         .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
         .btn-primary { background-color: var(--accent); color: #FFF; }
         .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-primary:disabled { background-color: var(--text-secondary); cursor: not-allowed; }
+        .btn-secondary { background-color: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-secondary:hover { background-color: var(--background); color: var(--text-primary); }
+        
         .error-msg { color: var(--status-rejected); margin-top: 1rem; display: none; }
+        .success-msg { color: var(--status-confirmed); margin-top: 1rem; display: none; }
 
         /* --- LAYOUT PRINCIPAL (Portal) --- */
         #client-portal { display: none; flex: 1; }
@@ -200,15 +214,70 @@
         .status-Convertido-em-Pedido { background-color: var(--status-confirmed); }
         .status-Cancelado { background-color: var(--status-rejected); }
 
-        /* --- Seção: Novo Orçamento --- */
-        #novo-orcamento-view .layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            align-items: flex-start;
+        /* --- [NOVO] Seção: Novo Orçamento (Layout de 1 Coluna) --- */
+        #novo-orcamento-view {
+            max-width: 900px;
+            margin: 0 auto;
         }
+        
+        #orcamento-cart-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        #cart-items-list .cart-item {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: top;
+        }
+        #cart-items-list .cart-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        #cart-items-list .cart-item-details {
+            flex-grow: 1;
+        }
+        #cart-items-list .cart-item-details strong { 
+            color: var(--accent); 
+            font-size: 1.05rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        /* [NOVO] Estilo para a descrição do item personalizado */
+        #cart-items-list .cart-item-details pre {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: pre-wrap; /* Quebra a linha */
+            line-height: 1.5;
+        }
+        .cart-item-remove-btn {
+            background: none; border: none;
+            color: var(--status-rejected);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 15px;
+        }
+
+        #add-item-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 30px;
+        }
+        #add-item-controls .btn {
+            flex: 1;
+        }
+
         .product-list-container {
-            max-height: 70vh;
+            max-height: 60vh;
             overflow-y: auto;
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -237,21 +306,71 @@
             background: var(--background); color: var(--text-primary);
         }
         
-        .cart-summary {
+        /* --- [NOVO] Modal de Item Personalizado --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            align-items: flex-start; /* Alinha no topo */
+            justify-content: center;
+            overflow-y: auto; /* Permite rolar o modal */
+            padding: 5vh 0; /* Espaço no topo/baixo */
+        }
+        .modal-box {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            position: sticky;
-            top: 30px;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            z-index: 10001;
         }
-        #cart-items-list .cart-item {
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 {
+            font-family: var(--font-heading);
+            color: var(--text-primary);
+        }
+        .modal-close-btn {
+            background: none; border: none; font-size: 1.5rem;
+            color: var(--text-secondary); cursor: pointer;
+        }
+        .modal-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group label {
+            font-weight: 600;
             font-size: 0.9rem;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed var(--border);
         }
-        #cart-items-list .cart-item strong { color: var(--accent); }
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        /* --- Fim Seção Novo Orçamento --- */
+
         
         /* --- CHATBOT (Tema Oceano Azul) --- */
         .floating-chatbot { position: fixed; bottom: 15px; right: 15px; z-index: 9999; }
@@ -376,60 +495,68 @@
         .chatbot-send:hover { background-color: var(--accent-hover); }
         .chatbot-send:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        /* --- [NOVO] Estilos para o Logo do Chatbot --- */
+        /* --- Estilos para o Logo do Chatbot --- */
         .chatbot-logo-icon {
             width: 100%; height: 100%;
             object-fit: contain;
         }
         .nav-menu li a .chatbot-logo-icon {
             width: 20px; height: 20px;
-            margin-left: 2px; /* Ajuste do alinhamento do ícone da nav */
+            margin-left: 2px;
         }
         .chatbot-minimized-icon {
-            font-size: inherit; /* Reseta o font-size */
-            padding: 12px; /* Adiciona padding para o logo respirar */
+            font-size: inherit; 
+            padding: 12px;
         }
         .chatbot-minimized-icon .chatbot-logo-icon {
             width: 36px; height: 36px;
         }
         .chatbot-header-avatar {
-            font-size: inherit; /* Reseta o font-size */
+            font-size: inherit;
             padding: 5px;
         }
         .chatbot-header-avatar .chatbot-logo-icon {
             width: 35px; height: 35px;
         }
         .message.bot .message-avatar {
-            font-size: inherit; /* Reseta o font-size */
+            font-size: inherit;
             padding: 5px;
         }
         .message.bot .message-avatar .chatbot-logo-icon {
             width: 25px; height: 25px;
         }
-        /* --- Fim dos Novos Estilos --- */
 
 
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: static; }
             .main-content { margin-left: 0; }
-            #novo-orcamento-view .layout { grid-template-columns: 1fr; }
+            
+            /* [ALTERADO] Layout do novo orçamento em mobile */
+            #novo-orcamento-view {
+                max-width: 100%;
+            }
+            #add-item-controls {
+                flex-direction: column;
+            }
+            .form-grid {
+                grid-template-columns: 1fr; /* Campos um embaixo do outro */
+            }
+
             .cart-summary { position: static; top: 0; }
             .floating-chatbot { right: 15px; left: 15px; }
             .chatbot-window { right: 15px; left: 15px; width: auto; }
         }
 
-        /* CORREÇÃO DO BOTÃO "OK" FLUTUANTE */
+        /* [ALTERADO] #custom-dialog-modal agora é .modal-overlay */
         #custom-dialog-modal {
-            display: none; /* Garante que o modal está escondido por padrão */
+            display: none; 
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6);
             z-index: 10001;
-            align-items: center;
+            align-items: center; /* [ALTERADO] Para de volta no centro */
             justify-content: center;
+            padding: 0; /* [ALTERADO] Remove o padding */
         }
     </style>
 </head>
@@ -504,28 +631,45 @@
                 </div>
             </div>
 
+            <!-- [INÍCIO] SEÇÃO NOVO ORÇAMENTO (TOTALMENTE REFEITA) -->
             <div class="content-view" id="novo-orcamento-view" style="display:none;">
                  <div class="content-section">
-                    <div class="layout">
-                        <div class="product-list-container">
-                            <div id="product-list">
-                                <p style="padding: 2rem; text-align: center;">Carregando produtos...</p>
-                            </div>
+                    
+                    <!-- 1. O Carrinho de Orçamento (Agora no topo) -->
+                    <div id="orcamento-cart-container">
+                        <h3>Itens da Solicitação</h3>
+                        <div id="cart-items-list" style="margin: 1.5rem 0;">
+                            <p id="cart-empty-msg" style="color: var(--text-secondary);">Nenhum item adicionado.</p>
+                            <!-- Itens do carrinho serão inseridos aqui pelo JS -->
                         </div>
-                        <div class="cart-summary">
-                            <h3>Itens da Solicitação</h3>
-                            <div id="cart-items-list" style="margin: 1rem 0;">
-                                <p id="cart-empty-msg" style="color: var(--text-secondary);">Nenhum item adicionado.</p>
-                            </div>
-                            <button class="btn btn-primary" id="submit-orcamento-btn" style="width: 100%;">
-                                <i class="fas fa-paper-plane"></i> Enviar Solicitação
-                            </button>
-                            <p class="success-msg" id="orcamento-success-msg"></p>
-                            <p class="error-msg" id="orcamento-error-msg"></p>
+                        <button class="btn btn-primary" id="submit-orcamento-btn" style="width: 100%;">
+                            <i class="fas fa-paper-plane"></i> Enviar Solicitação
+                        </button>
+                        <p class="success-msg" id="orcamento-success-msg" style="margin-bottom: 0;"></p>
+                        <p class="error-msg" id="orcamento-error-msg" style="margin-bottom: 0;"></p>
+                    </div>
+
+                    <!-- 2. Botões de Ação -->
+                    <div id="add-item-controls">
+                        <button class="btn btn-primary" id="show-custom-item-modal-btn">
+                            <i class="fas fa-pencil-alt"></i> Adicionar Item Personalizado
+                        </button>
+                        <button class="btn btn-secondary" id="show-catalog-btn">
+                            <i class="fas fa-book-open"></i> Adicionar Produto do Catálogo
+                        </button>
+                    </div>
+
+                    <!-- 3. Lista de Produtos do Catálogo (Escondida por padrão) -->
+                    <div class="product-list-container" id="product-list-container" style="display: none;">
+                        <div id="product-list">
+                            <p style="padding: 2rem; text-align: center;">Carregando produtos...</p>
                         </div>
                     </div>
+
                 </div>
             </div>
+            <!-- [FIM] SEÇÃO NOVO ORÇAMENTO -->
+
 
             <div class="content-view" id="meus-pedidos-view" style="display:none;">
                 <div class="content-section">
@@ -550,6 +694,7 @@
         </div>
     </div>
 
+    <!-- Chatbot (Sem alterações) -->
     <div class="floating-chatbot" id="floatingChatbot" style="display:none;">
         <div id="chatbotButtonContainer">
              <div class="chatbot-minimized-icon" id="minimizedIcon" aria-label="Abrir Chatbot">
@@ -601,6 +746,7 @@
         </div>
     </div>
 
+    <!-- Modal de Alerta Customizado (Sem alterações) -->
     <div id="custom-dialog-modal" class="modal-overlay">
         <div style="background: var(--surface); padding: 2rem; border-radius: 8px; max-width: 400px; text-align: center;">
             <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
@@ -609,6 +755,90 @@
             </div>
         </div>
     </div>
+
+    <!-- [NOVO] Modal de Item Personalizado -->
+    <div id="custom-item-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Adicionar Item Personalizado</h2>
+                <button class="modal-close-btn" id="custom-item-modal-close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <form class="modal-form" id="custom-item-form">
+                <div class="form-group">
+                    <label for="custom-item-categoria">Categoria do Produto</label>
+                    <select id="custom-item-categoria" required>
+                        <option value="">-- Selecione a Categoria --</option>
+                        <option value="Adesivos">Adesivos</option>
+                        <option value="Lacres">Lacres</option>
+                        <option value="Brindes">Brindes</option>
+                        <option value="Impressos">Impressos</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Campos Condicionais: Adesivos/Lacres -->
+                <div id="fields-adesivo-lacre" style="display: none; display: grid; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="custom-item-material">Material (Ex: Vinil, BOPP, Couchê, Casca de Ovo)</label>
+                        <input type="text" id="custom-item-material" placeholder="Vinil Branco">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="custom-item-medida">Medida (Ex: 10x5cm)</label>
+                            <input type="text" id="custom-item-medida" placeholder="10cm x 5cm">
+                        </div>
+                        <div class="form-group">
+                            <label for="custom-item-cores-adesivo">Nº de Cores (Ex: 4x0)</label>
+                            <input type="text" id="custom-item-cores-adesivo" placeholder="4x0 (Colorido Frente)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Condicionais: Brindes -->
+                <div id="fields-brinde" style="display: none; display: grid; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label for="custom-item-tipo-brinde">Tipo de Brinde (Ex: Mousepad, Chaveiro)</label>
+                        <input type="text" id="custom-item-tipo-brinde" placeholder="Mousepad de Neoprene">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="custom-item-impressao-brinde">Tipo de Impressão</label>
+                            <input type="text" id="custom-item-impressao-brinde" placeholder="Sublimação">
+                        </div>
+                        <div class="form-group">
+                            <label for="custom-item-cores-brinde">Nº de Cores</label>
+                            <input type="text" id="custom-item-cores-brinde" placeholder="Colorido Total">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos Comuns -->
+                <div class="form-grid">
+                     <div class="form-group">
+                        <label for="custom-item-quantidade">Quantidade *</label>
+                        <input type="number" id="custom-item-quantidade" placeholder="Ex: 1000" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-item-prazo">Prazo (Para quando precisa?)</label>
+                        <input type="date" id="custom-item-prazo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="custom-item-detalhes">Detalhes Adicionais (Obrigatório se "Outro")</label>
+                    <textarea id="custom-item-detalhes" rows="3" placeholder="Ex: Preciso de corte especial, acabamento fosco..."></textarea>
+                </div>
+            </form>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="custom-item-modal-cancel-btn">Cancelar</button>
+                <button class="btn btn-primary" id="add-custom-item-to-cart-btn">Adicionar ao Orçamento</button>
+            </div>
+        </div>
+    </div>
+    <!-- [FIM] Modal -->
+
 
     <script>
         // URLs da API (do app.py)
@@ -620,15 +850,13 @@
         let CLIENT_ID = null;
         let CLIENT_NAME = null;
         
-        // --- Carrinho de Orçamento ---
-        let orcamentoCart = {};
+        // --- [ALTERADO] Carrinho de Orçamento agora é um ARRAY ---
+        let orcamentoCart = []; // Antes era um objeto {}
         let productsMap = {};
+        // [NOVO] Mapa para os seletores do formulário
+        let categoryMap = {};
 
-        // --- [CORREÇÃO JAVASCRIPT] ---
-        // Todos os seletores são movidos para dentro do 'DOMContentLoaded'
-        // para garantir que os elementos existam antes de selecioná-los.
-        
-        // --- Utils (Podem ficar fora, pois são apenas definições de função) ---
+        // --- Utils (Sem alterações) ---
         function getAuthHeaders() {
             return {
                 'Content-Type': 'application/json',
@@ -650,11 +878,9 @@
             return `status-${statusKey}`;
         }
         
-        // --- Variáveis Globais de Chat ---
         let chatHistory = [];
         
-        // --- Lógica de View (Troca de Painel) ---
-        // (Definições de função podem ficar fora)
+        // --- Lógica de View (Sem alterações) ---
         function switchView(viewId, pageTitleEl, views, navLinks) {
             views.forEach(view => view.classList.remove('active'));
             document.getElementById(`${viewId}-view`).classList.add('active');
@@ -669,24 +895,25 @@
 
             // Carrega dados sob demanda
             if (viewId === 'dashboard') loadDashboardStats();
-            if (viewId === 'novo-orcamento') loadProductsForOrcamento();
+            // [ALTERADO] Carrega produtos e o categoryMap
+            if (viewId === 'novo-orcamento') loadProductsAndCategories();
             if (viewId === 'meus-pedidos') loadOrderHistory();
-            if (viewId === 'falar-chat') toggleChat(true); // Força abertura do chat
+            if (viewId === 'falar-chat') toggleChat(true); 
         }
 
-        // --- AUTENTICAÇÃO ---
+        // --- AUTENTICAÇÃO (Sem alterações) ---
         function showPortal(loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks) {
             loginScreen.style.display = 'none';
             clientPortal.style.display = 'flex';
             clientNameDisplay.textContent = CLIENT_NAME;
-            floatingChatbot.style.display = 'block'; // Mostra o chatbot
+            floatingChatbot.style.display = 'block';
             switchView('dashboard', pageTitle, views, navLinks);
-            startChatbotSession(); // Inicia a sessão do chatbot
+            startChatbotSession(); 
         }
         function showLogin(loginScreen, clientPortal, floatingChatbot) {
             loginScreen.style.display = 'flex';
             clientPortal.style.display = 'none';
-            floatingChatbot.style.display = 'none'; // Esconde o chatbot
+            floatingChatbot.style.display = 'none';
             
             localStorage.removeItem('oceano_client_token');
             localStorage.removeItem('oceano_client_id');
@@ -730,9 +957,8 @@
              }
          }
         
-        // --- DASHBOARD ---
+        // --- DASHBOARD (Sem alterações) ---
         async function loadDashboardStats() {
-            // Seletores são passados ou buscados aqui
             const statAguardandoPagamento = document.getElementById('stat-aguardando-pagamento');
             const statEmProducao = document.getElementById('stat-em-producao');
             const statProntos = document.getElementById('stat-prontos');
@@ -750,10 +976,10 @@
             } catch (e) {
                 console.error("Erro stats:", e);
             }
-            loadOrderHistory(true); // Carrega a tabela de últimos pedidos
+            loadOrderHistory(true); 
         }
 
-        // --- MEUS PEDIDOS & ÚLTIMOS PEDIDOS (Dashboard) ---
+        // --- MEUS PEDIDOS (Sem alterações) ---
         async function loadOrderHistory(isDashboard = false) {
             const lastOrdersTable = document.querySelector('#last-orders-table tbody');
             const allOrdersTable = document.querySelector('#all-orders-table tbody');
@@ -771,7 +997,7 @@
                 let orders = await response.json();
                 
                 if (isDashboard) {
-                    orders = orders.slice(0, 5); // Pega só os 5 primeiros pro dashboard
+                    orders = orders.slice(0, 5); 
                 }
                 
                 tableBody.innerHTML = '';
@@ -812,23 +1038,42 @@
             }
         }
         
-        // --- NOVO ORÇAMENTO (Lógica do Carrinho) ---
-        async function loadProductsForOrcamento() {
+        // --- [ALTERADO] NOVO ORÇAMENTO (Lógica do Carrinho e Modal) ---
+        
+        // [ALTERADO] Carrega produtos para a lista E para os seletores do modal
+        async function loadProductsAndCategories() {
             const productListContainer = document.getElementById('product-list');
             productListContainer.innerHTML = '<p style="padding: 2rem; text-align: center;">Carregando produtos...</p>';
+            
+            // Reseta mapas
+            productsMap = {};
+            categoryMap = {};
+
             try {
                 const response = await fetch(API_PRODUTOS_URL); // API Pública
                 if (!response.ok) throw new Error('Falha ao carregar produtos.');
                 
                 const products = await response.json();
                 productListContainer.innerHTML = '';
-                productsMap = {};
                 
+                // Popula o Mapa de Categorias e a Lista de Produtos
                 products.forEach(p => {
-                    productsMap[p.id] = p; // Salva no mapa
+                    productsMap[p.id] = p; // Salva no mapa de produtos
+                    
+                    // Adiciona ao Mapa de Categorias
+                    const cat = p.categoria || 'Outros';
+                    const subcat = p.subcategoria || 'Geral';
+                    if (!categoryMap[cat]) {
+                        categoryMap[cat] = {};
+                    }
+                    if (!categoryMap[cat][subcat]) {
+                        categoryMap[cat][subcat] = [];
+                    }
+                    categoryMap[cat][subcat].push(p);
+
+                    // Adiciona ao HTML da lista de catálogo
                     const item = document.createElement('div');
                     item.className = 'product-item';
-                    // Adiciona o 'onclick' diretamente, já que esta função é chamada após o DOM carregar
                     item.innerHTML = `
                         <div class="product-image-box">
                             <img src="${p.imagem_principal_url || '/static/oceanologo.png'}" alt="${p.nome_produto}" onerror="this.src='/static/oceanologo.png';">
@@ -839,43 +1084,116 @@
                         </div>
                         <div class="product-actions">
                             <input type="number" min="1" value="1" id="qty-${p.id}" placeholder="Qtd.">
-                            <button class="btn btn-primary" onclick="addToOrcamentoCart(${p.id})">
+                            <button class="btn btn-primary" onclick="addCatalogItemToCart(${p.id})">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
                     `;
                     productListContainer.appendChild(item);
                 });
+                
+                // [NOVO] Popula o <select> de categoria principal no modal
+                const categoriaSelect = document.getElementById('custom-item-categoria');
+                categoriaSelect.innerHTML = '<option value="">-- Selecione a Categoria --</option>'; // Limpa
+                const mainCategories = ['Adesivos', 'Lacres', 'Brindes', 'Impressos', 'Outro'];
+                mainCategories.forEach(cat => {
+                     const option = document.createElement('option');
+                     option.value = cat;
+                     option.textContent = cat;
+                     categoriaSelect.appendChild(option);
+                });
+
             } catch (error) {
                 productListContainer.innerHTML = '<p style="color:var(--status-rejected);">Erro ao carregar produtos.</p>';
             }
         }
 
-        function addToOrcamentoCart(productId) {
+        // [ALTERADO] Adiciona item do CATÁLOGO ao carrinho
+        function addCatalogItemToCart(productId) {
             const product = productsMap[productId];
             if (!product) return;
             const quantity = parseInt(document.getElementById(`qty-${productId}`).value) || 1;
             
-            orcamentoCart[productId] = {
-                produto_id: product.id,
-                nome: product.nome_produto,
-                quantidade: quantity,
-                observacao: ''
-            };
+            // Verifica se o item já está no carrinho
+            const existingItem = orcamentoCart.find(item => item.type === 'catalog' && item.produto_id === productId);
+            
+            if (existingItem) {
+                existingItem.quantidade += quantity;
+            } else {
+                orcamentoCart.push({
+                    type: 'catalog',
+                    produto_id: product.id,
+                    nome: product.nome_produto,
+                    quantidade: quantity,
+                    observacao: `[Item de Catálogo] Cód: ${product.codigo_produto || 'S/C'}`
+                });
+            }
+            updateOrcamentoCartUI();
+            showCustomAlert(`${product.nome_produto} adicionado ao orçamento!`);
+        }
+
+        // [NOVO] Adiciona item PERSONALIZADO ao carrinho
+        function addCustomItemToCart() {
+            const form = document.getElementById('custom-item-form');
+            if (!form.checkValidity()) {
+                 showCustomAlert('Por favor, preencha pelo menos a Quantidade.');
+                 return;
+            }
+
+            const categoria = document.getElementById('custom-item-categoria').value;
+            const quantidade = parseInt(document.getElementById('custom-item-quantidade').value);
+            
+            if (categoria === 'Outro' && document.getElementById('custom-item-detalhes').value.trim() === '') {
+                showCustomAlert('Para a categoria "Outro", o campo "Detalhes Adicionais" é obrigatório.');
+                return;
+            }
+            
+            let observacaoString = `Item Personalizado:\n`;
+            observacaoString += `Categoria: ${categoria}\n`;
+            
+            // Pega dados dos campos condicionais
+            if (categoria === 'Adesivos' || categoria === 'Lacres') {
+                observacaoString += `Material: ${document.getElementById('custom-item-material').value || 'Não informado'}\n`;
+                observacaoString += `Medida: ${document.getElementById('custom-item-medida').value || 'Não informado'}\n`;
+                observacaoString += `Cores: ${document.getElementById('custom-item-cores-adesivo').value || 'Não informado'}\n`;
+            } else if (categoria === 'Brindes') {
+                observacaoString += `Tipo de Brinde: ${document.getElementById('custom-item-tipo-brinde').value || 'Não informado'}\n`;
+                observacaoString += `Impressão: ${document.getElementById('custom-item-impressao-brinde').value || 'Não informado'}\n`;
+                observacaoString += `Cores: ${document.getElementById('custom-item-cores-brinde').value || 'Não informado'}\n`;
+            }
+            
+            // Pega dados dos campos comuns
+            const prazo = document.getElementById('custom-item-prazo').value;
+            if (prazo) {
+                observacaoString += `Prazo Desejado: ${formatDate(prazo)}\n`;
+            }
+            observacaoString += `Detalhes: ${document.getElementById('custom-item-detalhes').value || 'Nenhum'}\n`;
+
+            orcamentoCart.push({
+                type: 'custom',
+                produto_id: null, // Importante: null para item personalizado
+                nome: `Item Personalizado (${categoria})`,
+                quantidade: quantidade,
+                observacao: observacaoString
+            });
+            
+            updateOrcamentoCartUI();
+            closeCustomItemModal();
+            showCustomAlert(`Item Personalizado (${categoria}) adicionado!`);
+        }
+
+        // [ALTERADO] Remove item do carrinho pelo ÍNDICE do array
+        function removeFromOrcamentoCart(index) {
+            orcamentoCart.splice(index, 1); // Remove o item pelo índice
             updateOrcamentoCartUI();
         }
 
-        function removeFromOrcamentoCart(productId) {
-            delete orcamentoCart[productId];
-            updateOrcamentoCartUI();
-        }
-
+        // [ALTERADO] Atualiza a UI do carrinho (lendo o array)
         function updateOrcamentoCartUI() {
             const cartItemsList = document.getElementById('cart-items-list');
             const cartEmptyMsg = document.getElementById('cart-empty-msg');
-            const productIds = Object.keys(orcamentoCart);
             
-            if (productIds.length === 0) {
+            if (orcamentoCart.length === 0) {
                 cartItemsList.innerHTML = '';
                 cartEmptyMsg.style.display = 'block';
                 return;
@@ -884,20 +1202,34 @@
             cartEmptyMsg.style.display = 'none';
             cartItemsList.innerHTML = '';
             
-            productIds.forEach(id => {
-                const item = orcamentoCart[id];
+            orcamentoCart.forEach((item, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'cart-item';
+                
+                // O <pre> preserva a formatação da string de observação
                 itemDiv.innerHTML = `
-                    <p>
-                        <strong>${item.quantidade}x</strong> ${item.nome}
-                        <button onclick="removeFromOrcamentoCart(${id})" style="float: right; color: var(--status-rejected); background: none; border: none; cursor: pointer;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </p>
+                    <div class="cart-item-details">
+                        <strong>${item.quantidade}x - ${item.nome}</strong>
+                        <pre>${item.observacao.trim()}</pre>
+                    </div>
+                    <button class="cart-item-remove-btn" onclick="removeFromOrcamentoCart(${index})" title="Remover item">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 `;
                 cartItemsList.appendChild(itemDiv);
             });
+        }
+
+        // [NOVO] Funções de controle do Modal de Item Personalizado
+        function showCustomItemModal() {
+            document.getElementById('custom-item-modal').style.display = 'flex';
+        }
+        function closeCustomItemModal() {
+            document.getElementById('custom-item-modal').style.display = 'none';
+            document.getElementById('custom-item-form').reset(); // Limpa o formulário
+            // Esconde todos os campos condicionais
+            document.getElementById('fields-adesivo-lacre').style.display = 'none';
+            document.getElementById('fields-brinde').style.display = 'none';
         }
         
         function showCustomAlert(message) {
@@ -907,7 +1239,7 @@
             customDialogModal.style.display = 'flex';
         }
 
-        // --- CHATBOT (Lógica de UI e API) ---
+        // --- CHATBOT (Sem alterações) ---
         
         function getCurrentTime() {
             return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -920,12 +1252,11 @@
             let formattedText = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
             if (!isUser) {
-                chatHistory.push({ role: 'model', content: text }); // Gemini usa 'model' para o bot
+                chatHistory.push({ role: 'model', content: text }); 
             } else {
                 chatHistory.push({ role: 'user', content: text });
             }
 
-            // [CORREÇÃO LOGO] Troca o ícone do robô pela tag <img>
             const avatarIcon = isUser 
                 ? '<i class="fas fa-user"></i>' 
                 : '<img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">';
@@ -949,7 +1280,6 @@
             typingDiv.className = 'message bot typing-message';
             typingDiv.id = 'typing-indicator';
             
-            // [CORREÇÃO LOGO] Troca o ícone do robô pela tag <img>
             typingDiv.innerHTML = `
                 <div class="message-avatar">
                     <img src="/static/logochat.png" alt="Chatbot" class="chatbot-logo-icon">
@@ -1023,9 +1353,8 @@
             showTypingIndicator();
             
             try {
-                // Prepara o histórico para o formato do app.py
                 const historyForAPI = chatHistory.slice(0, -1).map(item => ({
-                    role: item.role === 'model' ? 'bot' : 'user', // O app.py V3 esperava 'bot'
+                    role: item.role === 'model' ? 'bot' : 'user',
                     content: item.content
                 }));
                 
@@ -1036,7 +1365,7 @@
 
                 const response = await fetch(API_CHAT_URL, {
                     method: 'POST',
-                    headers: getAuthHeaders(), // Envia o token do cliente
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(payload)
                 });
                 
@@ -1057,11 +1386,9 @@
         }
         
         // --- INICIALIZAÇÃO GERAL ---
-        // [CORREÇÃO JAVASCRIPT]
-        // Todo o código que depende do DOM é movido para aqui dentro.
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- Seletores DOM ---
+            // --- Seletores DOM (Geral) ---
             const loginScreen = document.getElementById('login-screen');
             const clientPortal = document.getElementById('client-portal');
             const loginForm = document.getElementById('login-form');
@@ -1071,9 +1398,6 @@
             const pageTitle = document.getElementById('page-title');
             const views = document.querySelectorAll('.content-view');
             const navLinks = document.querySelectorAll('.nav-link');
-            const submitOrcamentoBtn = document.getElementById('submit-orcamento-btn');
-            const orcamentoSuccessMsg = document.getElementById('orcamento-success-msg');
-            const orcamentoErrorMsg = document.getElementById('orcamento-error-msg');
             
             // --- Seletores Chatbot ---
             const floatingChatbot = document.getElementById('floatingChatbot');
@@ -1086,9 +1410,27 @@
             const previewClose = document.getElementById('previewClose');
             const minimizedIcon = document.getElementById('minimizedIcon');
             
-            // --- Seletores Diálogo ---
+            // --- Seletores Diálogo de Alerta ---
             const customDialogModal = document.getElementById('custom-dialog-modal');
             const dialogOkBtn = document.getElementById('dialog-ok-btn');
+
+            // --- [NOVO] Seletores "Novo Orçamento" ---
+            const submitOrcamentoBtn = document.getElementById('submit-orcamento-btn');
+            const orcamentoSuccessMsg = document.getElementById('orcamento-success-msg');
+            const orcamentoErrorMsg = document.getElementById('orcamento-error-msg');
+            const showCustomItemModalBtn = document.getElementById('show-custom-item-modal-btn');
+            const showCatalogBtn = document.getElementById('show-catalog-btn');
+            const productListContainer = document.getElementById('product-list-container');
+            
+            // --- [NOVO] Seletores Modal Item Personalizado ---
+            const customItemModal = document.getElementById('custom-item-modal');
+            const customItemModalCloseBtn = document.getElementById('custom-item-modal-close-btn');
+            const customItemModalCancelBtn = document.getElementById('custom-item-modal-cancel-btn');
+            const addCustomItemToCartBtn = document.getElementById('add-custom-item-to-cart-btn');
+            const customItemCategoriaSelect = document.getElementById('custom-item-categoria');
+            const fieldsAdesivoLacre = document.getElementById('fields-adesivo-lacre');
+            const fieldsBrinde = document.getElementById('fields-brinde');
+
 
             // --- Listeners de Autenticação ---
             loginForm.addEventListener('submit', (e) => {
@@ -1106,10 +1448,10 @@
                 });
             });
 
-            // --- Listener Novo Orçamento ---
+            // --- [ALTERADO] Listener de Envio do Orçamento ---
             submitOrcamentoBtn.addEventListener('click', async () => {
-                const itens = Object.values(orcamentoCart);
-                if (itens.length === 0) {
+                // 'orcamentoCart' agora é o array
+                if (orcamentoCart.length === 0) {
                     showCustomAlert('Seu carrinho de orçamento está vazio.');
                     return;
                 }
@@ -1120,18 +1462,20 @@
                 orcamentoSuccessMsg.style.display = 'none';
 
                 try {
+                    // O payload (itens: array) já é o formato que a API espera!
                     const response = await fetch(`${API_CLIENT_URL}/orcamentos/novo`, {
                         method: 'POST',
                         headers: getAuthHeaders(),
-                        body: JSON.stringify({ itens: itens })
+                        body: JSON.stringify({ itens: orcamentoCart })
                     });
                     const data = await response.json();
                     if (response.ok) {
                         orcamentoSuccessMsg.textContent = data.mensagem;
                         orcamentoSuccessMsg.style.display = 'block';
-                        orcamentoCart = {};
-                        updateOrcamentoCartUI();
-                        switchView('meus-pedidos', pageTitle, views, navLinks); // Pula para a tela de pedidos
+                        orcamentoCart = []; // Limpa o array
+                        updateOrcamentoCartUI(); // Atualiza a UI (mostra vazio)
+                        // Pula para a tela de pedidos após o sucesso
+                        switchView('meus-pedidos', pageTitle, views, navLinks); 
                     } else {
                         throw new Error(data.erro || 'Falha ao enviar solicitação.');
                     }
@@ -1143,6 +1487,31 @@
                     submitOrcamentoBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
                 }
             });
+
+            // --- [NOVO] Listeners da página "Novo Orçamento" ---
+            showCustomItemModalBtn.addEventListener('click', showCustomItemModal);
+            
+            showCatalogBtn.addEventListener('click', () => {
+                // Alterna (toggle) a visibilidade da lista de produtos
+                const isVisible = productListContainer.style.display === 'block';
+                productListContainer.style.display = isVisible ? 'none' : 'block';
+                showCatalogBtn.innerHTML = isVisible 
+                    ? '<i class="fas fa-book-open"></i> Adicionar Produto do Catálogo'
+                    : '<i class="fas fa-eye-slash"></i> Esconder Catálogo';
+            });
+
+            // --- [NOVO] Listeners do Modal de Item Personalizado ---
+            customItemModalCloseBtn.addEventListener('click', closeCustomItemModal);
+            customItemModalCancelBtn.addEventListener('click', closeCustomItemModal);
+            addCustomItemToCartBtn.addEventListener('click', addCustomItemToCart);
+            
+            // Mostra/Esconde campos do formulário baseado na categoria
+            customItemCategoriaSelect.addEventListener('change', (e) => {
+                const categoria = e.target.value;
+                fieldsAdesivoLacre.style.display = (categoria === 'Adesivos' || categoria === 'Lacres') ? 'grid' : 'none';
+                fieldsBrinde.style.display = (categoria === 'Brindes') ? 'grid' : 'none';
+            });
+
 
             // --- Listeners do Chatbot ---
             chatbotButton.addEventListener('click', toggleChat);
@@ -1157,7 +1526,7 @@
                 }
             });
 
-            // --- Listener do Diálogo ---
+            // --- Listener do Diálogo de Alerta ---
             dialogOkBtn.addEventListener('click', () => {
                 customDialogModal.style.display = 'none';
             });
