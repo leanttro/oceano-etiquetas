@@ -25,6 +25,7 @@
             --status-confirmed: #10b981; /* Verde */
             --status-rejected: #ef4444; /* Vermelho */
             --status-default: #6b7280; /* Cinza */
+            --status-convertido: #a855f7; /* Roxo */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -111,12 +112,13 @@
         .status-true { background-color: var(--status-confirmed); }
         .status-false { background-color: var(--status-rejected); }
         
-        /* Status de Pedidos */
+        /* Status de Orçamentos e Pedidos */
         .status-Aguardando-Orçamento { background-color: var(--status-pending); color: #000; }
         .status-Aguardando-Pagamento { background-color: #3B82F6; color: #fff; }
         .status-Pago, .status-Pago-(Aguardando-Verificação) { background-color: var(--status-confirmed); }
         .status-Em-Produção { background-color: var(--status-default); }
         .status-Enviado, .status-Pronto-para-Retirada { background-color: #a855f7; } /* Roxo */
+        .status-Convertido-em-Pedido { background-color: var(--status-convertido); }
         .status-Cancelado { background-color: var(--status-rejected); }
         
         .product-image-cell img { height: 40px; width: 40px; object-fit: cover; border-radius: 4px; background: #fff; }
@@ -132,9 +134,9 @@
         .form-check { display: flex; align-items: center; gap: 0.5rem; background: var(--background); padding: 0.8rem; border-radius: 8px; }
         .form-check input { width: auto; }
 
-        /* Estilo Detalhe do Pedido */
-        .pedido-details p { margin-bottom: 0.5rem; font-size: 1.05rem; }
-        .pedido-details strong { color: var(--text-primary); font-weight: 700; }
+        /* Estilo Detalhe do Pedido/Orçamento */
+        .details-box p { margin-bottom: 0.5rem; font-size: 1.05rem; }
+        .details-box strong { color: var(--text-primary); font-weight: 700; }
         .itens-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; background-color: var(--background); }
         .itens-table th, .itens-table td { padding: 0.8rem; border: 1px solid var(--border); }
         .itens-table th { background-color: var(--accent-hover); color: var(--text-primary); }
@@ -174,30 +176,33 @@
             <div id="admin-hero">
                 <div class="container">
                     <h1>Painel de Controle Oceano</h1>
-                    <p>Gerenciamento de Pedidos, Produtos e Clientes</p>
+                    <p>Gerenciamento de Orçamentos, Pedidos, Produtos e Clientes</p>
                 </div>
                 
                 <div class="container">
                     <div class="stats-grid">
                         <div class="stat-card">
+                            <div class="stat-number" id="stat-orcamentos">-</div>
+                            <div class="stat-label">Orçamentos Pendentes</div>
+                        </div>
+                         <div class="stat-card">
                             <div class="stat-number" id="stat-pedidos">-</div>
-                            <div class="stat-label">Pedidos Pendentes</div>
+                            <div class="stat-label">Pedidos em Produção</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="stat-produtos">-</div>
                             <div class="stat-label">Produtos Ativos</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="stat-clientes">-</div>
-                            <div class="stat-label">Clientes Cadastrados</div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Abas de Navegação -->
+                <!-- Abas de Navegação (V3 - Lógica Separada) -->
                 <div class="admin-tabs">
-                    <button class="tab-link active" data-tab="pedidos-section">
-                        <i class="fas fa-receipt"></i> Pedidos
+                    <button class="tab-link active" data-tab="orcamentos-section">
+                        <i class="fas fa-calculator"></i> Orçamentos
+                    </button>
+                    <button class="tab-link" data-tab="pedidos-section">
+                        <i class="fas fa-receipt"></i> Pedidos (Aprovados)
                     </button>
                     <button class="tab-link" data-tab="produtos-section">
                         <i class="fas fa-boxes-stacked"></i> Produtos
@@ -211,24 +216,41 @@
                 </div>
             </div>
 
-            <!-- [Seção 1: PEDIDOS] -->
-            <section id="pedidos-section" class="admin-section active" style="background-color: var(--background);">
+            <!-- [Seção 1: ORÇAMENTOS] (Nova Seção V3) -->
+            <section id="orcamentos-section" class="admin-section active" style="background-color: var(--background);">
                  <div class="container">
                     <div class="section-header">
-                        <h2>Gerenciar Pedidos (Orçamentos)</h2>
+                        <h2>Gerenciar Orçamentos (Pendentes)</h2>
                     </div>
-                    <table class="admin-table" id="orders-table">
+                    <table class="admin-table" id="orcamentos-table">
                         <thead>
-                            <tr><th>ID</th><th>Cliente</th><th>Data</th><th>Valor Total</th><th>Status</th><th>Ações</th></tr>
+                            <tr><th>ID</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Status</th><th>Ações</th></tr>
                         </thead>
                         <tbody>
-                            <tr id="orders-loading"><td colspan="6" style="text-align: center;">Carregando pedidos...</td></tr>
+                            <tr id="orcamentos-loading"><td colspan="6" style="text-align: center;">Carregando orçamentos...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
             
-            <!-- [Seção 2: PRODUTOS] (Substitui o Colab) -->
+            <!-- [Seção 2: PEDIDOS APROVADOS] (Nova Seção V3) -->
+            <section id="pedidos-section" class="admin-section">
+                 <div class="container">
+                    <div class="section-header">
+                        <h2>Gerenciar Pedidos (Aprovados)</h2>
+                    </div>
+                    <table class="admin-table" id="pedidos-table">
+                        <thead>
+                            <tr><th>ID</th><th>Cliente</th><th>Data</th><th>Valor Total</th><th>Status</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="pedidos-loading"><td colspan="6" style="text-align: center;">Carregando pedidos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- [Seção 3: PRODUTOS] -->
             <section id="produtos-section" class="admin-section">
                 <div class="container">
                     <div class="section-header">
@@ -246,7 +268,7 @@
                 </div>
             </section>
 
-            <!-- [Seção 3: CLIENTES] -->
+            <!-- [Seção 4: CLIENTES] -->
             <section id="clientes-section" class="admin-section">
                  <div class="container">
                     <div class="section-header">
@@ -264,7 +286,7 @@
                 </div>
             </section>
 
-            <!-- [Seção 4: ADMINS] -->
+            <!-- [Seção 5: ADMINS] -->
             <section id="admins-section" class="admin-section" style="background-color: var(--background);">
                  <div class="container">
                     <div class="section-header">
@@ -288,7 +310,7 @@
     <!-- --- MODAIS DE GERENCIAMENTO --- -->
     <!-- ============================================================= -->
 
-    <!-- [Modal 1: PRODUTOS] (Complexo, substitui o Colab) -->
+    <!-- [Modal 1: PRODUTOS] -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" data-modal="product-modal">&times;</button>
@@ -366,7 +388,7 @@
                     </div>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check" style="display: none;"> <!-- [CORREÇÃO V2] Ocultado pois a coluna não existe -->
                     <input type="checkbox" id="product-ativo" checked>
                     <label for="product-ativo">Produto Ativo (Aparece no site)?</label>
                 </div>
@@ -451,76 +473,124 @@
         </div>
     </div>
     
-    <!-- [Modal 4: PEDIDOS] -->
-    <div id="order-detail-modal" class="modal-overlay">
+    <!-- [Modal 4: ORÇAMENTOS] (V3 - Lógica Separada) -->
+    <div id="orcamento-detail-modal" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close" data-modal="order-detail-modal">&times;</button>
-            <h3 id="order-modal-title">Detalhes do Pedido #<span id="order-id-display"></span></h3>
+            <button class="modal-close" data-modal="orcamento-detail-modal">&times;</button>
+            <h3 id="orcamento-modal-title">Detalhes do Orçamento #<span id="orcamento-id-display"></span></h3>
             
-            <div class="pedido-details">
-                <p><strong>Cliente:</strong> <span id="order-client-name"></span> (<span id="order-client-email"></span>)</p>
-                <p><strong>Data de Criação:</strong> <span id="order-creation-date"></span></p>
+            <div class="details-box">
+                <p><strong>Cliente:</strong> <span id="orcamento-client-name"></span> (<span id="orcamento-client-email"></span>)</p>
+                <p><strong>Data de Solicitação:</strong> <span id="orcamento-creation-date"></span></p>
                 
                 <div class="form-grid-3 full-width" style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem;">
                     <div class="input-group">
-                        <label for="order-status">Status do Pedido</label>
-                        <select id="order-status" required>
+                        <label for="orcamento-status">Status do Orçamento</label>
+                        <select id="orcamento-status" required>
                             <option value="Aguardando Orçamento">Aguardando Orçamento</option>
                             <option value="Aguardando Pagamento">Aguardando Pagamento</option>
                             <option value="Pago (Aguardando Verificação)">Pago (Aguardando Verificação)</option>
-                            <option value="Em Produção">Em Produção</option>
-                            <option value="Pronto para Retirada">Pronto para Retirada</option>
-                            <option value="Enviado">Enviado</option>
                             <option value="Cancelado">Cancelado</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <label for="order-frete">Valor Frete (R$)</label>
-                        <input type="number" id="order-frete" step="0.01" value="0.00">
+                        <label for="orcamento-frete">Valor Frete (R$)</label>
+                        <input type="number" id="orcamento-frete" step="0.01" value="0.00">
                     </div>
                     <div class="input-group">
-                        <label for="order-total">Valor Final Total (R$)</label>
-                        <input type="number" id="order-total" step="0.01" value="0.00" required>
+                        <label for="orcamento-total">Valor Final Total (R$)</label>
+                        <input type="number" id="orcamento-total" step="0.01" value="0.00" required>
                     </div>
                 </div>
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="order-payment-link">Chave PIX ou Link de Pagamento</label>
-                        <input type="text" id="order-payment-link" placeholder="sua-chave-pix ou https://...">
+                        <label for="orcamento-payment-link">Chave PIX ou Link de Pagamento</label>
+                        <input type="text" id="orcamento-payment-link" placeholder="sua-chave-pix ou https://...">
                     </div>
                     <div class="input-group">
-                        <label for="order-tracking-code">Código de Rastreio</label>
-                        <input type="text" id="order-tracking-code" placeholder="PB123456789BR">
+                        <!-- Campo vazio, pois o rastreio só existe no PEDIDO -->
                     </div>
                 </div>
                  <div class="input-group full-width">
-                    <label for="order-admin-notes">Observações do Admin (visível ao cliente)</label>
-                    <textarea id="order-admin-notes" rows="2"></textarea>
+                    <label for="orcamento-admin-notes">Observações do Admin (visível ao cliente)</label>
+                    <textarea id="orcamento-admin-notes" rows="2"></textarea>
                 </div>
 
-
-                <h4 style="margin-top: 1rem;">Itens do Pedido</h4>
+                <h4 style="margin-top: 1rem;">Itens do Orçamento</h4>
                 <table class="itens-table">
                     <thead>
                         <tr><th>Produto</th><th>Cód.</th><th>Qtd.</th><th>Obs. Cliente</th><th>Preço Unit. (R$)</th></tr>
                     </thead>
-                    <tbody id="order-items-list">
+                    <tbody id="orcamento-items-list">
                         <!-- Itens preenchidos via JS -->
                     </tbody>
                 </table>
                 
-                <p class="error-msg" id="order-error-msg">Erro ao atualizar pedido.</p>
-                <p class="success-msg" id="order-success-msg">Pedido atualizado!</p>
+                <p class="error-msg" id="orcamento-error-msg">Erro ao atualizar.</p>
+                <p class="success-msg" id="orcamento-success-msg">Orçamento atualizado!</p>
             </div>
             
             <div class="modal-buttons">
-                <button type="button" class="btn btn-danger" data-modal="order-detail-modal">Fechar</button>
-                <button type="button" class="btn btn-success" id="save-order-btn">Salvar Alterações</button>
+                <button type="button" class="btn btn-danger" data-modal="orcamento-detail-modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="save-orcamento-btn">Salvar Alterações</button>
+                <button type="button" class="btn btn-success" id="approve-orcamento-btn">Aprovar e Converter em Pedido</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- [Modal 5: PEDIDOS APROVADOS] (V3 - Lógica Separada) -->
+    <div id="pedido-detail-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" data-modal="pedido-detail-modal">&times;</button>
+            <h3 id="pedido-modal-title">Detalhes do Pedido #<span id="pedido-id-display"></span></h3>
+            
+            <div class="details-box">
+                <p><strong>Cliente:</strong> <span id="pedido-client-name"></span> (<span id="pedido-client-email"></span>)</p>
+                <p><strong>Valor Total:</strong> <span id="pedido-total-display"></span></p>
+                
+                <div class="form-grid-3 full-width" style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem;">
+                    <div class="input-group">
+                        <label for="pedido-status">Status do Pedido</label>
+                        <select id="pedido-status" required>
+                            <option value="Em Produção">Em Produção</option>
+                            <option value="Pronto para Retirada">Pronto para Retirada</option>
+                            <option value="Enviado">Enviado</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                         <label for="pedido-tracking-code">Código de Rastreio</label>
+                        <input type="text" id="pedido-tracking-code" placeholder="PB123456789BR">
+                    </div>
+                    <div class="input-group">
+                         <label for="pedido-admin-notes">Observações do Admin</label>
+                         <input type="text" id="pedido-admin-notes">
+                    </div>
+                </div>
+
+                <h4 style="margin-top: 1rem;">Itens do Pedido</h4>
+                <table class="itens-table">
+                    <thead>
+                        <tr><th>Produto</th><th>Cód.</th><th>Qtd.</th><th>Preço Unit.</th></tr>
+                    </thead>
+                    <tbody id="pedido-items-list">
+                        <!-- Itens preenchidos via JS -->
+                    </tbody>
+                </table>
+                
+                <p class="error-msg" id="pedido-error-msg">Erro ao atualizar.</p>
+                <p class="success-msg" id="pedido-success-msg">Pedido atualizado!</p>
+            </div>
+            
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-danger" data-modal="pedido-detail-modal">Fechar</button>
+                <button type="button" class="btn btn-success" id="save-pedido-btn">Salvar Status do Pedido</button>
             </div>
         </div>
     </div>
 
-    <!-- [Modal 5: DIÁLOGO DE CONFIRMAÇÃO] -->
+    <!-- [Modal 6: DIÁLOGO DE CONFIRMAÇÃO] -->
     <div id="custom-dialog-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
@@ -532,7 +602,7 @@
     </div>
 
     <!-- ============================================================= -->
-    <!-- --- JAVASCRIPT DO PAINEL ADMIN --- -->
+    <!-- --- JAVASCRIPT DO PAINEL ADMIN (V3 - Lógica Separada) --- -->
     <!-- ============================================================= -->
     <script>
         // URL da API (do app.py)
@@ -550,12 +620,14 @@
         const statProdutosEl = document.getElementById('stat-produtos');
         const statClientesEl = document.getElementById('stat-clientes');
         const statPedidosEl = document.getElementById('stat-pedidos');
+        const statOrcamentosEl = document.getElementById('stat-orcamentos'); // V3
 
         // --- Seletores Tabelas ---
         const productsTableBody = document.querySelector('#products-table tbody');
         const clientsTableBody = document.querySelector('#clients-table tbody');
         const adminsTableBody = document.querySelector('#admins-table tbody'); 
-        const ordersTableBody = document.querySelector('#orders-table tbody');
+        const orcamentosTableBody = document.querySelector('#orcamentos-table tbody'); // V3
+        const pedidosTableBody = document.querySelector('#pedidos-table tbody'); // V3
 
         // --- Seletores Modais ---
         const productModal = document.getElementById('product-modal');
@@ -564,37 +636,51 @@
         const clientForm = document.getElementById('client-form');
         const adminModal = document.getElementById('admin-modal'); 
         const adminForm = document.getElementById('admin-form'); 
-        const orderDetailModal = document.getElementById('order-detail-modal');
-        const saveOrderBtn = document.getElementById('save-order-btn');
+        const orcamentoDetailModal = document.getElementById('orcamento-detail-modal'); // V3
+        const pedidoDetailModal = document.getElementById('pedido-detail-modal'); // V3
 
-        // --- Seletores Modal Produto (detalhados) ---
+        // --- Seletores Modal Produto ---
         const productIdInput = document.getElementById('product-id');
         const productErrorMsg = document.getElementById('product-error-msg');
         const productSuccessMsg = document.getElementById('product-success-msg');
         
-        // --- Seletores Modal Cliente (detalhados) ---
+        // --- Seletores Modal Cliente ---
         const clientIdInput = document.getElementById('client-id');
         const clientErrorMsg = document.getElementById('client-error-msg');
         const clientSuccessMsg = document.getElementById('client-success-msg');
         
-        // --- Seletores Modal Admin (detalhados) ---
+        // --- Seletores Modal Admin ---
         const adminErrorMsg = document.getElementById('admin-error-msg');
         const adminSuccessMsg = document.getElementById('admin-success-msg');
         
-        // --- Seletores Modal Pedido (detalhados) ---
-        const orderIdDisplay = document.getElementById('order-id-display');
-        const orderClientName = document.getElementById('order-client-name');
-        const orderClientEmail = document.getElementById('order-client-email');
-        const orderCreationDate = document.getElementById('order-creation-date');
-        const orderStatusSelect = document.getElementById('order-status');
-        const orderFreteInput = document.getElementById('order-frete');
-        const orderTotalInput = document.getElementById('order-total');
-        const orderPaymentLink = document.getElementById('order-payment-link');
-        const orderTrackingCode = document.getElementById('order-tracking-code');
-        const orderAdminNotes = document.getElementById('order-admin-notes');
-        const orderItemsList = document.getElementById('order-items-list');
-        const orderErrorMsg = document.getElementById('order-error-msg');
-        const orderSuccessMsg = document.getElementById('order-success-msg');
+        // --- Seletores Modal ORÇAMENTO (V3) ---
+        const orcamentoIdDisplay = document.getElementById('orcamento-id-display');
+        const orcamentoClientName = document.getElementById('orcamento-client-name');
+        const orcamentoClientEmail = document.getElementById('orcamento-client-email');
+        const orcamentoCreationDate = document.getElementById('orcamento-creation-date');
+        const orcamentoStatusSelect = document.getElementById('orcamento-status');
+        const orcamentoFreteInput = document.getElementById('orcamento-frete');
+        const orcamentoTotalInput = document.getElementById('orcamento-total');
+        const orcamentoPaymentLink = document.getElementById('orcamento-payment-link');
+        const orcamentoAdminNotes = document.getElementById('orcamento-admin-notes');
+        const orcamentoItemsList = document.getElementById('orcamento-items-list');
+        const orcamentoErrorMsg = document.getElementById('orcamento-error-msg');
+        const orcamentoSuccessMsg = document.getElementById('orcamento-success-msg');
+        const saveOrcamentoBtn = document.getElementById('save-orcamento-btn');
+        const approveOrcamentoBtn = document.getElementById('approve-orcamento-btn');
+        
+        // --- Seletores Modal PEDIDO (V3) ---
+        const pedidoIdDisplay = document.getElementById('pedido-id-display');
+        const pedidoClientName = document.getElementById('pedido-client-name');
+        const pedidoClientEmail = document.getElementById('pedido-client-email');
+        const pedidoTotalDisplay = document.getElementById('pedido-total-display');
+        const pedidoStatusSelect = document.getElementById('pedido-status');
+        const pedidoTrackingCode = document.getElementById('pedido-tracking-code');
+        const pedidoAdminNotes = document.getElementById('pedido-admin-notes');
+        const pedidoItemsList = document.getElementById('pedido-items-list');
+        const pedidoErrorMsg = document.getElementById('pedido-error-msg');
+        const pedidoSuccessMsg = document.getElementById('pedido-success-msg');
+        const savePedidoBtn = document.getElementById('save-pedido-btn');
 
         // --- Seletores Dialog Customizado ---
         const customDialogModal = document.getElementById('custom-dialog-modal');
@@ -602,8 +688,9 @@
         const dialogOkBtn = document.getElementById('dialog-ok-btn');
         const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
         let confirmCallback = null;
-        let isEditing = false; // Flag genérica para create/update
-        let currentOrderId = null; // ID do pedido atualmente aberto
+        let isEditing = false;
+        let currentOrcamentoId = null; // V3
+        let currentPedidoId = null; // V3
 
         // --- FUNÇÕES DE UTILS ---
         function getAuthHeaders() {
@@ -711,10 +798,10 @@
         // --- CARREGAMENTO DO DASHBOARD (MÉTODO PRINCIPAL) ---
         async function loadDashboard() {
             if (!ADMIN_TOKEN) return showLogin();
-            // Carrega tudo em paralelo
             Promise.all([
                 loadDashboardStats(),
-                loadOrdersTable(),
+                loadOrcamentosTable(), // V3
+                loadPedidosTable(), // V3
                 loadProductsTable(),
                 loadClientsTable(),
                 loadAdminsTable()
@@ -752,33 +839,34 @@
                 const stats = await response.json();
                 statProdutosEl.textContent = stats.stat_produtos;
                 statClientesEl.textContent = stats.stat_clientes;
-                statPedidosEl.textContent = stats.stat_pedidos;
+                statOrcamentosEl.textContent = stats.stat_orcamentos; // V3
+                statPedidosEl.textContent = stats.stat_pedidos; // V3
             } catch (error) {
                 console.error('Erro ao carregar stats:', error);
             }
         }
         
         // =============================================================
-        // --- CRUD PEDIDOS (Orçamentos) ---
+        // --- CRUD ORÇAMENTOS (V3) ---
         // =============================================================
         
-        async function loadOrdersTable() {
-            ordersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
+        async function loadOrcamentosTable() {
+            orcamentosTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
             try {
-                const response = await fetch(`${API_BASE_URL}/pedidos`, { headers: getAuthHeaders() });
+                const response = await fetch(`${API_BASE_URL}/orcamentos`, { headers: getAuthHeaders() });
                 if (response.status === 401) return showLogin();
                 
-                const orders = await response.json();
-                ordersTableBody.innerHTML = '';
+                const orcamentos = await response.json();
+                orcamentosTableBody.innerHTML = '';
                 
-                if (orders.length === 0) {
-                     ordersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum pedido encontrado.</td></tr>';
+                if (orcamentos.length === 0) {
+                     orcamentosTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum orçamento pendente encontrado.</td></tr>';
                      return;
                 }
 
-                orders.forEach(o => {
+                orcamentos.forEach(o => {
                     const statusClass = getStatusClass(o.status);
-                    const row = ordersTableBody.insertRow();
+                    const row = orcamentosTableBody.insertRow();
                     row.innerHTML = `
                         <td>#${o.id}</td>
                         <td>${o.nome_cliente || 'Cliente Deletado'}</td>
@@ -786,20 +874,220 @@
                         <td>${formatCurrency(o.valor_final_total)}</td>
                         <td><span class="status-badge ${statusClass}">${o.status}</span></td>
                         <td>
-                            <button class="btn-action btn-primary" onclick="openOrderDetailModal(${o.id})">Detalhes/Editar</button>
+                            <button class="btn-action btn-primary" onclick="openOrcamentoDetailModal(${o.id})">Definir Preço</button>
                         </td>
                     `;
                 });
             } catch (error) {
-                ordersTableBody.innerHTML = '<tr><td colspan="6" style="color:var(--status-rejected);">Erro ao carregar pedidos.</td></tr>';
+                orcamentosTableBody.innerHTML = '<tr><td colspan="6" style="color:var(--status-rejected);">Erro ao carregar orçamentos.</td></tr>';
             }
         }
         
-        let orderItensCache = []; // Cache para os itens do pedido
-        
-        async function openOrderDetailModal(id) {
+        async function openOrcamentoDetailModal(id) {
             hideAllMessages();
-            currentOrderId = id;
+            currentOrcamentoId = id;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/orcamentos/${id}`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const orcamento = await response.json();
+                
+                orcamentoIdDisplay.textContent = orcamento.id;
+                orcamentoClientName.textContent = orcamento.nome_cliente || 'N/A';
+                orcamentoClientEmail.textContent = orcamento.email || 'N/A';
+                orcamentoCreationDate.textContent = formatDate(orcamento.data_criacao);
+                orcamentoStatusSelect.value = orcamento.status;
+                orcamentoFreteInput.value = orcamento.valor_frete || 0.00;
+                orcamentoTotalInput.value = orcamento.valor_final_total || 0.00;
+                orcamentoPaymentLink.value = orcamento.chave_pix || '';
+                orcamentoAdminNotes.value = orcamento.observacoes_admin || '';
+                
+                orcamentoItemsList.innerHTML = '';
+                
+                orcamento.itens.forEach(item => {
+                    const row = orcamentoItemsList.insertRow();
+                    row.innerHTML = `
+                        <td>${item.nome_produto || '(Produto Deletado)'}</td>
+                        <td>${item.codigo_produto || 'N/A'}</td>
+                        <td>${item.quantidade_solicitada}</td>
+                        <td>${item.observacoes_cliente || '-'}</td>
+                        <td>
+                            <input type="number" step="0.01" class="item-price-input" data-item-id="${item.id}" value="${item.preco_unitario_definido || 0.00}" style="width: 80px; padding: 5px; background: #fff; color: #000;">
+                        </td>
+                    `;
+                });
+                
+                orcamentoDetailModal.style.display = 'flex';
+
+            } catch (error) {
+                showCustomAlert('Erro ao carregar dados do orçamento: ' + error.message);
+            }
+        }
+        
+        // Salvar alterações no ORÇAMENTO
+        saveOrcamentoBtn.addEventListener('click', async () => {
+            if (!currentOrcamentoId) return;
+            
+            hideAllMessages();
+            saveOrcamentoBtn.disabled = true;
+            
+            const updatedItens = [];
+            document.querySelectorAll('#orcamento-items-list .item-price-input').forEach(input => {
+                updatedItens.push({
+                    id: parseInt(input.dataset.itemId),
+                    preco_unitario_definido: parseFloat(input.value) || 0.0
+                });
+            });
+
+            const updateData = {
+                status: orcamentoStatusSelect.value,
+                valor_frete: parseFloat(orcamentoFreteInput.value) || 0.0,
+                valor_final_total: parseFloat(orcamentoTotalInput.value) || 0.0,
+                chave_pix: orcamentoPaymentLink.value,
+                observacoes_admin: orcamentoAdminNotes.value,
+                itens: updatedItens
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/orcamentos/${currentOrcamentoId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(updateData)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    orcamentoSuccessMsg.style.display = 'block';
+                    loadOrcamentosTable(); 
+                    loadDashboardStats();
+                    setTimeout(() => orcamentoDetailModal.style.display = 'none', 1500);
+                } else {
+                    orcamentoErrorMsg.textContent = data.erro || 'Falha ao salvar.';
+                    orcamentoErrorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                orcamentoErrorMsg.textContent = 'Erro de conexão com a API.';
+                orcamentoErrorMsg.style.display = 'block';
+            } finally {
+                saveOrcamentoBtn.disabled = false;
+            }
+        });
+
+        // APROVAR Orçamento e Converter em Pedido
+        approveOrcamentoBtn.addEventListener('click', async () => {
+             if (!currentOrcamentoId) return;
+
+             showCustomConfirm(`Deseja aprovar o orçamento #${currentOrcamentoId} e convertê-lo em um Pedido? (Os preços atuais serão salvos)`, async (confirmed) => {
+                if (!confirmed) return;
+
+                hideAllMessages();
+                approveOrcamentoBtn.disabled = true;
+                
+                // 1. Salva as alterações primeiro (garante que os preços estão corretos)
+                // A função saveOrcamentoBtn.click() chamará o PUT de orçamento e se for sucesso (response.ok)
+                // ela continua o fluxo. Vamos encapsular isso em uma função para evitar recursão
+                
+                // Nova função para salvar e aprovar
+                const saveAndApprove = async () => {
+                    const updatedItens = [];
+                    document.querySelectorAll('#orcamento-items-list .item-price-input').forEach(input => {
+                        updatedItens.push({
+                            id: parseInt(input.dataset.itemId),
+                            preco_unitario_definido: parseFloat(input.value) || 0.0
+                        });
+                    });
+
+                    const updateData = {
+                        status: orcamentoStatusSelect.value,
+                        valor_frete: parseFloat(orcamentoFreteInput.value) || 0.0,
+                        valor_final_total: parseFloat(orcamentoTotalInput.value) || 0.0,
+                        chave_pix: orcamentoPaymentLink.value,
+                        observacoes_admin: orcamentoAdminNotes.value,
+                        itens: updatedItens
+                    };
+                    
+                    try {
+                        // 1. Salvar Alterações
+                        let response = await fetch(`${API_BASE_URL}/orcamentos/${currentOrcamentoId}`, {
+                            method: 'PUT',
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify(updateData)
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.erro || 'Falha ao salvar o orçamento antes da aprovação.');
+                        }
+                        
+                        // 2. Aprovar/Converter
+                        response = await fetch(`${API_BASE_URL}/orcamentos/${currentOrcamentoId}/aprovar`, {
+                            method: 'POST',
+                            headers: getAuthHeaders()
+                        });
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            showCustomAlert(data.mensagem);
+                            loadOrcamentosTable();
+                            loadPedidosTable();
+                            loadDashboardStats();
+                            orcamentoDetailModal.style.display = 'none';
+                        } else {
+                            throw new Error(data.erro || 'Falha na conversão para Pedido.');
+                        }
+                    } catch (error) {
+                        orcamentoErrorMsg.textContent = `Erro: ${error.message}`;
+                        orcamentoErrorMsg.style.display = 'block';
+                    } finally {
+                        approveOrcamentoBtn.disabled = false;
+                    }
+                };
+                
+                await saveAndApprove();
+             });
+        });
+        
+        // =============================================================
+        // --- CRUD PEDIDOS (V3) ---
+        // =============================================================
+        
+        async function loadPedidosTable() {
+            pedidosTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/pedidos`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const pedidos = await response.json();
+                pedidosTableBody.innerHTML = '';
+                
+                if (pedidos.length === 0) {
+                     pedidosTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum pedido aprovado encontrado.</td></tr>';
+                     return;
+                }
+
+                pedidos.forEach(p => {
+                    const statusClass = getStatusClass(p.status);
+                    const row = pedidosTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>#${p.id}</td>
+                        <td>${p.nome_cliente || 'Cliente Deletado'}</td>
+                        <td>${formatDate(p.data_criacao)}</td>
+                        <td>${formatCurrency(p.valor_final_total)}</td>
+                        <td><span class="status-badge ${statusClass}">${p.status}</span></td>
+                        <td>
+                            <button class="btn-action" style="background:var(--status-default); color:#fff;" onclick="openPedidoDetailModal(${p.id})">Rastreio/Status</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                pedidosTableBody.innerHTML = '<tr><td colspan="6" style="color:var(--status-rejected);">Erro ao carregar pedidos.</td></tr>';
+            }
+        }
+        
+        async function openPedidoDetailModal(id) {
+            hideAllMessages();
+            currentPedidoId = id;
             
             try {
                 const response = await fetch(`${API_BASE_URL}/pedidos/${id}`, { headers: getAuthHeaders() });
@@ -807,91 +1095,70 @@
                 
                 const pedido = await response.json();
                 
-                orderIdDisplay.textContent = pedido.id;
-                orderClientName.textContent = pedido.nome_cliente || 'N/A';
-                orderClientEmail.textContent = pedido.email || 'N/A';
-                orderCreationDate.textContent = formatDate(pedido.data_criacao);
-                orderStatusSelect.value = pedido.status;
-                orderFreteInput.value = pedido.valor_frete || 0.00;
-                orderTotalInput.value = pedido.valor_final_total || 0.00;
-                orderPaymentLink.value = pedido.chave_pix || '';
-                orderTrackingCode.value = pedido.codigo_rastreio || '';
-                orderAdminNotes.value = pedido.observacoes_admin || '';
+                pedidoIdDisplay.textContent = pedido.id;
+                pedidoClientName.textContent = pedido.nome_cliente || 'N/A';
+                pedidoClientEmail.textContent = pedido.email || 'N/A';
+                pedidoTotalDisplay.textContent = formatCurrency(pedido.valor_final_total);
+                pedidoStatusSelect.value = pedido.status;
+                pedidoTrackingCode.value = pedido.codigo_rastreio || '';
+                pedidoAdminNotes.value = pedido.observacoes_admin || '';
                 
-                orderItemsList.innerHTML = '';
-                orderItensCache = pedido.itens; // Salva no cache
+                pedidoItemsList.innerHTML = '';
                 
                 pedido.itens.forEach(item => {
-                    const row = orderItemsList.insertRow();
+                    const row = pedidoItemsList.insertRow();
                     row.innerHTML = `
                         <td>${item.nome_produto || '(Produto Deletado)'}</td>
                         <td>${item.codigo_produto || 'N/A'}</td>
                         <td>${item.quantidade_solicitada}</td>
-                        <td>${item.observacoes_cliente || '-'}</td>
-                        <td>
-                            <input type="number" step="0.01" class="item-price-input" data-item-id="${item.id}" value="${item.preco_unitario_definido || 0.00}" style="width: 80px; padding: 5px;">
-                        </td>
+                        <td>${formatCurrency(item.preco_unitario_definido)}</td>
                     `;
                 });
                 
-                orderDetailModal.style.display = 'flex';
+                pedidoDetailModal.style.display = 'flex';
 
             } catch (error) {
                 showCustomAlert('Erro ao carregar dados do pedido: ' + error.message);
             }
         }
         
-        saveOrderBtn.addEventListener('click', async () => {
-            if (!currentOrderId) return;
+        savePedidoBtn.addEventListener('click', async () => {
+            if (!currentPedidoId) return;
             
             hideAllMessages();
-            saveOrderBtn.disabled = true;
-            
-            // 1. Coleta os preços unitários atualizados dos itens
-            const updatedItens = [];
-            document.querySelectorAll('#order-items-list .item-price-input').forEach(input => {
-                updatedItens.push({
-                    id: parseInt(input.dataset.itemId),
-                    preco_unitario_definido: parseFloat(input.value) || 0.0
-                });
-            });
+            savePedidoBtn.disabled = true;
 
-            // 2. Coleta os dados principais do pedido
             const updateData = {
-                status: orderStatusSelect.value,
-                valor_frete: parseFloat(orderFreteInput.value) || 0.0,
-                valor_final_total: parseFloat(orderTotalInput.value) || 0.0,
-                chave_pix: orderPaymentLink.value,
-                codigo_rastreio: orderTrackingCode.value,
-                observacoes_admin: orderAdminNotes.value,
-                itens: updatedItens // Envia os itens atualizados
+                status: pedidoStatusSelect.value,
+                codigo_rastreio: pedidoTrackingCode.value,
+                observacoes_admin: pedidoAdminNotes.value
             };
             
             try {
-                const response = await fetch(`${API_BASE_URL}/pedidos/${currentOrderId}`, {
+                const response = await fetch(`${API_BASE_URL}/pedidos/${currentPedidoId}`, {
                     method: 'PUT',
                     headers: getAuthHeaders(),
                     body: JSON.stringify(updateData)
                 });
                 
                 const data = await response.json();
-
                 if (response.ok) {
-                    orderSuccessMsg.style.display = 'block';
-                    loadOrdersTable(); 
+                    pedidoSuccessMsg.style.display = 'block';
+                    loadPedidosTable(); 
                     loadDashboardStats();
-                    setTimeout(() => orderDetailModal.style.display = 'none', 1500);
+                    setTimeout(() => pedidoDetailModal.style.display = 'none', 1500);
                 } else {
-                    orderErrorMsg.textContent = data.erro || 'Falha ao salvar.';
-                    orderErrorMsg.style.display = 'block';
+                    pedidoErrorMsg.textContent = data.erro || 'Falha ao salvar.';
+                    pedidoErrorMsg.style.display = 'block';
                 }
             } catch (error) {
-                orderErrorMsg.textContent = 'Erro de conexão com a API.';
-                orderErrorMsg.style.display = 'block';
+                pedidoErrorMsg.textContent = 'Erro de conexão com a API.';
+                pedidoErrorMsg.style.display = 'block';
             } finally {
-                saveOrderBtn.disabled = false;
+                savePedidoBtn.disabled = false;
             }
         });
+
 
         // =============================================================
         // --- CRUD PRODUTOS ---
@@ -912,16 +1179,14 @@
                 }
 
                 products.forEach(p => {
-                    const statusClass = getStatusClass(p.esta_ativo ? "true" : "false");
-                    const statusText = p.esta_ativo ? 'Ativo' : 'Inativo';
-                    
+                    // [CORREÇÃO V2] Removido 'esta_ativo'
                     const row = productsTableBody.insertRow();
                     row.innerHTML = `
                         <td class="product-image-cell"><img src="${p.imagem_principal_url || '/static/oceanologo.png'}" alt="${p.nome_produto}" onerror="this.src='/static/oceanologo.png';"></td>
                         <td>${p.codigo_produto || '-'}</td>
                         <td>${p.nome_produto}</td>
                         <td>${p.categoria || '-'}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td><span class="status-badge status-true">Ativo</span></td> <!-- Mockado como Ativo -->
                         <td>
                             <button class="btn-action" style="background:var(--accent); color:white;" onclick="openEditProductModal(${p.id})">Editar</button>
                             <button class="btn-action btn-danger" onclick="deleteProduct(${p.id})">Excluir</button>
@@ -938,7 +1203,7 @@
             document.getElementById('product-modal-title').textContent = 'Adicionar Novo Produto';
             document.getElementById('save-product-btn').textContent = 'Salvar Produto';
             productForm.reset(); 
-            document.getElementById('product-ativo').checked = true;
+            // document.getElementById('product-ativo').checked = true; // [CORREÇÃO V2] Removido
             productIdInput.value = '';
             hideAllMessages();
             productModal.style.display = 'flex';
@@ -964,16 +1229,16 @@
                 document.getElementById('product-whatsapp').value = p.whatsapp_link_texto;
                 document.getElementById('product-desc-curta').value = p.descricao_curta;
                 document.getElementById('product-desc-longa').value = p.descricao_longa;
-                document.getElementById('product-specs').value = p.especificacoes_tecnicas; // JSON string
+                document.getElementById('product-specs').value = p.especificacoes_tecnicas;
                 document.getElementById('product-img-url').value = p.imagem_principal_url;
                 document.getElementById('product-img-alt').value = p.imagem_principal_alt;
-                document.getElementById('product-galeria').value = (p.galeria_imagens || []).join(', '); // Converte Array para string
+                document.getElementById('product-galeria').value = (p.galeria_imagens || []).join(', ');
                 document.getElementById('product-categoria').value = p.categoria;
                 document.getElementById('product-subcategoria').value = p.subcategoria;
                 document.getElementById('product-slug').value = p.url_slug;
                 document.getElementById('product-meta-title').value = p.meta_title;
                 document.getElementById('product-meta-desc').value = p.meta_description;
-                document.getElementById('product-ativo').checked = p.esta_ativo;
+                // document.getElementById('product-ativo').checked = p.esta_ativo; // [CORREÇÃO V2] Removido
                 
                 productModal.style.display = 'flex';
 
@@ -997,13 +1262,13 @@
                 especificacoes_tecnicas: document.getElementById('product-specs').value || null,
                 imagem_principal_url: document.getElementById('product-img-url').value || null,
                 imagem_principal_alt: document.getElementById('product-img-alt').value || null,
-                galeria_imagens: document.getElementById('product-galeria').value || null, // Envia como string
+                galeria_imagens: document.getElementById('product-galeria').value || null,
                 categoria: document.getElementById('product-categoria').value || null,
                 subcategoria: document.getElementById('product-subcategoria').value || null,
                 url_slug: document.getElementById('product-slug').value || null,
                 meta_title: document.getElementById('product-meta-title').value || null,
                 meta_description: document.getElementById('product-meta-desc').value || null,
-                esta_ativo: document.getElementById('product-ativo').checked,
+                // esta_ativo: document.getElementById('product-ativo').checked, // [CORREÇÃO V2] Removido
             };
 
             const method = isEditing ? 'PUT' : 'POST';
@@ -1036,7 +1301,7 @@
         });
 
         async function deleteProduct(id) {
-            showCustomConfirm(`Tem certeza que deseja EXCLUIR o produto ID ${id}? Esta ação não pode ser desfeita.`, async (confirmed) => {
+            showCustomConfirm(`Tem certeza que deseja EXCLUIR o produto ID ${id}?`, async (confirmed) => {
                 if (!confirmed) return;
 
                 try {
@@ -1140,7 +1405,7 @@
         });
 
         async function deleteClient(id) {
-            showCustomConfirm(`Tem certeza que deseja EXCLUIR o cliente ID ${id}? Isso pode falhar se ele tiver pedidos.`, async (confirmed) => {
+            showCustomConfirm(`Tem certeza que deseja EXCLUIR o cliente ID ${id}? Isso pode falhar se ele tiver orçamentos.`, async (confirmed) => {
                 if (!confirmed) return;
 
                 try {
