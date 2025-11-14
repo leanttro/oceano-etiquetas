@@ -1079,6 +1079,10 @@
         
         // --- INICIALIZAÇÃO GERAL ---
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // *** CORREÇÃO AQUI ***
+            loginForm.addEventListener('submit', handleLogin);
+            
             CLIENT_TOKEN = localStorage.getItem('oceano_client_token');
             CLIENT_ID = localStorage.getItem('oceano_client_id');
             CLIENT_NAME = localStorage.getItem('oceano_client_name');
