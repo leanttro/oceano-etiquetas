@@ -8,23 +8,18 @@ import datetime
 import traceback
 import decimal
 import json 
-import collections # <-- NOVO: Importa collections para o menu ordenado
+import collections # Importa collections para o menu ordenado
 
-# Carrega variáveis de ambiente de um arquivo .env, se existir (para dev local)
-# No Render, você vai setar as variáveis de ambiente na interface
+# Carrega variáveis de ambiente
 load_dotenv()
 
-# Inicializa o aplicativo Flask
-# static_folder='.' -> Permite servir arquivos como 'index.html' e imagens da raiz.
-# template_folder='templates' -> Onde o Flask vai procurar o 'oceano-produto-detalhe.html'.
 app = Flask(__name__, static_folder='.', static_url_path='', template_folder='templates')
-CORS(app) # Habilita CORS para todas as rotas
+CORS(app) 
 
 def get_db_connection():
     """Cria e retorna uma conexão com o banco de dados PostgreSQL."""
     conn = None
     try:
-        # Pega a URL do banco de dados das variáveis de ambiente
         db_url = os.getenv('DATABASE_URL')
         if not db_url:
             print("ERRO CRÍTICO: Variável de ambiente DATABASE_URL não encontrada.")
@@ -37,22 +32,16 @@ def get_db_connection():
         raise
 
 def format_db_data(data_dict):
-    """
-    Formata dados do banco (datas, decimais) para serem compatíveis com JSON.
-    (Versão adaptada para 'oceano_produtos' que usa TIMESTAMPTZ)
-    """
+    """Formata dados do banco (datas, decimais) para serem compatíveis com JSON."""
     if not isinstance(data_dict, dict):
         return data_dict
 
     formatted_dict = {}
     for key, value in data_dict.items():
-        # Converte datetime.datetime e datetime.date para string ISO (seguro para JSON)
         if isinstance(value, (datetime.datetime, datetime.date)):
             formatted_dict[key] = value.isoformat() if value else None
-        # Converte datetime.time para string
         elif isinstance(value, datetime.time):
             formatted_dict[key] = value.strftime('%H:%M') if value else None
-        # Converte Decimal para float
         elif isinstance(value, decimal.Decimal):
             try:
                 formatted_dict[key] = float(value)
@@ -63,7 +52,8 @@ def format_db_data(data_dict):
     return formatted_dict
 
 
-# --- NOVO: PROVEDOR DE CONTEXTO PARA O MENU DINÂMICO ---
+# --- [FUNÇÃO 1 - ATUALIZADA] ---
+# Injeta o menu dinâmico em todos os templates
 @app.context_processor
 def inject_dynamic_menu():
     """
@@ -71,7 +61,6 @@ def inject_dynamic_menu():
     Consulta o BD e agrupa os produtos por categoria.
     """
     conn = None
-    # Garante a ordem desejada das categorias
     categorias_ordem = ['Lacres', 'Adesivos', 'Brindes', 'Impressos']
     menu_data = collections.OrderedDict([(cat, []) for cat in categorias_ordem])
 
@@ -79,7 +68,6 @@ def inject_dynamic_menu():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Busca apenas os campos necessários para o menu
         query = """
             SELECT nome_produto, url_slug, categoria 
             FROM oceano_produtos 
@@ -93,20 +81,31 @@ def inject_dynamic_menu():
         # Agrupa os produtos
         for produto in produtos:
             cat = produto['categoria']
+            
+            # --- [LÓGICA DE LINK ROBUSTO] ---
+            slug_do_bd = produto['url_slug']
+            
+            # 1. Remove o prefixo '/produtos/' se ele existir, para termos o slug limpo
+            if slug_do_bd.startswith('/produtos/'):
+                slug_limpo = slug_do_bd[len('/produtos/'):]
+            else:
+                slug_limpo = slug_do_bd # Ex: 'adesivos/TESTE'
+            
+            # 2. Monta a URL final que o usuário vai clicar
+            # Isso garante que o link no HTML será sempre /produtos/slug-limpo
+            url_final_para_link = f"/produtos/{slug_limpo}"
+
             produto_data = {
                 'nome': produto['nome_produto'],
-                'url': produto['url_slug'] # O BD já salva o /produtos/slug
+                'url': url_final_para_link 
             }
+            # --- [FIM DA LÓGICA DE LINK] ---
             
             if cat in menu_data:
                 menu_data[cat].append(produto_data)
-            else: 
-                # Adiciona categorias não previstas (ex: 'Outros') no final
-                if cat not in menu_data:
-                    menu_data[cat] = []
-                menu_data[cat].append(produto_data)
+            elif cat not in menu_data: 
+                menu_data[cat] = [produto_data]
         
-        # Remove categorias que buscamos mas que não têm produtos
         menu_data_final = {k: v for k, v in menu_data.items() if v}
         
         return dict(menu_categorias=menu_data_final)
@@ -114,11 +113,10 @@ def inject_dynamic_menu():
     except Exception as e:
         print(f"ERRO CRÍTICO ao gerar menu dinâmico: {e}")
         traceback.print_exc()
-        # Retorna um dicionário vazio em caso de falha no BD
         return dict(menu_categorias=collections.OrderedDict())
     finally:
         if conn: conn.close()
-# --- FIM DO PROVEDOR DE CONTEXTO ---
+# --- FIM DA FUNÇÃO 1 ---
 
 
 # --- ROTAS DA 'OCEANO ETIQUETAS' ---
@@ -131,7 +129,6 @@ def get_api_produtos():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # Filtro opcional por categoria (ex: /api/produtos?categoria=Lacres)
         categoria_filtro = request.args.get('categoria')
         
         query = "SELECT * FROM oceano_produtos"
@@ -147,9 +144,7 @@ def get_api_produtos():
         produtos_raw = cur.fetchall()
         cur.close()
 
-        # Processa os dados (formatação de datas, etc.)
         produtos_processados = [format_db_data(dict(produto)) for produto in produtos_raw]
-
         return jsonify(produtos_processados)
         
     except psycopg2.errors.UndefinedTable:
@@ -163,8 +158,8 @@ def get_api_produtos():
         if conn: conn.close()
 
 
-# --- ROTA DE DETALHE ÚNICA PARA PRODUTOS ---
-# Ex: /produtos/lacre-destrutivel-casca-ovo
+# --- [FUNÇÃO 2 - ATUALIZADA] ---
+# Rota de detalhe única para produtos
 @app.route('/produtos/<path:slug>') 
 def produto_detalhe(slug):
     """Renderiza a página de detalhe de um produto buscando pelo 'url_slug'."""
@@ -173,45 +168,47 @@ def produto_detalhe(slug):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # [CORREÇÃO 1 - APLICADA]
-        # O 'slug' da URL é 'lacre-destrutivel-casca-ovo'
-        # O banco de dados (via Colab) salva '/produtos/lacre-destrutivel-casca-ovo'
-        # A consulta DEVE buscar pelo caminho completo.
-        url_busca = f"/produtos/{slug}"
+        # --- [INÍCIO DA LÓGICA DE BUSCA ROBUSTA] ---
+        # O 'slug' da URL é, por exemplo, 'adesivos/TESTE'
+        # O BD pode ter '/produtos/adesivos/TESTE' (do script de 'inserir')
+        # OU 'adesivos/TESTE' (do script de 'editar', como visto no screenshot)
         
-        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (url_busca,))
+        # Tentativa 1: Buscar pelo slug com prefixo (o formato correto/novo)
+        url_busca_com_prefixo = f"/produtos/{slug}"
+        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (url_busca_com_prefixo,))
         produto = cur.fetchone()
+
+        if not produto:
+            # Tentativa 2: Buscar pelo slug exato (formato legado/editado)
+            print(f"AVISO: Produto com slug/url '{url_busca_com_prefixo}' não encontrado. Tentando busca legada por '{slug}'.")
+            cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (slug,))
+            produto = cur.fetchone()
+        
+        # --- [FIM DA LÓGICA DE BUSCA ROBUSTA] ---
+
         cur.close()
 
         if produto:
             # Formata os dados (datas, etc.) para o template
             produto_formatado = format_db_data(dict(produto))
             
-            # --- [INÍCIO DA CORREÇÃO 4] ---
-            # O template espera um objeto 'specs'. O banco de dados fornece
-            # uma string 'especificacoes_tecnicas'. Precisamos fazer o parse.
+            # Lógica para converter 'especificacoes_tecnicas' (string JSON) em um dict 'specs'
             specs_json_string = produto_formatado.get('especificacoes_tecnicas')
-            specs_dict = {} # Começa com um dicionário vazio por segurança
+            specs_dict = {} 
             
             if specs_json_string:
                 try:
-                    # Tenta fazer o parse da string JSON
                     specs_dict = json.loads(specs_json_string)
                 except json.JSONDecodeError:
-                    # Se falhar (ex: texto simples), loga o aviso e deixa specs_dict vazio
                     print(f"AVISO: Falha ao decodificar JSON de especificacoes_tecnicas para o slug '{slug}'.")
             
-            # Adiciona o dict 'specs' ao 'produto_formatado' que vai para o template.
-            # Se o parse falhou ou a string era vazia, 'specs' será {}
             produto_formatado['specs'] = specs_dict
-            # --- [FIM DA CORREÇÃO 4] ---
             
-            # Renderiza o template 'oceano-produto-detalhe.html'
-            # e injeta os dados do banco na variável 'produto'
+            # Renderiza o template e injeta os dados na variável 'produto'
             return render_template('oceano-produto-detalhe.html', produto=produto_formatado)
         else:
-            # [CORREÇÃO 1] Log atualizado para usar 'url_busca'
-            print(f"AVISO: Produto com slug/url '{url_busca}' não encontrado.")
+            # Se ambas as tentativas falharem
+            print(f"ERRO FINAL: Produto não encontrado para '{url_busca_com_prefixo}' ou '{slug}'.")
             return "Produto não encontrado", 404
             
     except Exception as e:
@@ -220,6 +217,7 @@ def produto_detalhe(slug):
         return "Erro ao carregar a página do produto", 500
     finally:
         if conn: conn.close()
+# --- FIM DA FUNÇÃO 2 ---
 
 
 # --- ROTAS PARA SERVIR ARQUIVOS (DEVE VIR POR ÚLTIMO) ---
@@ -234,21 +232,13 @@ def index_route():
 
 @app.route('/<path:path>')
 def serve_static_files(path):
-    """
-    Serve arquivos estáticos (CSS, JS, imagens, etc.) ou retorna 404
-    (Lógica copiada do seu app.py de feiras)
-    """
+    """Serve arquivos estáticos (CSS, JS, imagens, etc.) ou retorna 404"""
     basename = os.path.basename(path)
     
-    # 1. Se não contém um ponto, NÃO é um arquivo estático (ex: /produtos/slug-do-produto)
-    #    Isso deve ter sido pego pela rota @app.route('/produtos/<path:slug>')
-    #    Se chegou aqui, é um slug que não foi encontrado.
     if '.' not in basename:
         print(f"AVISO: Tentativa de acesso a um slug não encontrado (sem ponto no basename): {path}")
         return "Not Found", 404
         
-    # 2. Se contém um ponto, TENTA servir como arquivo estático (.html, .css, .png, etc.)
-    #    (O 'index.html' não é mais pego aqui, pois foi movido para 'templates/')
     if os.path.exists(os.path.join('.', path)):
         return send_from_directory('.', path)
     else:
@@ -257,10 +247,6 @@ def serve_static_files(path):
 
 # --- Execução do App ---
 if __name__ == '__main__':
-    # O Render usa a variável 'PORT'
     port = int(os.environ.get("PORT", 10000))
-    # debug=False é o padrão para produção
-    # debug=True é útil para desenvolvimento local, pois recarrega
-    # automaticamente e mostra erros detalhados no navegador.
-    # Mude para True se estiver testando localmente.
+    # Mude debug=True para desenvolvimento local
     app.run(host="0.0.0.0", port=port, debug=False)
