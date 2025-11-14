@@ -820,9 +820,10 @@ def tool_check_status_pedido(pedido_id_str, cliente_id):
 # --- Configuração do Modelo Gemini ---
 if GEMINI_API_KEY:
     # Definição das ferramentas que a IA pode usar
-    tools_config = {
-        "google_search": {},
-        "tool_config": {
+    # MUDANÇA: A Google Search Tool deve ser listada separadamente.
+    tools_to_use = [
+        "google_search",  # Nome da ferramenta Google Search
+        {
             "function_declarations": [
                 {
                     "name": "check_status_pedido",
@@ -837,11 +838,11 @@ if GEMINI_API_KEY:
                 }
             ]
         }
-    }
+    ]
     
     # O "cérebro" do chatbot
     SYSTEM_PROMPT = """
-    Você é o 'Oceabot', o assistente de vendas e atendimento da Oceano Etiquetas.
+    Você é o 'Oceano Bot', o assistente de vendas e atendimento da Oceano Etiquetas.
     Seu único objetivo é ajudar clientes e vender produtos, baseando-se **estritamente** em informações do site www.oceanoetiquetas.com.br e nos dados do sistema interno.
 
     REGRAS PRINCIPAIS:
@@ -856,7 +857,7 @@ if GEMINI_API_KEY:
     gemini_model = genai.GenerativeModel(
         model_name="gemini-2.5-flash-preview-09-2025",
         system_instruction=SYSTEM_PROMPT,
-        tools=tools_config
+        tools=tools_to_use # MUDANÇA: Passa a lista `tools_to_use`
     )
 else:
     gemini_model = None
