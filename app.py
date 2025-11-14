@@ -18,13 +18,10 @@ from functools import wraps
 load_dotenv()
 
 # --- [CONFIGURAÇÃO UNIFICADA DO APP] ---
-# O Flask agora usa 'static' para arquivos públicos (logo, admin.css, etc.)
-# e 'templates' para todos os HTMLs renderizados (index, detalhe, admin).
 app = Flask(__name__, static_folder='static', template_folder='templates')
-CORS(app, supports_credentials=True) # Habilita CORS para todas as rotas e permite credenciais
+CORS(app, supports_credentials=True) 
 
 # Configuração de sessão (Necessário para o login admin)
-# Coloque esta chave no seu .env ou nas variáveis do Render
 app.secret_key = os.getenv('SECRET_KEY', 'chave-secreta-padrao-trocar-em-prod')
 ADMIN_SESSIONS = {} # Armazenamento de token em memória (simples)
 
@@ -75,7 +72,6 @@ def format_db_data(data_dict):
 
 # =====================================================================
 # --- [INÍCIO: FUNCIONALIDADE PÚBLICA (Seu código original)] ---
-# (Nenhuma funcionalidade apagada, conforme solicitado)
 # =====================================================================
 
 @app.context_processor
@@ -88,12 +84,12 @@ def inject_dynamic_menu():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Otimizado: Só busca produtos que têm categoria e slug
+        
+        # [CORREÇÃO 1] Removido 'WHERE esta_ativo = TRUE' para evitar o UndefinedColumn error
         query = """
             SELECT nome_produto, url_slug, categoria 
             FROM oceano_produtos 
-            WHERE esta_ativo = TRUE 
-              AND categoria IS NOT NULL AND categoria != '' 
+            WHERE categoria IS NOT NULL AND categoria != '' 
               AND url_slug IS NOT NULL AND url_slug != ''
             ORDER BY categoria, nome_produto;
         """
@@ -105,7 +101,6 @@ def inject_dynamic_menu():
             cat = produto['categoria']
             slug_do_bd = produto['url_slug']
             
-            # Lógica de limpeza de slug
             if slug_do_bd.startswith('/produtos/'):
                 slug_limpo = slug_do_bd[len('/produtos/'):]
             else:
@@ -118,7 +113,6 @@ def inject_dynamic_menu():
             if cat in menu_data:
                 menu_data[cat].append(produto_data)
             elif cat not in menu_data: 
-                # Adiciona categorias não previstas (ex: 'Outros') ao final
                 menu_data[cat] = [produto_data]
         
         menu_data_final = {k: v for k, v in menu_data.items() if v}
@@ -140,12 +134,12 @@ def get_api_produtos():
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         categoria_filtro = request.args.get('categoria')
         
-        # Otimizado: Só puxa produtos ativos para o público
-        query = "SELECT * FROM oceano_produtos WHERE esta_ativo = TRUE"
+        # [CORREÇÃO 2] Removido 'WHERE esta_ativo = TRUE'
+        query = "SELECT * FROM oceano_produtos"
         params = []
 
         if categoria_filtro:
-            query += " AND categoria ILIKE %s"
+            query += " WHERE categoria ILIKE %s"
             params.append(f"%{categoria_filtro}%")
 
         query += " ORDER BY codigo_produto;"
@@ -153,7 +147,6 @@ def get_api_produtos():
         produtos_raw = cur.fetchall()
         cur.close()
         
-        # Usa o JSON Encoder customizado
         return jsonify(produtos_raw)
         
     except psycopg2.errors.UndefinedTable:
@@ -172,29 +165,27 @@ def produto_detalhe(slug):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Lógica de busca robusta (com e sem prefixo)
         url_busca_com_prefixo = f"/produtos/{slug}"
-        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s AND esta_ativo = TRUE;', (url_busca_com_prefixo,))
+        
+        # [CORREÇÃO 3] Removido 'AND esta_ativo = TRUE' de ambas as consultas
+        cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (url_busca_com_prefixo,))
         produto = cur.fetchone()
 
         if not produto:
-            cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s AND esta_ativo = TRUE;', (slug,))
+            cur.execute('SELECT * FROM oceano_produtos WHERE url_slug = %s;', (slug,))
             produto = cur.fetchone()
 
         cur.close()
 
         if produto:
-            produto_formatado = dict(produto) # Converte para dict
+            produto_formatado = dict(produto) 
             
-            # Converte 'especificacoes_tecnicas' (string JSON) em um dict 'specs'
             specs_json_string = produto_formatado.get('especificacoes_tecnicas')
             specs_dict = {} 
             if specs_json_string:
                 try:
-                    # Tenta carregar o JSON
                     specs_dict = json.loads(specs_json_string)
                 except json.JSONDecodeError:
-                    # Se falhar (ex: texto puro), apenas exibe o texto
                     print(f"AVISO: especs_tecnicas do slug '{slug}' não é JSON. Tratando como texto.")
                     specs_dict = {"Descrição": specs_json_string}
             
@@ -202,7 +193,7 @@ def produto_detalhe(slug):
             
             return render_template('oceano-produto-detalhe.html', produto=produto_formatado)
         else:
-            return "Produto não encontrado ou inativo", 404
+            return "Produto não encontrado", 404
             
     except Exception as e:
         print(f"ERRO na rota /produtos/{slug}: {e}")
@@ -219,27 +210,17 @@ def produto_detalhe(slug):
 # --- [INÍCIO: NOVO PAINEL ADMIN B2B] ---
 # =====================================================================
 
-# --- Rota de Acesso ao Painel Admin ---
-
 @app.route('/admin')
 def admin_panel():
-    """
-    [NOVO] Serve o painel de admin 'admin.html' da pasta 'templates'.
-    O JS no 'admin.html' vai forçar o login se não houver token.
-    """
+    """[NOVO] Serve o painel de admin 'admin.html' da pasta 'templates'."""
     return render_template('admin.html')
-
-# --- API de Login Admin (Puxando da tabela real) ---
 
 @app.route('/api/oceano/admin/login', methods=['POST'])
 def admin_login():
-    """
-    [NOVO] Faz o login consultando a tabela 'oceano_admin'.
-    Exatamente como você pediu, sem placebo, usando seus usuários reais.
-    """
+    """[NOVO] Faz o login consultando a tabela 'oceano_admin'."""
     data = request.json
     username = data.get('username')
-    password = data.get('password') # 'chave_admin'
+    password = data.get('password') 
 
     if not username or not password:
         return jsonify({"erro": "Usuário e senha são obrigatórios"}), 400
@@ -249,23 +230,18 @@ def admin_login():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Consulta a tabela correta: 'oceano_admin'
         cur.execute("SELECT * FROM oceano_admin WHERE username = %s AND chave_admin = %s", (username, password))
         admin_user = cur.fetchone()
         cur.close()
 
         if admin_user:
-            # Usuário encontrado. Cria um token de sessão.
             token = str(uuid.uuid4())
             ADMIN_SESSIONS[token] = {"id": admin_user["id"], "username": admin_user["username"]}
-            
-            # Retorna o token para o frontend
             return jsonify({
                 "mensagem": f"Login bem-sucedido! Bem-vindo, {admin_user['username']}.",
                 "token": token
             })
         else:
-            # Usuário não encontrado
             return jsonify({"erro": "Credenciais inválidas. Verifique usuário e senha."}), 401
 
     except Exception as e:
@@ -276,7 +252,6 @@ def admin_login():
         if conn: conn.close()
 
 # --- Wrapper de Verificação de Token ---
-# (Uma função 'decorator' que protege as rotas admin)
 def token_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -284,12 +259,11 @@ def token_required(f):
         if not token:
             return jsonify({"erro": "Token de autorização ausente"}), 401
         
-        token = token.replace('Bearer ', '') # Remove o prefixo "Bearer "
+        token = token.replace('Bearer ', '')
         
         if token not in ADMIN_SESSIONS:
             return jsonify({"erro": "Token inválido ou expirado"}), 401
         
-        # Token válido, permite que a rota execute
         return f(*args, **kwargs)
     return decorated_function
 
@@ -304,7 +278,8 @@ def get_dashboard_stats():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        cur.execute("SELECT COUNT(*) FROM oceano_produtos WHERE esta_ativo = TRUE;")
+        # [CORREÇÃO 4] Removido 'WHERE esta_ativo = TRUE'
+        cur.execute("SELECT COUNT(*) FROM oceano_produtos;")
         stat_produtos = cur.fetchone()[0]
         
         cur.execute("SELECT COUNT(*) FROM oceano_clientes;")
@@ -345,13 +320,13 @@ def handle_produtos():
         if request.method == 'POST':
             data = request.json
             
-            # Converte string de galeria (separada por vírgula) em array PGSQL
             galeria_list = data.get('galeria_imagens')
             if isinstance(galeria_list, str) and galeria_list.strip():
                  galeria_pg_array = [url.strip() for url in galeria_list.split(',') if url.strip()]
             else:
                 galeria_pg_array = None
 
+            # [CORREÇÃO 5] Removido 'esta_ativo' do INSERT
             cur.execute(
                 """
                 INSERT INTO oceano_produtos (
@@ -359,21 +334,20 @@ def handle_produtos():
                     descricao_longa, especificacoes_tecnicas, 
                     imagem_principal_url, imagem_principal_alt, galeria_imagens, 
                     categoria, subcategoria, meta_title, meta_description, 
-                    whatsapp_link_texto, esta_ativo, pagina_gerada
+                    whatsapp_link_texto, pagina_gerada
                 ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 ) RETURNING *;
                 """,
                 (
                     data['nome_produto'], data.get('codigo_produto'), data.get('url_slug'),
                     data.get('descricao_curta'), data.get('descricao_longa'),
-                    data.get('especificacoes_tecnicas'), # String JSON
+                    data.get('especificacoes_tecnicas'), 
                     data.get('imagem_principal_url'), data.get('imagem_principal_alt'),
-                    galeria_pg_array, # Array PGSQL
+                    galeria_pg_array, 
                     data.get('categoria'), data.get('subcategoria'),
                     data.get('meta_title'), data.get('meta_description'),
-                    data.get('whatsapp_link_texto'), data.get('esta_ativo', True),
-                    False # pagina_gerada (legado)
+                    data.get('whatsapp_link_texto'), False 
                 )
             )
             novo_produto = cur.fetchone()
@@ -412,13 +386,13 @@ def handle_produto_id(id):
         if request.method == 'PUT':
             data = request.json
             
-            # Converte string de galeria (separada por vírgula) em array PGSQL
             galeria_list = data.get('galeria_imagens')
             if isinstance(galeria_list, str) and galeria_list.strip():
                  galeria_pg_array = [url.strip() for url in galeria_list.split(',') if url.strip()]
             else:
                 galeria_pg_array = None
 
+            # [CORREÇÃO 6] Removido 'esta_ativo' do UPDATE
             cur.execute(
                 """
                 UPDATE oceano_produtos SET
@@ -428,19 +402,19 @@ def handle_produto_id(id):
                     imagem_principal_alt = %s, galeria_imagens = %s, 
                     categoria = %s, subcategoria = %s, 
                     meta_title = %s, meta_description = %s, 
-                    whatsapp_link_texto = %s, esta_ativo = %s
+                    whatsapp_link_texto = %s
                 WHERE id = %s
                 RETURNING *;
                 """,
                 (
                     data['nome_produto'], data.get('codigo_produto'), data.get('url_slug'),
                     data.get('descricao_curta'), data.get('descricao_longa'),
-                    data.get('especificacoes_tecnicas'), # String JSON
+                    data.get('especificacoes_tecnicas'), 
                     data.get('imagem_principal_url'), data.get('imagem_principal_alt'),
-                    galeria_pg_array, # Array PGSQL
+                    galeria_pg_array, 
                     data.get('categoria'), data.get('subcategoria'),
                     data.get('meta_title'), data.get('meta_description'),
-                    data.get('whatsapp_link_texto'), data.get('esta_ativo', True),
+                    data.get('whatsapp_link_texto'),
                     id
                 )
             )
@@ -479,7 +453,6 @@ def get_pedidos():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Junta com a tabela de clientes para pegar o nome
         cur.execute(
             """
             SELECT p.*, c.nome_cliente 
@@ -506,7 +479,6 @@ def handle_pedido_id(id):
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
         if request.method == 'GET':
-            # Busca o pedido principal
             cur.execute(
                 """
                 SELECT p.*, c.nome_cliente, c.email, c.telefone 
@@ -521,7 +493,6 @@ def handle_pedido_id(id):
                 cur.close()
                 return jsonify({"erro": "Pedido não encontrado"}), 404
             
-            # Busca os itens do pedido
             cur.execute(
                 """
                 SELECT i.*, p.nome_produto, p.codigo_produto 
@@ -533,7 +504,6 @@ def handle_pedido_id(id):
             itens = cur.fetchall()
             cur.close()
             
-            # Combina os resultados
             pedido_completo = dict(pedido)
             pedido_completo['itens'] = [dict(item) for item in itens]
             return jsonify(pedido_completo)
@@ -541,7 +511,6 @@ def handle_pedido_id(id):
         if request.method == 'PUT':
             data = request.json
             
-            # Atualiza o pedido
             cur.execute(
                 """
                 UPDATE oceano_pedidos SET
@@ -567,7 +536,6 @@ def handle_pedido_id(id):
             )
             pedido_atualizado = cur.fetchone()
             
-            # Atualiza os preços dos itens (se enviados)
             if 'itens' in data and isinstance(data['itens'], list):
                 for item in data['itens']:
                     cur.execute(
@@ -650,7 +618,6 @@ def handle_cliente_id(id):
         return jsonify({"mensagem": "Cliente deletado com sucesso"})
     except psycopg2.IntegrityError as e:
         conn.rollback()
-        # Erro de FK (Foreign Key)
         return jsonify({"erro": "Não é possível deletar este cliente pois ele possui pedidos associados."}), 409
     except Exception as e:
         conn.rollback()
@@ -700,7 +667,6 @@ def handle_admin_id(id):
     """[NOVO] Deleta um admin."""
     conn = get_db_connection()
     try:
-        # Segurança: Não permitir que o admin '1' (root/primeiro) seja deletado
         if id == 1:
             return jsonify({"erro": "Não é permitido deletar o administrador principal (ID 1)."}), 403
 
@@ -734,10 +700,8 @@ def index_route():
 
 # A rota para servir arquivos estáticos (ex: /static/oceanologo.png)
 # é tratada automaticamente pelo Flask porque definimos `static_folder='static'`.
-# Não precisamos mais da rota /<path:path> que estava no seu app.py original.
 
 # --- Execução do App ---
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    # Mude debug=True para desenvolvimento local
     app.run(host="0.0.0.0", port=port, debug=False)
