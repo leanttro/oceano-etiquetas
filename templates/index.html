@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oceano Etiquetas - Soluções Industriais</title>
-    <!-- [NOVO] Adicionado Font Awesome para os ícones do modal -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -1238,7 +1237,6 @@
             </ul>
             
             <div class="nav-controls"> 
-                <!-- [NOVO] Botão agora abre o modal -->
                 <a class="nav-cta open-orcamento-modal-btn">
                     <span class="full-text">Solicitar Orçamento</span>
                     <span class="short-text">Orçamento</span>
@@ -1361,7 +1359,6 @@
                 <h1>Da Impressão à Produção: Velocidade e Precisão Industrial.</h1>
                 <p>Nossa tecnologia de impressão digital garante rolos de etiquetas com acabamento perfeito e prontos para sua linha de montagem.</p>
                 <div class="hero-buttons">
-                    <!-- [NOVO] Botão agora abre o modal -->
                     <a class="btn btn-hero-primary open-orcamento-modal-btn">Falar com Especialista</a>
                     <a href="#produtos" class="btn btn-hero-secondary">Ver Produtos</a>
                 </div>
@@ -1439,7 +1436,6 @@
         </div>
     </section>
 
-    <!-- [INÍCIO SEÇÃO REORDENADA] --- Seção Produtos agora vem PRIMEIRO -->
     <section id="produtos" class="products">
         <div class="container">
             <div class="section-header">
@@ -1456,13 +1452,9 @@
                 </div>
             </div>
             <div class="products-grid">
-                <!-- Produtos são carregados aqui via JS -->
-            </div>
+                </div>
         </div>
     </section>
-    <!-- [FIM SEÇÃO REORDENADA] -->
-    
-    <!-- [INÍCIO SEÇÃO REORDENADA] --- Seção Serviços agora vem DEPOIS -->
     <section id="servicos" class="services">
         <div class="container">
             <div class="section-header">
@@ -1493,13 +1485,10 @@
             </div>
         </div>
     </section>
-    <!-- [FIM SEÇÃO REORDENADA] -->
-
     <section class="cta-section">
         <div class="container">
             <h2>Pronto para elevar o padrão de qualidade?</h2>
             <p>Entre em contato com nossa equipe técnica e receba uma consultoria especializada para seu projeto.</p>
-            <!-- [NOVO] Botão agora abre o modal -->
             <a class="btn btn-primary open-orcamento-modal-btn" style="background: white; color: var(--dark);">Falar com Especialista</a>
         </div>
     </section>
@@ -1537,8 +1526,7 @@
                 <a href="#sobre">Sobre Nós</a>
                 <a href="#servicos">Qualidade</a>
                 <a href="#contato">Contato</a>
-                <a href="#" class="open-orcamento-modal-btn">Orçamento</a> <!-- [NOVO] Link abre modal -->
-            </div>
+                <a href="#" class="open-orcamento-modal-btn">Orçamento</a> </div>
         </div>
 
         <div class="footer-bottom">
@@ -1546,9 +1534,6 @@
         </div>
     </footer>
 
-    <!-- [INÍCIO] MODAIS DE ORÇAMENTO (Copiados do portal.html) -->
-
-    <!-- Modal de Alerta Customizado -->
     <div id="custom-dialog-modal" class="modal-overlay">
         <div style="background: var(--surface); padding: 2rem; border-radius: 8px; max-width: 400px; text-align: center;">
             <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
@@ -1558,7 +1543,6 @@
         </div>
     </div>
 
-    <!-- Modal de Item Personalizado (Aninhado) -->
     <div id="custom-item-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -1579,7 +1563,6 @@
                     </select>
                 </div>
 
-                <!-- Campos Condicionais: Adesivos/Lacres -->
                 <div id="fields-adesivo-lacre" style="display: none; display: grid; gap: 1.5rem;">
                     <div class="form-group">
                         <label for="custom-item-material">Material (Ex: Vinil, BOPP, Couchê, Casca de Ovo)</label>
@@ -1597,7 +1580,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Condicionais: Brindes -->
                 <div id="fields-brinde" style="display: none; display: grid; gap: 1.5rem;">
                     <div class="form-group">
                         <label for="custom-item-tipo-brinde">Tipo de Brinde (Ex: Mousepad, Chaveiro)</label>
@@ -1615,7 +1597,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Comuns -->
                 <div class="form-grid">
                      <div class="form-group">
                         <label for="custom-item-quantidade">Quantidade *</label>
@@ -1640,7 +1621,6 @@
         </div>
     </div>
     
-    <!-- Modal Principal de Orçamento Público -->
     <div id="public-orcamento-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -1648,7 +1628,6 @@
                 <button class="modal-close-btn" id="public-orcamento-modal-close-btn"><i class="fas fa-times"></i></button>
             </div>
             
-            <!-- FORMULÁRIO DE CONTATO INICIAL -->
             <form class="modal-form" id="public-orcamento-contact-form">
                 <div class="form-grid">
                     <div class="form-group">
@@ -1684,7 +1663,6 @@
                 <p class="error-msg" id="public-orcamento-error-msg"></p>
             </form>
             
-            <!-- 2. Carrinho de Itens (Escondido até o contato ser preenchido) -->
             <div id="public-orcamento-step-2" style="display: none;">
                  <h3 style="font-family: var(--font-heading); font-size: 1.2rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">Itens da Solicitação</h3>
 
@@ -1702,7 +1680,6 @@
                         </button>
                     </div>
 
-                    <!-- Lista de Produtos do Catálogo Público (Escondida) -->
                     <div class="product-list-container" id="public-product-list-container" style="display: none;">
                         <div id="public-product-list">
                             <p style="padding: 2rem; text-align: center;">Carregando produtos...</p>
@@ -1718,7 +1695,6 @@
                 </div>
             </div>
 
-            <!-- Botões de Navegação do Formulário -->
             <div class="modal-footer" id="public-orcamento-step-1-footer" style="justify-content: flex-end;">
                  <button type="button" class="btn btn-primary" id="public-next-step-btn">
                      Próximo: Adicionar Itens <i class="fas fa-arrow-right"></i>
@@ -1727,8 +1703,6 @@
 
         </div>
     </div>
-    <!-- [FIM] MODAIS -->
-
     <script>
         // URLs da API (do app.py)
         // [NOVO] Adicionado a API pública de orçamento
@@ -1818,6 +1792,17 @@
             // Reseta o carrinho público (em caso de cancelamento)
             orcamentoCartPublico = [];
         }
+
+        // *** [INÍCIO DA CORREÇÃO 1] ***
+        // Define a função que estava faltando para fechar o modal aninhado
+        function closeCustomItemModal() {
+            document.getElementById('custom-item-modal').style.display = 'none';
+            document.getElementById('custom-item-form').reset();
+            // Reseta os campos condicionais
+            document.getElementById('fields-adesivo-lacre').style.display = 'none';
+            document.getElementById('fields-brinde').style.display = 'none';
+        }
+        // *** [FIM DA CORREÇÃO 1] ***
 
         // [NOVO] Função de próxima etapa (valida contato e passa para o carrinho)
         async function nextPublicOrcamentoStep() {
@@ -1924,7 +1909,7 @@
                 observacao: observacaoString
             });
             
-            closeFunction();
+            closeFunction(); // Isso chama a 'closeCustomItemModal' que definimos
             updatePublicOrcamentoCartUI();
             showCustomAlert(`Item Personalizado (${categoria}) adicionado!`);
         }
@@ -2034,12 +2019,13 @@
             }
         }
         
+        // *** [INÍCIO DA CORREÇÃO 2] ***
         // --- Envio Final do Orçamento Público ---
         async function submitPublicOrcamento() {
             const nome = document.getElementById('public-nome').value;
             const email = document.getElementById('public-email').value;
             const telefone = document.getElementById('public-telefone').value;
-            const cnpj = document.getElementById('public-cnpj').value;
+            // const cnpj = document.getElementById('public-cnpj').value; // app.py não usa este campo
             const codigo = document.getElementById('public-codigo').value;
             const isCadastrado = document.getElementById('public-is-cadastrado').checked;
             const submitBtn = document.getElementById('public-submit-orcamento-btn');
@@ -2057,30 +2043,32 @@
             successMsg.style.display = 'none';
 
             try {
-                // A API pública (que ainda não criamos, mas estamos simulando) precisa de todos os dados de contato
-                const payload = {
-                    contato: { nome, email, telefone, cnpj, isCadastrado, codigo },
+                // [CORREÇÃO] Monta o payload 'flat' (plano) que o app.py espera
+                // O app.py espera 'nome', 'email', 'whatsapp', 'codigo_acesso'
+                const finalPayload = {
+                    nome: nome,
+                    email: email,
+                    whatsapp: telefone, // Mapeia o campo 'telefone' para 'whatsapp'
+                    codigo_acesso: isCadastrado ? codigo : null, // Mapeia o 'codigo' para 'codigo_acesso'
                     itens: orcamentoCartPublico
                 };
-
-                // NOTE: Estamos simulando o endpoint /api/oceano/public/orcamentos
-                // Você terá que criar essa rota no seu app.py para receber esses dados
-                // e criar o cliente (se necessário) e o orçamento.
                 
-                // const response = await fetch(`${API_PUBLIC_URL}/orcamentos`, {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(payload)
-                // });
+                // [CORREÇÃO] Ativa o fetch, remove a simulação e aponta para o endpoint correto do app.py
+                // O endpoint no app.py é '/api/oceano/orcamento/publico'
+                const response = await fetch(`/api/oceano/orcamento/publico`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(finalPayload) // Envia o payload corrigido
+                });
                 
-                // SIMULAÇÃO: Se o código for 1234, falha. Caso contrário, sucesso em 2s.
-                if (codigo === '1234') {
-                    throw new Error("Código de Acesso inválido para cliente cadastrado.");
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.erro || 'Falha ao enviar. Tente novamente.');
                 }
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                // FIM SIMULAÇÃO
                 
-                successMsg.textContent = "✅ Orçamento enviado com sucesso! Entraremos em contato em breve.";
+                const resultData = await response.json(); // Pega a resposta de sucesso
+                
+                successMsg.textContent = `✅ ${resultData.mensagem}`; // Usa a mensagem vinda da API
                 successMsg.style.display = 'block';
                 orcamentoCartPublico = [];
                 updatePublicOrcamentoCartUI();
@@ -2093,6 +2081,7 @@
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Finalizar e Enviar Orçamento';
             }
         }
+        // *** [FIM DA CORREÇÃO 2] ***
 
 
         // --- INICIALIZAÇÃO GERAL ---
@@ -2167,22 +2156,26 @@
                 }
             });
             
+            // Listener do botão de Finalizar (agora chama a função corrigida)
             publicSubmitOrcamentoBtn.addEventListener('click', submitPublicOrcamento);
 
             // --- [INÍCIO] LÓGICA DO MODAL ANINHADO (Item Personalizado) ---
             
-            // Fecha o Modal Aninhado
+            // Fecha o Modal Aninhado (Botão 'X')
+            // Agora chama a função 'closeCustomItemModal' que definimos
             customItemModalCloseBtn.addEventListener('click', () => {
                 closeCustomItemModal();
                 // Garante que o modal principal ainda está visível
                 publicOrcamentoModal.style.display = 'flex';
             });
+            // Fecha o Modal Aninhado (Botão 'Cancelar')
             customItemModalCancelBtn.addEventListener('click', () => {
                 closeCustomItemModal();
                 publicOrcamentoModal.style.display = 'flex';
             });
 
             // Adiciona Item Personalizado (para o carrinho público)
+            // Agora chama a 'closeCustomItemModal' corretamente
             addCustomItemToCartBtn.addEventListener('click', () => {
                  addCustomItemToPublicCart('custom-item-form', orcamentoCartPublico, closeCustomItemModal);
             });
