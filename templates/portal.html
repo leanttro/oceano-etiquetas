@@ -636,23 +636,19 @@
                 </div>
             </div>
 
-            <!-- [INÍCIO] SEÇÃO NOVO ORÇAMENTO (TOTALMENTE REFEITA) -->
             <div class="content-view" id="novo-orcamento-view" style="display:none;">
                  <div class="content-section">
                     
-                    <!-- [NOVO] Botão de Iniciar Novo Orçamento (para limpar o carrinho e começar) -->
                     <button class="btn btn-primary" id="start-new-orcamento-btn" style="width: 100%;">
                         <i class="fas fa-file-invoice"></i> Iniciar Novo Orçamento
                     </button>
 
                     
-                    <!-- 1. O Carrinho de Orçamento (Agora no topo) -->
                     <div id="orcamento-cart-container">
                         <h3>Itens da Solicitação</h3>
                         <div id="cart-items-list" style="margin: 1.5rem 0;">
                             <p id="cart-empty-msg" style="color: var(--text-secondary);">Nenhum item adicionado.</p>
-                            <!-- Itens do carrinho serão inseridos aqui pelo JS -->
-                        </div>
+                            </div>
                         <button class="btn btn-primary" id="submit-orcamento-btn" style="width: 100%;">
                             <i class="fas fa-paper-plane"></i> Enviar Solicitação
                         </button>
@@ -660,7 +656,6 @@
                         <p class="error-msg" id="orcamento-error-msg" style="margin-bottom: 0;"></p>
                     </div>
 
-                    <!-- 2. Botões de Ação -->
                     <div id="add-item-controls">
                         <button class="btn btn-primary" id="show-custom-item-modal-btn">
                             <i class="fas fa-pencil-alt"></i> Adicionar Item Personalizado
@@ -670,7 +665,6 @@
                         </button>
                     </div>
 
-                    <!-- 3. Lista de Produtos do Catálogo (Escondida por padrão) -->
                     <div class="product-list-container" id="product-list-container" style="display: none;">
                         <div id="product-list">
                             <p style="padding: 2rem; text-align: center;">Carregando produtos...</p>
@@ -679,9 +673,6 @@
 
                 </div>
             </div>
-            <!-- [FIM] SEÇÃO NOVO ORÇAMENTO -->
-
-
             <div class="content-view" id="meus-pedidos-view" style="display:none;">
                 <div class="content-section">
                     <h2>Histórico de Orçamentos e Pedidos</h2>
@@ -705,7 +696,6 @@
         </div>
     </div>
 
-    <!-- Chatbot (Sem alterações) -->
     <div class="floating-chatbot" id="floatingChatbot" style="display:none;">
         <div id="chatbotButtonContainer">
              <div class="chatbot-minimized-icon" id="minimizedIcon" aria-label="Abrir Chatbot">
@@ -757,7 +747,6 @@
         </div>
     </div>
 
-    <!-- Modal de Alerta Customizado (Sem alterações) -->
     <div id="custom-dialog-modal" class="modal-overlay">
         <div style="background: var(--surface); padding: 2rem; border-radius: 8px; max-width: 400px; text-align: center;">
             <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
@@ -767,7 +756,6 @@
         </div>
     </div>
 
-    <!-- [NOVO] Modal de Item Personalizado -->
     <div id="custom-item-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -788,7 +776,6 @@
                     </select>
                 </div>
 
-                <!-- Campos Condicionais: Adesivos/Lacres -->
                 <div id="fields-adesivo-lacre" style="display: none; display: grid; gap: 1.5rem;">
                     <div class="form-group">
                         <label for="custom-item-material">Material (Ex: Vinil, BOPP, Couchê, Casca de Ovo)</label>
@@ -806,7 +793,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Condicionais: Brindes -->
                 <div id="fields-brinde" style="display: none; display: grid; gap: 1.5rem;">
                     <div class="form-group">
                         <label for="custom-item-tipo-brinde">Tipo de Brinde (Ex: Mousepad, Chaveiro)</label>
@@ -824,7 +810,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Comuns -->
                 <div class="form-grid">
                      <div class="form-group">
                         <label for="custom-item-quantidade">Quantidade *</label>
@@ -848,9 +833,6 @@
             </div>
         </div>
     </div>
-    <!-- [FIM] Modal -->
-
-
     <script>
         // URLs da API (do app.py)
         const API_CLIENT_URL = '/api/oceano/cliente';
@@ -891,11 +873,24 @@
         
         let chatHistory = [];
         
-        // --- Lógica de View (Sem alterações) ---
+        // --- [INÍCIO DA CORREÇÃO] ---
+        // --- Lógica de View [CORRIGIDA] ---
         function switchView(viewId, pageTitleEl, views, navLinks) {
-            views.forEach(view => view.classList.remove('active'));
-            document.getElementById(`${viewId}-view`).classList.add('active');
+            
+            // 1. Esconde TODAS as views
+            views.forEach(view => {
+                view.style.display = 'none'; // <-- A LINHA MAIS IMPORTANTE
+                view.classList.remove('active');
+            });
 
+            // 2. Mostra a view correta
+            const targetView = document.getElementById(`${viewId}-view`);
+            if (targetView) {
+                targetView.style.display = 'block'; // <-- A LINHA MAIS IMPORTANTE
+                targetView.classList.add('active');
+            }
+
+            // 3. Atualiza os links de navegação
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.dataset.view === viewId) {
@@ -904,13 +899,13 @@
                 }
             });
 
-            // Carrega dados sob demanda
+            // Carrega dados sob demanda (seu código original)
             if (viewId === 'dashboard') loadDashboardStats();
-            // [ALTERADO] Carrega produtos e o categoryMap
             if (viewId === 'novo-orcamento') loadProductsAndCategories();
             if (viewId === 'meus-pedidos') loadOrderHistory();
             if (viewId === 'falar-chat') toggleChat(true); 
         }
+        // --- [FIM DA CORREÇÃO] ---
 
         // --- AUTENTICAÇÃO (Sem alterações) ---
         function showPortal(loginScreen, clientPortal, clientNameDisplay, floatingChatbot, pageTitle, views, navLinks) {
