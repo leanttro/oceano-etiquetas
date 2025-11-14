@@ -1277,7 +1277,7 @@
             customDialogModal.style.display = 'flex';
         }
 
-        // --- CHATBOT (Sem alterações) ---
+        // --- CHATBOT (LÓGICA CORRIGIDA) ---
         
         function getCurrentTime() {
             return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -1352,6 +1352,9 @@
             minimizedIcon.classList.remove('minimized');
         }
         
+        // ==========================================================
+        // [INÍCIO] FUNÇÃO TOGGLECHAT CORRIGIDA
+        // ==========================================================
         function toggleChat(forceOpen = false) {
             const chatbotWindow = document.getElementById('chatbotWindow');
             const chatbotButton = document.getElementById('chatbotButton');
@@ -1370,10 +1373,13 @@
                 // --- LÓGICA CORRIGIDA PARA ABRIR ---
                 chatbotWindow.classList.add('active');       // 1. Mostra a janela de chat
                 chatbotButton.classList.add('hidden');       // 2. Esconde o preview bubble
-                minimizedIcon.classList.remove('minimized'); // 3. ESCONDE o ícone minimizado (a linha que faltava corrigir)
+                minimizedIcon.classList.remove('minimized'); // 3. ESCONDE o ícone minimizado
                 setTimeout(() => chatbotInput.focus(), 300);
             }
         }
+        // ==========================================================
+        // [FIM] FUNÇÃO TOGGLECHAT CORRIGIDA
+        // ==========================================================
 
         function startChatbotSession() {
             const chatbotMessages = document.getElementById('chatbotMessages');
@@ -1565,11 +1571,17 @@
             });
 
 
-            // --- Listeners do Chatbot ---
-            chatbotButton.addEventListener('click', toggleChat);
-            chatbotClose.addEventListener('click', toggleChat);
+            // ==========================================================
+            // [INÍCIO] LISTENERS DO CHATBOT CORRIGIDOS
+            // ==========================================================
+            chatbotButton.addEventListener('click', () => toggleChat());
+            chatbotClose.addEventListener('click', () => toggleChat());
             previewClose.addEventListener('click', (e) => { e.stopPropagation(); minimizePreview(); });
-            minimizedIcon.addEventListener('click', toggleChat);
+            minimizedIcon.addEventListener('click', () => toggleChat());
+            // ==========================================================
+            // [FIM] LISTENERS DO CHATBOT CORRIGIDOS
+            // ==========================================================
+
             chatbotSend.addEventListener('click', sendChatMessage);
             chatbotInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
@@ -1593,8 +1605,6 @@
                 showLogin(loginScreen, clientPortal, floatingChatbot);
             }
         });
-
-        // <-- [A LINHA DUPLICADA (1261) FOI REMOVIDA DAQUI] -->
 
     </script>
 </body>
