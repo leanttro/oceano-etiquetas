@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin | Oceano Etiquetas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- TEMA OCEANO ADMIN (Azul) --- */
+        :root {
+            --background: #0f172a; /* Azul Escuro (dark) */
+            --surface: #1e293b; /* Azul Médio (surface) */
+            --border: #334155; /* Azul Cinza (border) */
+            --text-primary: #f8fafc; /* Branco */
+            --text-secondary: #cbd5e1; /* Cinza Claro */
+            --accent: #2563eb; /* Azul Oceano (primary) */
+            --accent-hover: #1d4ed8; /* Azul Oceano Hover */
+            
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Montserrat', sans-serif;
+            
+            --status-pending: #facc15; /* Amarelo */
+            --status-confirmed: #10b981; /* Verde */
+            --status-rejected: #ef4444; /* Vermelho */
+            --status-default: #6b7280; /* Cinza */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-body); background-color: var(--background);
+            color: var(--text-secondary); line-height: 1.6;
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        h1, h2, h3 { font-family: var(--font-heading); color: var(--text-primary); }
+        .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background-color: var(--accent); color: var(--text-primary); }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-danger { background-color: var(--status-rejected); color: var(--text-primary); }
+        .btn-danger:hover { background-color: #c13030; }
+        .btn-success { background-color: var(--status-confirmed); color: var(--text-primary); }
+        .btn-success:hover { background-color: #0d996a; }
+        .btn-action { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .error-msg { color: var(--status-rejected); margin-top: 1rem; display: none; }
+        .success-msg { color: var(--status-confirmed); margin-top: 1rem; display: none; }
+        
+        /* --- TELA DE LOGIN --- */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .login-box { background-color: var(--surface); padding: 3rem; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .login-box h2 { font-size: 2rem; margin-bottom: 2rem; color: var(--text-primary); }
+        .input-group { margin-bottom: 1.5rem; text-align: left; }
+        .input-group label { display: block; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background-color: var(--background); color: var(--text-primary); font-family: var(--font-body); }
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus { border-color: var(--accent); outline: none; }
+        .logo-img { height: 60px; margin-bottom: 1.5rem; border-radius: 8px;} 
+
+        /* --- PAINEL PRINCIPAL --- */
+        #admin-panel { display: none; flex: 1; flex-direction: column; }
+        header { padding: 1rem 0; background-color: var(--surface); border-bottom: 1px solid var(--border); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; }
+        .btn-logout { padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--text-primary); color: var(--text-primary); border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+        .btn-logout:hover { background: var(--accent); color: var(--text-primary); border-color: var(--accent); }
+
+        #admin-hero { background-color: var(--surface); padding: 40px 0 0; position: relative; color: white; text-align: center; }
+        #admin-hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+        #admin-hero p { font-size: 1.2rem; color: var(--text-secondary); }
+        .hero-logo-container { width: 100%; text-align: center; margin-bottom: 20px; }
+        .hero-logo { height: 80px; border-radius: 8px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 30px; margin-bottom: 30px; }
+        .stat-card { background-color: var(--surface); padding: 2rem; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .stat-number { font-family: var(--font-heading); font-size: 3rem; font-weight: 700; color: var(--text-primary); line-height: 1; margin-bottom: 0.5rem; }
+        .stat-label { font-size: 1rem; color: var(--text-secondary); font-weight: 500; }
+        
+        /* Sistema de Abas */
+        .admin-tabs {
+            display: flex;
+            background-color: var(--surface);
+            padding-left: 2rem;
+            margin-top: -1px; /* Gruda no hero */
+        }
+        .tab-link {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .tab-link.active, .tab-link:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent);
+        }
+
+        .admin-section { padding: 3rem 0; border-bottom: 1px solid var(--border); display: none; }
+        .admin-section.active { display: block; }
+        .admin-section:nth-child(odd) { background-color: var(--surface); } /* Alterna cor */
+        
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;}
+        .section-header h2 { font-size: 2rem; }
+        
+        .admin-table { width: 100%; border-collapse: collapse; background-color: var(--background); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+        .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .admin-table th { background-color: rgba(0,0,0,0.2); color: var(--text-primary); font-weight: 600; }
+        .status-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: #fff; display: inline-block; }
+        .status-true { background-color: var(--status-confirmed); }
+        .status-false { background-color: var(--status-rejected); }
+        
+        /* Status de Pedidos */
+        .status-Aguardando-Orçamento { background-color: var(--status-pending); color: #000; }
+        .status-Aguardando-Pagamento { background-color: #3B82F6; color: #fff; }
+        .status-Pago, .status-Pago-(Aguardando-Verificação) { background-color: var(--status-confirmed); }
+        .status-Em-Produção { background-color: var(--status-default); }
+        .status-Enviado, .status-Pronto-para-Retirada { background-color: #a855f7; } /* Roxo */
+        .status-Cancelado { background-color: var(--status-rejected); }
+        
+        .product-image-cell img { height: 40px; width: 40px; object-fit: cover; border-radius: 4px; background: #fff; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.8); z-index: 5000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--surface); padding: 2rem; border-radius: 12px; width: 90%; max-width: 800px; position: relative; border-top: 5px solid var(--accent); box-shadow: 0 15px 40px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; }
+        .modal-content h3 { color: var(--accent); margin-bottom: 1rem; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .form-grid .full-width { grid-column: 1 / -1; }
+        .form-check { display: flex; align-items: center; gap: 0.5rem; background: var(--background); padding: 0.8rem; border-radius: 8px; }
+        .form-check input { width: auto; }
+
+        /* Estilo Detalhe do Pedido */
+        .pedido-details p { margin-bottom: 0.5rem; font-size: 1.05rem; }
+        .pedido-details strong { color: var(--text-primary); font-weight: 700; }
+        .itens-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; background-color: var(--background); }
+        .itens-table th, .itens-table td { padding: 0.8rem; border: 1px solid var(--border); }
+        .itens-table th { background-color: var(--accent-hover); color: var(--text-primary); }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <!-- O logo é servido da pasta /static/ -->
+            <img src="/static/oceanologo.png" alt="Oceano Etiquetas Logo" class="logo-img">
+            <h2>Painel Admin</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Usuário (Admin)</label>
+                    <input type="text" id="username" required placeholder="Digite seu usuário">
+                </div>
+                <div class="input-group">
+                    <label for="password">Senha (Chave de Acesso)</label>
+                    <input type="password" id="password" required placeholder="Digite sua senha">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button> 
+                <p class="error-msg" id="login-error">Usuário ou senha inválidos.</p>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-panel">
+        <header>
+            <div class="container admin-header">
+                 <a href="/admin"><img src="/static/oceanologo.png" alt="Oceano Etiquetas Logo" class="logo-img" style="height: 40px;"></a>
+                <button class="btn-logout" id="logout-btn">Sair <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+
+        <main>
+            <div id="admin-hero">
+                <div class="container">
+                    <h1>Painel de Controle Oceano</h1>
+                    <p>Gerenciamento de Pedidos, Produtos e Clientes</p>
+                </div>
+                
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="stat-pedidos">-</div>
+                            <div class="stat-label">Pedidos Pendentes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="stat-produtos">-</div>
+                            <div class="stat-label">Produtos Ativos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="stat-clientes">-</div>
+                            <div class="stat-label">Clientes Cadastrados</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Abas de Navegação -->
+                <div class="admin-tabs">
+                    <button class="tab-link active" data-tab="pedidos-section">
+                        <i class="fas fa-receipt"></i> Pedidos
+                    </button>
+                    <button class="tab-link" data-tab="produtos-section">
+                        <i class="fas fa-boxes-stacked"></i> Produtos
+                    </button>
+                    <button class="tab-link" data-tab="clientes-section">
+                        <i class="fas fa-users"></i> Clientes
+                    </button>
+                    <button class="tab-link" data-tab="admins-section">
+                        <i class="fas fa-user-shield"></i> Admins
+                    </button>
+                </div>
+            </div>
+
+            <!-- [Seção 1: PEDIDOS] -->
+            <section id="pedidos-section" class="admin-section active" style="background-color: var(--background);">
+                 <div class="container">
+                    <div class="section-header">
+                        <h2>Gerenciar Pedidos (Orçamentos)</h2>
+                    </div>
+                    <table class="admin-table" id="orders-table">
+                        <thead>
+                            <tr><th>ID</th><th>Cliente</th><th>Data</th><th>Valor Total</th><th>Status</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="orders-loading"><td colspan="6" style="text-align: center;">Carregando pedidos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- [Seção 2: PRODUTOS] (Substitui o Colab) -->
+            <section id="produtos-section" class="admin-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Gerenciar Produtos (Catálogo)</h2>
+                        <button class="btn btn-primary" id="open-add-product-modal">+ Adicionar Novo Produto</button>
+                    </div>
+                    <table class="admin-table" id="products-table">
+                        <thead>
+                            <tr><th></th><th>Código</th><th>Nome</th><th>Categoria</th><th>Status</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="products-loading"><td colspan="6" style="text-align: center;">Carregando produtos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- [Seção 3: CLIENTES] -->
+            <section id="clientes-section" class="admin-section">
+                 <div class="container">
+                    <div class="section-header">
+                        <h2>Gerenciar Clientes</h2>
+                        <button class="btn btn-primary" id="open-add-client-modal">+ Adicionar Novo Cliente</button>
+                    </div>
+                    <table class="admin-table" id="clients-table">
+                        <thead>
+                            <tr><th>Nome</th><th>Email</th><th>Telefone/CNPJ</th><th>Cód. Acesso</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="clients-loading"><td colspan="5" style="text-align: center;">Carregando clientes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- [Seção 4: ADMINS] -->
+            <section id="admins-section" class="admin-section" style="background-color: var(--background);">
+                 <div class="container">
+                    <div class="section-header">
+                        <h2>Gerenciar Usuários Admin</h2>
+                        <button class="btn btn-primary" id="open-add-admin-modal">+ Adicionar Novo Admin</button>
+                    </div>
+                    <table class="admin-table" id="admins-table">
+                        <thead>
+                            <tr><th>ID</th><th>Usuário</th><th>Data de Criação</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="admins-loading"><td colspan="4" style="text-align: center;">Carregando administradores...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- --- MODAIS DE GERENCIAMENTO --- -->
+    <!-- ============================================================= -->
+
+    <!-- [Modal 1: PRODUTOS] (Complexo, substitui o Colab) -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" data-modal="product-modal">&times;</button>
+            <h3 id="product-modal-title">Adicionar Novo Produto</h3> 
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                
+                <h4>Informações Principais</h4>
+                <div class="form-grid-3">
+                    <div class="input-group">
+                        <label for="product-nome">Nome do Produto</label>
+                        <input type="text" id="product-nome" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="product-codigo">Código (SKU)</label>
+                        <input type="text" id="product-codigo">
+                    </div>
+                    <div class="input-group">
+                        <label for="product-whatsapp">Texto p/ WhatsApp</label>
+                        <input type="text" id="product-whatsapp" placeholder="Ex: Lacre Casca de Ovo">
+                    </div>
+                </div>
+                
+                <div class="input-group full-width">
+                    <label for="product-desc-curta">Descrição Curta (para o card)</label>
+                    <textarea id="product-desc-curta" rows="2"></textarea>
+                </div>
+                <div class="input-group full-width">
+                    <label for="product-desc-longa">Descrição Longa (HTML permitido)</label>
+                    <textarea id="product-desc-longa" rows="4"></textarea>
+                </div>
+                <div class="input-group full-width">
+                    <label for="product-specs">Especificações Técnicas (Formato JSON)</label>
+                    <textarea id="product-specs" rows="4" placeholder='{ "Material": "PVC", "Tamanho": "10x5cm" }'></textarea>
+                </div>
+
+                <hr style="border-color: var(--border); margin: 1rem 0;">
+                <h4>Imagens & SEO</h4>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="product-img-url">URL Imagem Principal</label>
+                        <input type="text" id="product-img-url">
+                    </div>
+                    <div class="input-group">
+                        <label for="product-img-alt">Texto ALT da Imagem</label>
+                        <input type="text" id="product-img-alt">
+                    </div>
+                </div>
+                <div class="input-group full-width">
+                    <label for="product-galeria">Galeria (URLs separadas por vírgula)</label>
+                    <input type="text" id="product-galeria">
+                </div>
+                 <div class="form-grid-3">
+                    <div class="input-group">
+                        <label for="product-categoria">Categoria</label>
+                        <input type="text" id="product-categoria" placeholder="Ex: Lacres">
+                    </div>
+                    <div class="input-group">
+                        <label for="product-subcategoria">Subcategoria</label>
+                        <input type="text" id="product-subcategoria" placeholder="Ex: Casca de Ovo">
+                    </div>
+                     <div class="input-group">
+                        <label for="product-slug">URL (Slug)</label>
+                        <input type="text" id="product-slug" placeholder="/produtos/meu-produto-slug">
+                    </div>
+                </div>
+                 <div class="form-grid">
+                    <div class="input-group">
+                        <label for="product-meta-title">SEO Title</label>
+                        <input type="text" id="product-meta-title">
+                    </div>
+                    <div class="input-group">
+                        <label for="product-meta-desc">SEO Meta Description</label>
+                        <input type="text" id="product-meta-desc">
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="product-ativo" checked>
+                    <label for="product-ativo">Produto Ativo (Aparece no site)?</label>
+                </div>
+
+                <p class="error-msg" id="product-error-msg">Erro ao salvar.</p>
+                <p class="success-msg" id="product-success-msg">Produto salvo!</p>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-danger" data-modal="product-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="save-product-btn">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- [Modal 2: CLIENTES] -->
+    <div id="client-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" data-modal="client-modal">&times;</button>
+            <h3 id="client-modal-title">Adicionar Novo Cliente</h3>
+            <form id="client-form">
+                <input type="hidden" id="client-id">
+                <div class="input-group">
+                    <label for="client-name">Nome do Cliente / Empresa</label>
+                    <input type="text" id="client-name" required placeholder="Ex: Cliente Teste S.A.">
+                </div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="client-email">Email (Obrigatório)</label>
+                        <input type="email" id="client-email" required placeholder="contato@cliente.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="client-codigo">Código de Acesso (A "Senha" do cliente)</label>
+                        <input type="text" id="client-codigo" required placeholder="Ex: CLIENTE123">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="client-telefone">Telefone (Opcional)</label>
+                        <input type="text" id="client-telefone" placeholder="(11) 99999-9999">
+                    </div>
+                    <div class="input-group">
+                        <label for="client-cnpj">CNPJ/CPF (Opcional)</label>
+                        <input type="text" id="client-cnpj" placeholder="00.000.000/0001-00">
+                    </div>
+                </div>
+                
+                <p class="error-msg" id="client-error-msg">Erro ao salvar.</p>
+                <p class="success-msg" id="client-success-msg">Cliente adicionado!</p>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-danger" data-modal="client-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="save-client-btn">Salvar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- [Modal 3: ADMINS] -->
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" data-modal="admin-modal">&times;</button>
+            <h3>Adicionar Novo Administrador</h3>
+            <form id="admin-form">
+                <div class="input-group">
+                    <label for="admin-username">Nome de Usuário</label>
+                    <input type="text" id="admin-username" required placeholder="Ex: novo.admin">
+                </div>
+                <div class="input-group">
+                    <label for="admin-password">Senha (Chave de Acesso)</label>
+                    <input type="password" id="admin-password" required placeholder="Mínimo 4 caracteres">
+                </div>
+                
+                <p class="error-msg" id="admin-error-msg">Erro ao salvar.</p>
+                <p class="success-msg" id="admin-success-msg">Administrador adicionado!</p>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-danger" data-modal="admin-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="save-admin-btn">Salvar Administrador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- [Modal 4: PEDIDOS] -->
+    <div id="order-detail-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" data-modal="order-detail-modal">&times;</button>
+            <h3 id="order-modal-title">Detalhes do Pedido #<span id="order-id-display"></span></h3>
+            
+            <div class="pedido-details">
+                <p><strong>Cliente:</strong> <span id="order-client-name"></span> (<span id="order-client-email"></span>)</p>
+                <p><strong>Data de Criação:</strong> <span id="order-creation-date"></span></p>
+                
+                <div class="form-grid-3 full-width" style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem;">
+                    <div class="input-group">
+                        <label for="order-status">Status do Pedido</label>
+                        <select id="order-status" required>
+                            <option value="Aguardando Orçamento">Aguardando Orçamento</option>
+                            <option value="Aguardando Pagamento">Aguardando Pagamento</option>
+                            <option value="Pago (Aguardando Verificação)">Pago (Aguardando Verificação)</option>
+                            <option value="Em Produção">Em Produção</option>
+                            <option value="Pronto para Retirada">Pronto para Retirada</option>
+                            <option value="Enviado">Enviado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="order-frete">Valor Frete (R$)</label>
+                        <input type="number" id="order-frete" step="0.01" value="0.00">
+                    </div>
+                    <div class="input-group">
+                        <label for="order-total">Valor Final Total (R$)</label>
+                        <input type="number" id="order-total" step="0.01" value="0.00" required>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="order-payment-link">Chave PIX ou Link de Pagamento</label>
+                        <input type="text" id="order-payment-link" placeholder="sua-chave-pix ou https://...">
+                    </div>
+                    <div class="input-group">
+                        <label for="order-tracking-code">Código de Rastreio</label>
+                        <input type="text" id="order-tracking-code" placeholder="PB123456789BR">
+                    </div>
+                </div>
+                 <div class="input-group full-width">
+                    <label for="order-admin-notes">Observações do Admin (visível ao cliente)</label>
+                    <textarea id="order-admin-notes" rows="2"></textarea>
+                </div>
+
+
+                <h4 style="margin-top: 1rem;">Itens do Pedido</h4>
+                <table class="itens-table">
+                    <thead>
+                        <tr><th>Produto</th><th>Cód.</th><th>Qtd.</th><th>Obs. Cliente</th><th>Preço Unit. (R$)</th></tr>
+                    </thead>
+                    <tbody id="order-items-list">
+                        <!-- Itens preenchidos via JS -->
+                    </tbody>
+                </table>
+                
+                <p class="error-msg" id="order-error-msg">Erro ao atualizar pedido.</p>
+                <p class="success-msg" id="order-success-msg">Pedido atualizado!</p>
+            </div>
+            
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-danger" data-modal="order-detail-modal">Fechar</button>
+                <button type="button" class="btn btn-success" id="save-order-btn">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- [Modal 5: DIÁLOGO DE CONFIRMAÇÃO] -->
+    <div id="custom-dialog-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
+            <div id="dialog-buttons" class="modal-buttons" style="justify-content: center;">
+                <button type="button" class="btn btn-success" id="dialog-ok-btn">OK</button>
+                <button type="button" class="btn btn-danger" id="dialog-cancel-btn" style="display:none;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- --- JAVASCRIPT DO PAINEL ADMIN --- -->
+    <!-- ============================================================= -->
+    <script>
+        // URL da API (do app.py)
+        const API_BASE_URL = '/api/oceano/admin'; 
+        let ADMIN_TOKEN = null;
+
+        // --- Seletores Globais ---
+        const loginScreen = document.getElementById('login-screen');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginForm = document.getElementById('login-form'); 
+        const logoutButton = document.getElementById('logout-btn');
+        const loginErrorMsg = document.getElementById('login-error');
+
+        // --- Seletores de Stats ---
+        const statProdutosEl = document.getElementById('stat-produtos');
+        const statClientesEl = document.getElementById('stat-clientes');
+        const statPedidosEl = document.getElementById('stat-pedidos');
+
+        // --- Seletores Tabelas ---
+        const productsTableBody = document.querySelector('#products-table tbody');
+        const clientsTableBody = document.querySelector('#clients-table tbody');
+        const adminsTableBody = document.querySelector('#admins-table tbody'); 
+        const ordersTableBody = document.querySelector('#orders-table tbody');
+
+        // --- Seletores Modais ---
+        const productModal = document.getElementById('product-modal');
+        const productForm = document.getElementById('product-form');
+        const clientModal = document.getElementById('client-modal');
+        const clientForm = document.getElementById('client-form');
+        const adminModal = document.getElementById('admin-modal'); 
+        const adminForm = document.getElementById('admin-form'); 
+        const orderDetailModal = document.getElementById('order-detail-modal');
+        const saveOrderBtn = document.getElementById('save-order-btn');
+
+        // --- Seletores Modal Produto (detalhados) ---
+        const productIdInput = document.getElementById('product-id');
+        const productErrorMsg = document.getElementById('product-error-msg');
+        const productSuccessMsg = document.getElementById('product-success-msg');
+        
+        // --- Seletores Modal Cliente (detalhados) ---
+        const clientIdInput = document.getElementById('client-id');
+        const clientErrorMsg = document.getElementById('client-error-msg');
+        const clientSuccessMsg = document.getElementById('client-success-msg');
+        
+        // --- Seletores Modal Admin (detalhados) ---
+        const adminErrorMsg = document.getElementById('admin-error-msg');
+        const adminSuccessMsg = document.getElementById('admin-success-msg');
+        
+        // --- Seletores Modal Pedido (detalhados) ---
+        const orderIdDisplay = document.getElementById('order-id-display');
+        const orderClientName = document.getElementById('order-client-name');
+        const orderClientEmail = document.getElementById('order-client-email');
+        const orderCreationDate = document.getElementById('order-creation-date');
+        const orderStatusSelect = document.getElementById('order-status');
+        const orderFreteInput = document.getElementById('order-frete');
+        const orderTotalInput = document.getElementById('order-total');
+        const orderPaymentLink = document.getElementById('order-payment-link');
+        const orderTrackingCode = document.getElementById('order-tracking-code');
+        const orderAdminNotes = document.getElementById('order-admin-notes');
+        const orderItemsList = document.getElementById('order-items-list');
+        const orderErrorMsg = document.getElementById('order-error-msg');
+        const orderSuccessMsg = document.getElementById('order-success-msg');
+
+        // --- Seletores Dialog Customizado ---
+        const customDialogModal = document.getElementById('custom-dialog-modal');
+        const dialogMessage = document.getElementById('dialog-message');
+        const dialogOkBtn = document.getElementById('dialog-ok-btn');
+        const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
+        let confirmCallback = null;
+        let isEditing = false; // Flag genérica para create/update
+        let currentOrderId = null; // ID do pedido atualmente aberto
+
+        // --- FUNÇÕES DE UTILS ---
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ADMIN_TOKEN}`
+            };
+        }
+        function formatCurrency(value) {
+            if (value === null || value === undefined) return 'R$ 0,00';
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+            return new Date(dateString).toLocaleDateString('pt-BR', options);
+        }
+        function getStatusClass(status) {
+            if (!status) return 'status-default';
+            const statusKey = status.replace(/\s/g, '-').replace(/[()]/g, '');
+            return `status-${statusKey}`;
+        }
+        function hideAllMessages() {
+            document.querySelectorAll('.error-msg, .success-msg').forEach(msg => msg.style.display = 'none');
+        }
+
+        // --- FUNÇÕES DE DIÁLOGO CUSTOMIZADO ---
+        function showCustomAlert(message) {
+            dialogMessage.textContent = message;
+            dialogOkBtn.style.display = 'block';
+            dialogCancelBtn.style.display = 'none';
+            customDialogModal.style.display = 'flex';
+        }
+        function showCustomConfirm(message, callback) {
+            dialogMessage.textContent = message;
+            dialogOkBtn.style.display = 'block';
+            dialogCancelBtn.style.display = 'block';
+            confirmCallback = callback;
+            customDialogModal.style.display = 'flex';
+        }
+        dialogOkBtn.addEventListener('click', () => {
+            customDialogModal.style.display = 'none';
+            if (dialogCancelBtn.style.display !== 'none' && confirmCallback) {
+                confirmCallback(true);
+            }
+            confirmCallback = null;
+        });
+        dialogCancelBtn.addEventListener('click', () => {
+            customDialogModal.style.display = 'none';
+            if (confirmCallback) {
+                confirmCallback(false);
+            }
+            confirmCallback = null;
+        });
+
+        // --- FUNÇÕES DE AUTENTICAÇÃO ---
+        function showPanel() {
+            loginScreen.style.display = 'none';
+            adminPanel.style.display = 'flex';
+            loadDashboard(); // Carrega todos os dados
+        }
+        function showLogin() {
+            loginScreen.style.display = 'flex';
+            adminPanel.style.display = 'none';
+            localStorage.removeItem('oceano_admin_token');
+            ADMIN_TOKEN = null;
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value; 
+            loginErrorMsg.style.display = 'none';
+            const loginButton = loginForm.querySelector('button[type="submit"]');
+            loginButton.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    ADMIN_TOKEN = data.token;
+                    localStorage.setItem('oceano_admin_token', data.token);
+                    showPanel();
+                } else {
+                    loginErrorMsg.textContent = data.erro || 'Credenciais inválidas.';
+                    loginErrorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                loginErrorMsg.textContent = 'Erro de conexão com o servidor.';
+                loginErrorMsg.style.display = 'block';
+            } finally {
+                loginButton.disabled = false;
+            }
+        }
+        
+        loginForm.addEventListener('submit', handleLogin);
+        logoutButton.addEventListener('click', showLogin);
+
+        // --- CARREGAMENTO DO DASHBOARD (MÉTODO PRINCIPAL) ---
+        async function loadDashboard() {
+            if (!ADMIN_TOKEN) return showLogin();
+            // Carrega tudo em paralelo
+            Promise.all([
+                loadDashboardStats(),
+                loadOrdersTable(),
+                loadProductsTable(),
+                loadClientsTable(),
+                loadAdminsTable()
+            ]);
+        }
+        
+        // --- NAVEGAÇÃO POR ABAS ---
+        document.querySelector('.admin-tabs').addEventListener('click', (e) => {
+            if (e.target.classList.contains('tab-link')) {
+                const tabId = e.target.dataset.tab;
+                
+                document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                document.querySelectorAll('.admin-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            }
+        });
+        
+        // --- ABRIR/FECHAR MODAIS (Genérico) ---
+        document.querySelectorAll('[data-modal]').forEach(el => {
+            el.addEventListener('click', () => {
+                const modalId = el.dataset.modal;
+                const modal = document.getElementById(modalId);
+                modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+            });
+        });
+
+        // --- FUNÇÕES DE CARREGAMENTO DE DADOS ---
+        
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/dashboard_stats`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                const stats = await response.json();
+                statProdutosEl.textContent = stats.stat_produtos;
+                statClientesEl.textContent = stats.stat_clientes;
+                statPedidosEl.textContent = stats.stat_pedidos;
+            } catch (error) {
+                console.error('Erro ao carregar stats:', error);
+            }
+        }
+        
+        // =============================================================
+        // --- CRUD PEDIDOS (Orçamentos) ---
+        // =============================================================
+        
+        async function loadOrdersTable() {
+            ordersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/pedidos`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const orders = await response.json();
+                ordersTableBody.innerHTML = '';
+                
+                if (orders.length === 0) {
+                     ordersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum pedido encontrado.</td></tr>';
+                     return;
+                }
+
+                orders.forEach(o => {
+                    const statusClass = getStatusClass(o.status);
+                    const row = ordersTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>#${o.id}</td>
+                        <td>${o.nome_cliente || 'Cliente Deletado'}</td>
+                        <td>${formatDate(o.data_criacao)}</td>
+                        <td>${formatCurrency(o.valor_final_total)}</td>
+                        <td><span class="status-badge ${statusClass}">${o.status}</span></td>
+                        <td>
+                            <button class="btn-action btn-primary" onclick="openOrderDetailModal(${o.id})">Detalhes/Editar</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                ordersTableBody.innerHTML = '<tr><td colspan="6" style="color:var(--status-rejected);">Erro ao carregar pedidos.</td></tr>';
+            }
+        }
+        
+        let orderItensCache = []; // Cache para os itens do pedido
+        
+        async function openOrderDetailModal(id) {
+            hideAllMessages();
+            currentOrderId = id;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/pedidos/${id}`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const pedido = await response.json();
+                
+                orderIdDisplay.textContent = pedido.id;
+                orderClientName.textContent = pedido.nome_cliente || 'N/A';
+                orderClientEmail.textContent = pedido.email || 'N/A';
+                orderCreationDate.textContent = formatDate(pedido.data_criacao);
+                orderStatusSelect.value = pedido.status;
+                orderFreteInput.value = pedido.valor_frete || 0.00;
+                orderTotalInput.value = pedido.valor_final_total || 0.00;
+                orderPaymentLink.value = pedido.chave_pix || '';
+                orderTrackingCode.value = pedido.codigo_rastreio || '';
+                orderAdminNotes.value = pedido.observacoes_admin || '';
+                
+                orderItemsList.innerHTML = '';
+                orderItensCache = pedido.itens; // Salva no cache
+                
+                pedido.itens.forEach(item => {
+                    const row = orderItemsList.insertRow();
+                    row.innerHTML = `
+                        <td>${item.nome_produto || '(Produto Deletado)'}</td>
+                        <td>${item.codigo_produto || 'N/A'}</td>
+                        <td>${item.quantidade_solicitada}</td>
+                        <td>${item.observacoes_cliente || '-'}</td>
+                        <td>
+                            <input type="number" step="0.01" class="item-price-input" data-item-id="${item.id}" value="${item.preco_unitario_definido || 0.00}" style="width: 80px; padding: 5px;">
+                        </td>
+                    `;
+                });
+                
+                orderDetailModal.style.display = 'flex';
+
+            } catch (error) {
+                showCustomAlert('Erro ao carregar dados do pedido: ' + error.message);
+            }
+        }
+        
+        saveOrderBtn.addEventListener('click', async () => {
+            if (!currentOrderId) return;
+            
+            hideAllMessages();
+            saveOrderBtn.disabled = true;
+            
+            // 1. Coleta os preços unitários atualizados dos itens
+            const updatedItens = [];
+            document.querySelectorAll('#order-items-list .item-price-input').forEach(input => {
+                updatedItens.push({
+                    id: parseInt(input.dataset.itemId),
+                    preco_unitario_definido: parseFloat(input.value) || 0.0
+                });
+            });
+
+            // 2. Coleta os dados principais do pedido
+            const updateData = {
+                status: orderStatusSelect.value,
+                valor_frete: parseFloat(orderFreteInput.value) || 0.0,
+                valor_final_total: parseFloat(orderTotalInput.value) || 0.0,
+                chave_pix: orderPaymentLink.value,
+                codigo_rastreio: orderTrackingCode.value,
+                observacoes_admin: orderAdminNotes.value,
+                itens: updatedItens // Envia os itens atualizados
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/pedidos/${currentOrderId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(updateData)
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    orderSuccessMsg.style.display = 'block';
+                    loadOrdersTable(); 
+                    loadDashboardStats();
+                    setTimeout(() => orderDetailModal.style.display = 'none', 1500);
+                } else {
+                    orderErrorMsg.textContent = data.erro || 'Falha ao salvar.';
+                    orderErrorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                orderErrorMsg.textContent = 'Erro de conexão com a API.';
+                orderErrorMsg.style.display = 'block';
+            } finally {
+                saveOrderBtn.disabled = false;
+            }
+        });
+
+        // =============================================================
+        // --- CRUD PRODUTOS ---
+        // =============================================================
+        
+        async function loadProductsTable() {
+            productsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/produtos`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const products = await response.json();
+                productsTableBody.innerHTML = '';
+                
+                if (products.length === 0) {
+                     productsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum produto cadastrado.</td></tr>';
+                     return;
+                }
+
+                products.forEach(p => {
+                    const statusClass = getStatusClass(p.esta_ativo ? "true" : "false");
+                    const statusText = p.esta_ativo ? 'Ativo' : 'Inativo';
+                    
+                    const row = productsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td class="product-image-cell"><img src="${p.imagem_principal_url || '/static/oceanologo.png'}" alt="${p.nome_produto}" onerror="this.src='/static/oceanologo.png';"></td>
+                        <td>${p.codigo_produto || '-'}</td>
+                        <td>${p.nome_produto}</td>
+                        <td>${p.categoria || '-'}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-action" style="background:var(--accent); color:white;" onclick="openEditProductModal(${p.id})">Editar</button>
+                            <button class="btn-action btn-danger" onclick="deleteProduct(${p.id})">Excluir</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                productsTableBody.innerHTML = '<tr><td colspan="6" style="color:var(--status-rejected);">Erro ao carregar produtos.</td></tr>';
+            }
+        }
+        
+        document.getElementById('open-add-product-modal').addEventListener('click', () => {
+            isEditing = false;
+            document.getElementById('product-modal-title').textContent = 'Adicionar Novo Produto';
+            document.getElementById('save-product-btn').textContent = 'Salvar Produto';
+            productForm.reset(); 
+            document.getElementById('product-ativo').checked = true;
+            productIdInput.value = '';
+            hideAllMessages();
+            productModal.style.display = 'flex';
+        });
+
+        async function openEditProductModal(id) {
+            isEditing = true;
+            productForm.reset();
+            hideAllMessages();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/produtos/${id}`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const p = await response.json();
+
+                document.getElementById('product-modal-title').textContent = 'Editar Produto';
+                document.getElementById('save-product-btn').textContent = 'Atualizar Produto';
+                
+                productIdInput.value = p.id;
+                document.getElementById('product-nome').value = p.nome_produto;
+                document.getElementById('product-codigo').value = p.codigo_produto;
+                document.getElementById('product-whatsapp').value = p.whatsapp_link_texto;
+                document.getElementById('product-desc-curta').value = p.descricao_curta;
+                document.getElementById('product-desc-longa').value = p.descricao_longa;
+                document.getElementById('product-specs').value = p.especificacoes_tecnicas; // JSON string
+                document.getElementById('product-img-url').value = p.imagem_principal_url;
+                document.getElementById('product-img-alt').value = p.imagem_principal_alt;
+                document.getElementById('product-galeria').value = (p.galeria_imagens || []).join(', '); // Converte Array para string
+                document.getElementById('product-categoria').value = p.categoria;
+                document.getElementById('product-subcategoria').value = p.subcategoria;
+                document.getElementById('product-slug').value = p.url_slug;
+                document.getElementById('product-meta-title').value = p.meta_title;
+                document.getElementById('product-meta-desc').value = p.meta_description;
+                document.getElementById('product-ativo').checked = p.esta_ativo;
+                
+                productModal.style.display = 'flex';
+
+            } catch (error) {
+                showCustomAlert('Erro ao carregar dados do produto para edição.');
+            }
+        }
+        
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAllMessages();
+            document.getElementById('save-product-btn').disabled = true;
+
+            const productData = {
+                id: isEditing ? parseInt(productIdInput.value) : null,
+                nome_produto: document.getElementById('product-nome').value,
+                codigo_produto: document.getElementById('product-codigo').value || null,
+                whatsapp_link_texto: document.getElementById('product-whatsapp').value || null,
+                descricao_curta: document.getElementById('product-desc-curta').value || null,
+                descricao_longa: document.getElementById('product-desc-longa').value || null,
+                especificacoes_tecnicas: document.getElementById('product-specs').value || null,
+                imagem_principal_url: document.getElementById('product-img-url').value || null,
+                imagem_principal_alt: document.getElementById('product-img-alt').value || null,
+                galeria_imagens: document.getElementById('product-galeria').value || null, // Envia como string
+                categoria: document.getElementById('product-categoria').value || null,
+                subcategoria: document.getElementById('product-subcategoria').value || null,
+                url_slug: document.getElementById('product-slug').value || null,
+                meta_title: document.getElementById('product-meta-title').value || null,
+                meta_description: document.getElementById('product-meta-desc').value || null,
+                esta_ativo: document.getElementById('product-ativo').checked,
+            };
+
+            const method = isEditing ? 'PUT' : 'POST';
+            const url = isEditing ? `${API_BASE_URL}/produtos/${productData.id}` : `${API_BASE_URL}/produtos`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(productData)
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    productSuccessMsg.style.display = 'block';
+                    loadProductsTable(); 
+                    loadDashboardStats();
+                    setTimeout(() => productModal.style.display = 'none', 1500);
+                } else {
+                    productErrorMsg.textContent = data.erro || 'Falha ao salvar.';
+                    productErrorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                productErrorMsg.textContent = 'Erro de conexão com a API.';
+                productErrorMsg.style.display = 'block';
+            } finally {
+                document.getElementById('save-product-btn').disabled = false;
+            }
+        });
+
+        async function deleteProduct(id) {
+            showCustomConfirm(`Tem certeza que deseja EXCLUIR o produto ID ${id}? Esta ação não pode ser desfeita.`, async (confirmed) => {
+                if (!confirmed) return;
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/produtos/${id}`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        showCustomAlert(data.mensagem); 
+                        loadProductsTable();
+                        loadDashboardStats();
+                    } else {
+                        showCustomAlert(data.erro); 
+                    }
+                } catch (error) {
+                    showCustomAlert('Erro ao conectar com a API.'); 
+                }
+            });
+        }
+
+        // =============================================================
+        // --- CRUD CLIENTES ---
+        // =============================================================
+        
+        async function loadClientsTable() {
+            clientsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/clientes`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+                
+                const clients = await response.json();
+                clientsTableBody.innerHTML = '';
+
+                if (clients.length === 0) {
+                     clientsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum cliente cadastrado.</td></tr>';
+                     return;
+                }
+                
+                clients.forEach(c => {
+                    const row = clientsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${c.nome_cliente}</td>
+                        <td>${c.email}</td>
+                        <td>${c.telefone || c.cnpj_cpf || '-'}</td>
+                        <td>${c.codigo_acesso}</td>
+                        <td>
+                            <button class="btn-action btn-danger" onclick="deleteClient(${c.id})">Excluir</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                clientsTableBody.innerHTML = '<tr><td colspan="5" style="color:var(--status-rejected);">Erro ao carregar clientes.</td></tr>';
+            }
+        }
+        
+        document.getElementById('open-add-client-modal').addEventListener('click', () => {
+            isEditing = false;
+            clientForm.reset();
+            hideAllMessages();
+            clientModal.style.display = 'flex';
+        });
+
+        clientForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAllMessages();
+            document.getElementById('save-client-btn').disabled = true;
+
+            const clientData = {
+                nome_cliente: document.getElementById('client-name').value,
+                email: document.getElementById('client-email').value,
+                telefone: document.getElementById('client-telefone').value,
+                cnpj_cpf: document.getElementById('client-cnpj').value,
+                codigo_acesso: document.getElementById('client-codigo').value,
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/clientes`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(clientData)
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    clientSuccessMsg.style.display = 'block';
+                    loadClientsTable();
+                    loadDashboardStats();
+                    setTimeout(() => clientModal.style.display = 'none', 1500);
+                } else {
+                    clientErrorMsg.textContent = data.erro || 'Falha ao salvar.';
+                    clientErrorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                clientErrorMsg.textContent = 'Erro de conexão com a API.';
+                clientErrorMsg.style.display = 'block';
+            } finally {
+                document.getElementById('save-client-btn').disabled = false;
+            }
+        });
+
+        async function deleteClient(id) {
+            showCustomConfirm(`Tem certeza que deseja EXCLUIR o cliente ID ${id}? Isso pode falhar se ele tiver pedidos.`, async (confirmed) => {
+                if (!confirmed) return;
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/clientes/${id}`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        showCustomAlert(data.mensagem); 
+                        loadClientsTable();
+                        loadDashboardStats();
+                    } else {
+                        showCustomAlert(data.erro); 
+                    }
+                } catch (error) {
+                    showCustomAlert('Erro ao conectar com a API.'); 
+                }
+            });
+        }
+
+
+        // =============================================================
+        // --- CRUD ADMINISTRADORES ---
+        // =============================================================
+        
+        async function loadAdminsTable() {
+            adminsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Carregando...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, { headers: getAuthHeaders() });
+                if (response.status === 401) return showLogin();
+
+                const admins = await response.json();
+                adminsTableBody.innerHTML = '';
+
+                if (admins.length === 0) {
+                     adminsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhum administrador cadastrado.</td></tr>';
+                     return;
+                }
+                
+                admins.forEach(a => {
+                    const row = adminsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${a.id}</td>
+                        <td>${a.username}</td>
+                        <td>${formatDate(a.data_criacao)}</td>
+                        <td>
+                            ${a.id === 1 ? '(Root)' : `<button class="btn-action btn-danger" onclick="deleteAdmin(${a.id})">Excluir</button>`}
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                adminsTableBody.innerHTML = '<tr><td colspan="4" style="color:var(--status-rejected);">Erro ao carregar admins.</td></tr>';
+            }
+        }
+        
+        document.getElementById('open-add-admin-modal').addEventListener('click', () => {
+            adminForm.reset();
+            hideAllMessages();
+            adminModal.style.display = 'flex';
+        });
+
+        adminForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAllMessages();
+            document.getElementById('save-admin-btn').disabled = true;
+
+            const adminData = {
+                username: document.getElementById('admin-username').value,
+                chave_admin: document.getElementById('admin-password').value,
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(adminData)
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    adminSuccessMsg.style.display = 'block';
+                    loadAdminsTable();
+                    setTimeout(() => adminModal.style.display = 'none', 1500);
+                } else {
+                    adminErrorMsg.textContent = data.erro || 'Falha ao salvar.';
+                    adminErrorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                adminErrorMsg.textContent = 'Erro de conexão com a API.';
+                adminErrorMsg.style.display = 'block';
+            } finally {
+                document.getElementById('save-admin-btn').disabled = false;
+            }
+        });
+
+        async function deleteAdmin(id) {
+            showCustomConfirm(`Tem certeza que deseja EXCLUIR o administrador ID ${id}?`, async (confirmed) => {
+                if (!confirmed) return;
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        showCustomAlert(data.mensagem); 
+                        loadAdminsTable();
+                    } else {
+                        showCustomAlert(data.erro); 
+                    }
+                } catch (error) {
+                    showCustomAlert('Erro ao conectar com a API.'); 
+                }
+            });
+        }
+
+        // --- INICIALIZAÇÃO ---
+        ADMIN_TOKEN = localStorage.getItem('oceano_admin_token');
+        if (ADMIN_TOKEN) {
+            showPanel();
+        } else {
+            showLogin();
+        }
+    </script>
+</body>
+</html>
