@@ -1135,24 +1135,36 @@ def handle_chat(cliente_id):
             
             # 3. Envia o resultado da ferramenta de volta para a IA
             if tool_result:
+                # ==========================================================
+                # [INÍCIO DA CORREÇÃO 1/2] - Removido 'part='
+                # ==========================================================
                 response = chat.send_message(
-                    part=genai.Part(
+                    genai.Part(
                         function_response=genai.FunctionResponse(
                             name=function_call.name,
                             response=tool_result 
                         )
                     )
                 )
+                # ==========================================================
+                # [FIM DA CORREÇÃO 1/2]
+                # ==========================================================
             else:
                 # Se a ferramenta falhar, envia uma resposta genérica
+                # ==========================================================
+                # [INÍCIO DA CORREÇÃO 2/2] - Removido 'part='
+                # ==========================================================
                 response = chat.send_message(
-                    part=genai.Part(
+                    genai.Part(
                         function_response=genai.FunctionResponse(
                             name=function_call.name,
                             response={"erro": "Ferramenta não reconhecida."}
                         )
                     )
                 )
+                # ==========================================================
+                # [FIM DA CORREÇÃO 2/2]
+                # ==========================================================
         
         # 4. Retorna a resposta final da IA (em texto)
         final_response_text = response.candidates[0].content.parts[0].text
