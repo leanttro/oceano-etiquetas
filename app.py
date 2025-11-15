@@ -1080,7 +1080,8 @@ if GEMINI_API_KEY:
     
     # Inicializa o modelo
     gemini_model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash-latest",
+        # [CORREÇÃO] Alterado para o nome do modelo do app 'Copia' que está funcionando
+        model_name="gemini-2.5-flash-preview-09-2025", 
         system_instruction=SYSTEM_PROMPT,
         tools=tools_to_use # [ALTERADO] Passa a nova lista de ferramentas
     )
