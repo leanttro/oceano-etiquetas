@@ -1145,10 +1145,10 @@ def handle_chat(cliente_id):
             # 3. Envia o resultado da ferramenta de volta para a IA
             if tool_result:
                 # ==========================================================
-                # [INÍCIO DA CORREÇÃO 1/2] - CORREÇÃO DE ATRIBUTO 'Part'
+                # [CORREÇÃO DE ATRIBUTO 'contents' para 'content']
                 # ==========================================================
                 response = chat.send_message(
-                    contents=[{
+                    content=[{ # <--- AQUI: ALTERADO 'contents' para 'content'
                         "role": "function",
                         "parts": [{
                             "functionResponse": {
@@ -1159,15 +1159,13 @@ def handle_chat(cliente_id):
                     }]
                 )
                 # ==========================================================
-                # [FIM DA CORREÇÃO 1/2]
-                # ==========================================================
             else:
                 # Se a ferramenta falhar, envia uma resposta genérica
                 # ==========================================================
-                # [INÍCIO DA CORREÇÃO 2/2] - CORREÇÃO DE ATRIBUTO 'Part'
+                # [CORREÇÃO DE ATRIBUTO 'contents' para 'content']
                 # ==========================================================
                 response = chat.send_message(
-                    contents=[{
+                    content=[{ # <--- AQUI: ALTERADO 'contents' para 'content'
                         "role": "function",
                         "parts": [{
                             "functionResponse": {
@@ -1177,8 +1175,6 @@ def handle_chat(cliente_id):
                         }]
                     }]
                 )
-                # ==========================================================
-                # [FIM DA CORREÇÃO 2/2]
                 # ==========================================================
         
         # 4. Retorna a resposta final da IA (em texto)
