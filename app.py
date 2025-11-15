@@ -321,7 +321,9 @@ def handle_produtos():
             return jsonify(produtos)
         if request.method == 'POST':
             data = request.get_json()
-            galeria_list = [url.strip() for url in data.get('galeria_imagens', '').split(',') if url.strip()] or None
+            # [CORREÇÃO] Garante que 'galeria_raw' seja uma string antes de 'split'
+            galeria_raw = data.get('galeria_imagens') or ''
+            galeria_list = [url.strip() for url in galeria_raw.split(',') if url.strip()] or None
             sql = """
             INSERT INTO oceano_produtos (
                 nome_produto, codigo_produto, whatsapp_link_texto, descricao_curta, 
@@ -362,7 +364,9 @@ def handle_produto_id(id):
             return jsonify(format_db_data(dict(produto)))
         if request.method == 'PUT':
             data = request.get_json()
-            galeria_list = [url.strip() for url in data.get('galeria_imagens', '').split(',') if url.strip()] or None
+            # [CORREÇÃO] Garante que 'galeria_raw' seja uma string antes de 'split'
+            galeria_raw = data.get('galeria_imagens') or ''
+            galeria_list = [url.strip() for url in galeria_raw.split(',') if url.strip()] or None
             sql = """
             UPDATE oceano_produtos SET
                 nome_produto = %s, codigo_produto = %s, whatsapp_link_texto = %s, 

@@ -146,7 +146,6 @@
 
     <div id="login-screen">
         <div class="login-box">
-            <!-- O logo é servido da pasta /static/ -->
             <img src="/static/oceanologo.png" alt="Oceano Etiquetas Logo" class="logo-img">
             <h2>Painel Admin</h2>
             <form id="login-form">
@@ -196,7 +195,6 @@
                     </div>
                 </div>
 
-                <!-- Abas de Navegação (V3 - Lógica Separada) -->
                 <div class="admin-tabs">
                     <button class="tab-link active" data-tab="orcamentos-section">
                         <i class="fas fa-calculator"></i> Orçamentos
@@ -216,7 +214,6 @@
                 </div>
             </div>
 
-            <!-- [Seção 1: ORÇAMENTOS] (Nova Seção V3) -->
             <section id="orcamentos-section" class="admin-section active" style="background-color: var(--background);">
                  <div class="container">
                     <div class="section-header">
@@ -233,7 +230,6 @@
                 </div>
             </section>
             
-            <!-- [Seção 2: PEDIDOS APROVADOS] (Nova Seção V3) -->
             <section id="pedidos-section" class="admin-section">
                  <div class="container">
                     <div class="section-header">
@@ -250,7 +246,6 @@
                 </div>
             </section>
             
-            <!-- [Seção 3: PRODUTOS] -->
             <section id="produtos-section" class="admin-section">
                 <div class="container">
                     <div class="section-header">
@@ -268,7 +263,6 @@
                 </div>
             </section>
 
-            <!-- [Seção 4: CLIENTES] -->
             <section id="clientes-section" class="admin-section">
                  <div class="container">
                     <div class="section-header">
@@ -286,7 +280,6 @@
                 </div>
             </section>
 
-            <!-- [Seção 5: ADMINS] -->
             <section id="admins-section" class="admin-section" style="background-color: var(--background);">
                  <div class="container">
                     <div class="section-header">
@@ -306,11 +299,6 @@
         </main>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- --- MODAIS DE GERENCIAMENTO --- -->
-    <!-- ============================================================= -->
-
-    <!-- [Modal 1: PRODUTOS] -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" data-modal="product-modal">&times;</button>
@@ -388,8 +376,7 @@
                     </div>
                 </div>
 
-                <div class="form-check" style="display: none;"> <!-- [CORREÇÃO V2] Ocultado pois a coluna não existe -->
-                    <input type="checkbox" id="product-ativo" checked>
+                <div class="form-check" style="display: none;"> <input type="checkbox" id="product-ativo" checked>
                     <label for="product-ativo">Produto Ativo (Aparece no site)?</label>
                 </div>
 
@@ -404,7 +391,6 @@
         </div>
     </div>
     
-    <!-- [Modal 2: CLIENTES] -->
     <div id="client-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 600px;">
             <button class="modal-close" data-modal="client-modal">&times;</button>
@@ -447,7 +433,6 @@
         </div>
     </div>
 
-    <!-- [Modal 3: ADMINS] -->
     <div id="admin-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
             <button class="modal-close" data-modal="admin-modal">&times;</button>
@@ -473,7 +458,6 @@
         </div>
     </div>
     
-    <!-- [Modal 4: ORÇAMENTOS] (V3 - Lógica Separada) -->
     <div id="orcamento-detail-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" data-modal="orcamento-detail-modal">&times;</button>
@@ -508,8 +492,7 @@
                         <input type="text" id="orcamento-payment-link" placeholder="sua-chave-pix ou https://...">
                     </div>
                     <div class="input-group">
-                        <!-- Campo vazio, pois o rastreio só existe no PEDIDO -->
-                    </div>
+                        </div>
                 </div>
                  <div class="input-group full-width">
                     <label for="orcamento-admin-notes">Observações do Admin (visível ao cliente)</label>
@@ -522,8 +505,7 @@
                         <tr><th>Produto</th><th>Cód.</th><th>Qtd.</th><th>Obs. Cliente</th><th>Preço Unit. (R$)</th></tr>
                     </thead>
                     <tbody id="orcamento-items-list">
-                        <!-- Itens preenchidos via JS -->
-                    </tbody>
+                        </tbody>
                 </table>
                 
                 <p class="error-msg" id="orcamento-error-msg">Erro ao atualizar.</p>
@@ -538,7 +520,6 @@
         </div>
     </div>
     
-    <!-- [Modal 5: PEDIDOS APROVADOS] (V3 - Lógica Separada) -->
     <div id="pedido-detail-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" data-modal="pedido-detail-modal">&times;</button>
@@ -575,8 +556,7 @@
                         <tr><th>Produto</th><th>Cód.</th><th>Qtd.</th><th>Preço Unit.</th></tr>
                     </thead>
                     <tbody id="pedido-items-list">
-                        <!-- Itens preenchidos via JS -->
-                    </tbody>
+                        </tbody>
                 </table>
                 
                 <p class="error-msg" id="pedido-error-msg">Erro ao atualizar.</p>
@@ -590,7 +570,6 @@
         </div>
     </div>
 
-    <!-- [Modal 6: DIÁLOGO DE CONFIRMAÇÃO] -->
     <div id="custom-dialog-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <p id="dialog-message" style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem;"></p>
@@ -601,9 +580,6 @@
         </div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- --- JAVASCRIPT DO PAINEL ADMIN (V3 - Lógica Separada) --- -->
-    <!-- ============================================================= -->
     <script>
         // URL da API (do app.py)
         const API_BASE_URL = '/api/oceano/admin'; 
@@ -618,7 +594,7 @@
 
         // --- Seletores de Stats ---
         const statProdutosEl = document.getElementById('stat-produtos');
-        const statClientesEl = document.getElementById('stat-clientes');
+        // const statClientesEl = document.getElementById('stat-clientes'); // [CORREÇÃO] Removido
         const statPedidosEl = document.getElementById('stat-pedidos');
         const statOrcamentosEl = document.getElementById('stat-orcamentos'); // V3
 
@@ -838,7 +814,7 @@
                 if (response.status === 401) return showLogin();
                 const stats = await response.json();
                 statProdutosEl.textContent = stats.stat_produtos;
-                statClientesEl.textContent = stats.stat_clientes;
+                // statClientesEl.textContent = stats.stat_clientes; // [CORREÇÃO] Removido
                 statOrcamentosEl.textContent = stats.stat_orcamentos; // V3
                 statPedidosEl.textContent = stats.stat_pedidos; // V3
             } catch (error) {
@@ -1186,8 +1162,7 @@
                         <td>${p.codigo_produto || '-'}</td>
                         <td>${p.nome_produto}</td>
                         <td>${p.categoria || '-'}</td>
-                        <td><span class="status-badge status-true">Ativo</span></td> <!-- Mockado como Ativo -->
-                        <td>
+                        <td><span class="status-badge status-true">Ativo</span></td> <td>
                             <button class="btn-action" style="background:var(--accent); color:white;" onclick="openEditProductModal(${p.id})">Editar</button>
                             <button class="btn-action btn-danger" onclick="deleteProduct(${p.id})">Excluir</button>
                         </td>
