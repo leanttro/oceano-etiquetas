@@ -1107,10 +1107,15 @@ def handle_chat(cliente_id):
     for item in history_raw:
         # Gemini espera 'model' para o bot e 'user' para o usuário
         role = 'model' if item['role'] == 'bot' else 'user'
-        chat_history.append({'role': role, 'parts': [{'text': item['content']}]})
+        # [CORREÇÃO] O objeto 'parts' dentro do histórico precisa ser uma lista de dicionários
+        content_part = item['content']
+        if isinstance(content_part, str):
+            chat_history.append({'role': role, 'parts': [{'text': content_part}]})
+        else:
+             # Isso é para lidar com o histórico caso ele já tenha vindo no formato de função
+             chat_history.append({'role': role, 'parts': content_part})
 
-    # [REMOVIDO] Não há mais 'grounded_message'
-    
+
     try:
         # Inicia o chat
         chat = gemini_model.start_chat(history=chat_history)
@@ -1140,15 +1145,18 @@ def handle_chat(cliente_id):
             # 3. Envia o resultado da ferramenta de volta para a IA
             if tool_result:
                 # ==========================================================
-                # [INÍCIO DA CORREÇÃO 1/2] - Removido 'part='
+                # [INÍCIO DA CORREÇÃO 1/2] - CORREÇÃO DE ATRIBUTO 'Part'
                 # ==========================================================
                 response = chat.send_message(
-                    genai.Part(
-                        function_response=genai.FunctionResponse(
-                            name=function_call.name,
-                            response=tool_result 
-                        )
-                    )
+                    contents=[{
+                        "role": "function",
+                        "parts": [{
+                            "functionResponse": {
+                                "name": function_call.name,
+                                "response": tool_result 
+                            }
+                        }]
+                    }]
                 )
                 # ==========================================================
                 # [FIM DA CORREÇÃO 1/2]
@@ -1156,15 +1164,18 @@ def handle_chat(cliente_id):
             else:
                 # Se a ferramenta falhar, envia uma resposta genérica
                 # ==========================================================
-                # [INÍCIO DA CORREÇÃO 2/2] - Removido 'part='
+                # [INÍCIO DA CORREÇÃO 2/2] - CORREÇÃO DE ATRIBUTO 'Part'
                 # ==========================================================
                 response = chat.send_message(
-                    genai.Part(
-                        function_response=genai.FunctionResponse(
-                            name=function_call.name,
-                            response={"erro": "Ferramenta não reconhecida."}
-                        )
-                    )
+                    contents=[{
+                        "role": "function",
+                        "parts": [{
+                            "functionResponse": {
+                                "name": function_call.name,
+                                "response": {"erro": "Ferramenta não reconhecida."}
+                            }
+                        }]
+                    }]
                 )
                 # ==========================================================
                 # [FIM DA CORREÇÃO 2/2]
@@ -1175,6 +1186,7 @@ def handle_chat(cliente_id):
         return jsonify({'response': final_response_text})
 
     except Exception as e:
+        # Imprime o traceback completo no console do servidor para debug
         print(f"🔴 Erro Chatbot API: {e}")
         traceback.print_exc()
         return jsonify({"response": "Desculpe, tive um problema interno ao processar sua solicitação."}), 500
